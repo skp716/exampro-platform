@@ -262,6 +262,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -275,38 +276,64 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
     let allStudentResults = [];
 
-    window.handleLogin = (e) => {
-      e.preventDefault();
-      const user = document.getElementById('admin-user').value.trim();
-      const pass = document.getElementById('admin-pass').value.trim();
+    // IMPORTANT: create this exact email/password account in Firebase Authentication.
+    // Firestore rules should allow this email as the admin identity.
+    const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL@gmail.com";
 
-      if (user === "saurav" && pass === "saurav@123") {
-        sessionStorage.setItem("admin_logged_in", "true");
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('admin-main').style.display = 'block';
-        loadExamSettings();
-        fetchLiveDatabaseRecords();
-      } else {
-        document.getElementById('login-error').style.display = 'block';
+    window.handleLogin = async (e) => {
+      e.preventDefault();
+      const user = document.getElementById('admin-user').value.trim().toLowerCase();
+      const pass = document.getElementById('admin-pass').value;
+      const loginError = document.getElementById('login-error');
+      const button = e.submitter;
+
+      loginError.style.display = 'none';
+      if (user !== ADMIN_EMAIL.toLowerCase()) {
+        loginError.textContent = 'This account is not authorized as an admin.';
+        loginError.style.display = 'block';
+        return;
+      }
+
+      try {
+        if (button) { button.disabled = true; button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...'; }
+        const credential = await signInWithEmailAndPassword(auth, user, pass);
+        if (!credential.user.emailVerified) {
+          await signOut(auth);
+          throw new Error('Please verify the admin email address before signing in.');
+        }
+        showAdminPanel();
+      } catch (err) {
+        console.error('Admin login error:', err);
+        loginError.textContent = err.message || 'Invalid admin credentials.';
+        loginError.style.display = 'block';
+      } finally {
+        if (button) { button.disabled = false; button.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login to Panel'; }
       }
     };
 
-    window.logoutAdmin = () => {
-      sessionStorage.removeItem("admin_logged_in");
-      location.reload();
-    };
-
-    if (sessionStorage.getItem("admin_logged_in") === "true") {
+    function showAdminPanel() {
       document.getElementById('login-overlay').style.display = 'none';
       document.getElementById('admin-main').style.display = 'block';
-      window.addEventListener('DOMContentLoaded', () => {
-        loadExamSettings();
-        fetchLiveDatabaseRecords();
-      });
+      loadExamSettings();
+      fetchLiveDatabaseRecords();
     }
+
+    window.logoutAdmin = async () => {
+      try { await signOut(auth); } finally { location.reload(); }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && user.emailVerified) {
+        showAdminPanel();
+      } else {
+        document.getElementById('login-overlay').style.display = 'flex';
+        document.getElementById('admin-main').style.display = 'none';
+      }
+    });
 
     window.switchSlide = (slideNum) => {
       document.querySelectorAll('.admin-slide-content').forEach(s => s.classList.remove('active'));
