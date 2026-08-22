@@ -266,8 +266,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
@@ -280,29 +279,7 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
-    let studentUid = null;
-
-    async function ensureStudentAuth() {
-      if (auth.currentUser) {
-        studentUid = auth.currentUser.uid;
-        return auth.currentUser;
-      }
-      const credential = await signInAnonymously(auth);
-      studentUid = credential.user.uid;
-      return credential.user;
-    }
-
-    async function sha256Hex(value) {
-      const data = new TextEncoder().encode(value);
-      const hash = await crypto.subtle.digest("SHA-256", data);
-      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
-    }
-
-    // Authenticate the student anonymously. Firestore rules use this UID
-    // to allow only a single create operation for this student's result.
-    ensureStudentAuth().catch(err => console.error("Student auth error:", err));
 
     let questionsList = [];
     let currentQuestionIndex = 0;
@@ -428,7 +405,15 @@
       proceedBtn.innerText = "Verifying Entry...";
 
       try {
-        await ensureStudentAuth();
+        const qRef = query(collection(db, "results"), where("email", "==", emailInput));
+        const snap = await getDocs(qRef);
+
+        if (!snap.empty) {
+          duplicateError.style.display = 'flex';
+          proceedBtn.disabled = false;
+          proceedBtn.innerText = "Proceed to Instructions";
+          return;
+        }
 
         currentStudentName = nameInput;
         currentStudentEmail = emailInput;
@@ -618,35 +603,23 @@
     };
 
     async function submitStudentExam() {
-      const submitBtn = document.getElementById('submit-all-btn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      const resultPayload = {
+        name: currentStudentName,
+        email: currentStudentEmail,
+        score: finalizedScoreString,
+        tabSwitches: parseInt(sessionStorage.getItem('tabSwitches') || '0'),
+        copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
+        penaltiesApplied: parseInt(sessionStorage.getItem('penaltiesApplied') || '0'),
+        feedback: document.getElementById('feedback-input').value.trim() || "None",
+        submittedAt: new Date()
+      };
 
       try {
-        const user = await ensureStudentAuth();
-        const resultId = await sha256Hex(currentStudentEmail);
-        const resultPayload = {
-          uid: user.uid,
-          name: currentStudentName,
-          email: currentStudentEmail,
-          score: finalizedScoreString,
-          tabSwitches: parseInt(sessionStorage.getItem('tabSwitches') || '0'),
-          copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
-          penaltiesApplied: parseInt(sessionStorage.getItem('penaltiesApplied') || '0'),
-          feedback: document.getElementById('feedback-input').value.trim() || "None",
-          rating: selectedRating,
-          submittedAt: new Date()
-        };
-
-        // Deterministic document ID prevents a second create for the same email.
-        await setDoc(doc(db, "results", resultId), resultPayload, { merge: false });
+        await addDoc(collection(db, "results"), resultPayload);
         sessionStorage.clear();
         document.getElementById('success-modal').classList.add('show');
       } catch (e) {
-        console.error("Secure submission error:", e);
         alert("Submission Error: " + e.message);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Submit & Complete';
       }
     }
 
