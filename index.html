@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -24,36 +24,25 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
     
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow-x: hidden;
-      position: relative;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+      background:#eef3f8;
+      color:var(--text-main);
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
+      -webkit-user-select:none;
+      -ms-user-select:none;
+      user-select:none;
     }
 
-    body::before {
-      content: "";
-      position: absolute;
-      width: 100%; height: 100%; top: 0; left: 0;
-      background-image: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(30, 58, 138, 0.15) 0%, transparent 50%),
-                        linear-gradient(rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95));
-      z-index: -1;
-    }
+    body::before { content:none; }
 
     .test-container {
-      background: var(--bg-card);
-      width: 100%; max-width: 650px;
-      padding: 2.5rem; border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
+      width:100%; min-height:100vh; position:relative;
+    }
+    #slide-1,#slide-2,#slide-4 {
+      width:min(760px,calc(100% - 28px)); margin:28px auto; background:#fff;
+      border:1px solid #dce5ee; border-radius:14px; overflow:hidden;
+      box-shadow:0 12px 35px rgba(15,23,42,.10); padding:0;
     }
 
     .slide { display: none; }
@@ -83,6 +72,49 @@
 
     .instruction-list { list-style: none; margin-bottom: 2rem; color: var(--text-main); }
     .instruction-list li { padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; gap: 10px; font-size: 0.95rem; }
+
+    .exam-config-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 1.5rem;
+    }
+    .config-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: linear-gradient(135deg, #f8fbff, #ffffff);
+      border: 1px solid #dbe5f1;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    .config-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #eaf2ff;
+      color: var(--primary);
+      font-size: 1rem;
+      flex: 0 0 42px;
+    }
+    .config-card span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .config-card strong {
+      display: block;
+      color: var(--primary);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
 
     .negative-marking-box { background: rgba(239, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-weight: 500; color: #b91c1c; }
 
@@ -122,134 +154,122 @@
     .success-popup { background: white; padding: 3rem 2rem; border-radius: 16px; text-align: center; max-width: 450px; width: 90%; }
     .success-popup i { font-size: 4rem; color: var(--success); margin-bottom: 1.5rem; }
 
-    /* ===== ACC PROFESSIONAL EXAM UI ===== */
+    /* ===== ACC PROFESSIONAL EXAM UI — MATCHED TO REFERENCE IMAGE ===== */
     .brand-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1.4rem;
-      border-bottom: 1px solid #e2e8f0;
+      background:linear-gradient(135deg,#062d75 0%,#0b3f95 55%,#0a327e 100%);
+      color:#fff; text-align:center; padding:26px 20px 22px; margin:0;
     }
     .brand-mark {
-      width: 58px; height: 58px; margin: 0 auto 12px;
-      border-radius: 14px; display:flex; align-items:center; justify-content:center;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      color:#fff; font-size:1.45rem; box-shadow:0 8px 20px rgba(30,58,138,.22);
+      width:64px;height:64px;margin:0 auto 10px;border-radius:50%;
+      display:grid;place-items:center;background:#fff;color:#0a347e;font-size:1.55rem;
+      border:4px solid #f6c64a; box-shadow:0 4px 15px rgba(0,0,0,.18);
     }
-    .brand-name {
-      font-size: 1.55rem; line-height:1.2; font-weight:800; color:#0f172a;
-      letter-spacing:.2px;
-    }
-    .brand-sub {
-      margin-top:5px; color:#64748b; font-size:.88rem; font-weight:600;
-      letter-spacing:1.2px; text-transform:uppercase;
-    }
+    .brand-name {font-size:1.35rem;line-height:1.25;font-weight:800;letter-spacing:.2px;}
+    .brand-sub {margin-top:6px;color:#f8d36b;font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;}
+    #slide-1 h2,#slide-2 h2 {padding:22px 26px 0;font-size:1.35rem;margin-bottom:4px;}
+    #slide-1 > p.subtitle,#slide-2 > p.subtitle {padding:0 26px;margin-bottom:20px;}
+    #login-form {padding:0 26px 26px;}
+    #login-form .form-group {margin-bottom:16px;}
+    #login-form input {background:#fff;border:1px solid #cfd8e3;border-radius:8px;padding:12px 13px;}
+    #login-form .btn {width:100%;justify-content:center;background:#083783;border-radius:7px;}
+    #slide-2 .negative-marking-box {margin:0 26px 16px;background:#fff0f0;border:1px solid #ffd1d1;border-left:4px solid #dc2626;color:#c62828;border-radius:7px;}
+    #slide-2 .exam-config-cards {padding:0 26px;margin-bottom:12px;}
+    #slide-2 .instruction-list {padding:0 26px;margin-bottom:8px;}
+    #slide-2 .btn-group {padding:0 26px 26px;}
+    .exam-config-cards {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .config-card {display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #d9e2ec;border-radius:9px;box-shadow:none;}
+    .config-icon {width:42px;height:42px;border-radius:9px;display:grid;place-items:center;background:#edf4ff;color:#0b3f95;font-size:1rem;flex:0 0 42px;}
+    .config-card span {display:block;color:#64748b;font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+    .config-card strong {display:block;color:#092f73;font-size:1.15rem;font-weight:800;}
+    .negative-marking-box {font-weight:600;}
 
-    /* Full exam-paper style layout */
-    .exam-shell {
-      width: 100vw; min-height:100vh; background:#eef2f7;
-      display:flex; flex-direction:column; position:fixed; inset:0;
-      overflow:hidden;
-    }
-    .exam-topbar {
-      height:68px; background:#fff; border-bottom:1px solid #dbe3ec;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 24px; flex-shrink:0; box-shadow:0 2px 8px rgba(15,23,42,.06);
-    }
-    .exam-institute { display:flex; align-items:center; gap:12px; min-width:0; }
-    .mini-logo {
-      width:40px;height:40px;border-radius:10px;background:#1e3a8a;color:#fff;
-      display:flex;align-items:center;justify-content:center;font-weight:800;
-    }
-    .exam-institute strong { display:block;font-size:1rem;color:#0f172a; }
-    .exam-institute span { display:block;font-size:.72rem;color:#64748b;margin-top:2px; }
-    .exam-timer {
-      display:flex;align-items:center;gap:8px;padding:9px 15px;border-radius:8px;
-      border:1px solid #fbbf24;background:#fffbeb;color:#92400e;font-weight:800;
-      min-width:110px;justify-content:center;
-    }
-    .exam-main {
-      flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,1fr) 310px;
-      gap:16px; padding:16px;
-    }
-    .question-panel,.palette-panel {
-      background:#fff;border:1px solid #dbe3ec;border-radius:8px;
-      box-shadow:0 2px 8px rgba(15,23,42,.05); min-height:0;
-    }
-    .question-panel { display:flex;flex-direction:column;overflow:hidden; }
-    .question-head {
-      padding:15px 20px;border-bottom:1px solid #e5e7eb;display:flex;
-      justify-content:space-between;align-items:center;gap:12px;background:#fafcff;
-    }
-    .q-number {font-weight:800;color:#0f172a;font-size:1rem;}
+    .exam-shell {width:100vw;height:100vh;background:#eef2f7;display:flex;flex-direction:column;position:fixed;inset:0;overflow:hidden;}
+    .exam-topbar {height:72px;background:linear-gradient(135deg,#062d75,#0b3f95);color:#fff;border-bottom:1px solid #08295f;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;box-shadow:0 2px 8px rgba(15,23,42,.14);}
+    .exam-institute {display:flex;align-items:center;gap:11px;min-width:0;}
+    .mini-logo {width:46px;height:46px;border-radius:50%;background:#fff;color:#0a347e;border:3px solid #f6c64a;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;flex:0 0 46px;}
+    .exam-institute strong {display:block;font-size:1rem;color:#fff;font-weight:800;}
+    .exam-institute span {display:block;font-size:.7rem;color:#f8d36b;margin-top:2px;font-weight:700;letter-spacing:1px;}
+    .topbar-right {display:flex;align-items:center;gap:24px;}
+    .palette-toggle{display:none;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:6px;width:38px;height:38px;cursor:pointer;font-size:1rem;}
+    .topbar-stat {padding-left:20px;border-left:1px solid rgba(255,255,255,.22);text-align:left;}
+    .topbar-stat span {display:block;font-size:.65rem;color:#cbd5e1;text-transform:uppercase;font-weight:700;}
+    .topbar-stat b {font-size:1rem;color:#fff;}
+    .exam-timer {display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:7px;border:1px solid #f3c84b;background:rgba(255,255,255,.08);color:#ffd84f;font-weight:900;min-width:108px;justify-content:center;}
+    .exam-main {position:relative;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 325px;gap:0;padding:0;overflow:hidden;}
+    .question-panel,.palette-panel {background:#fff;border:0;border-radius:0;box-shadow:none;min-height:0;}
+    .question-panel {display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #dbe3ec;}
+    .question-head {padding:16px 28px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;}
+    .q-number {font-weight:800;color:#111827;font-size:1rem;}
     .q-status {font-size:.78rem;color:#64748b;}
-    .question-scroll {padding:25px 28px;overflow:auto;flex:1;}
-    .exam-q-text {
-      font-size:1.08rem;line-height:1.7;color:#111827;font-weight:600;
-      margin-bottom:24px;white-space:pre-wrap;
-    }
-    .exam-option {
-      display:flex;align-items:flex-start;gap:12px;padding:14px 16px;margin-bottom:11px;
-      border:1px solid #d8e0ea;border-radius:7px;background:#fff;cursor:pointer;
-      transition:.15s ease;
-    }
+    .question-scroll {padding:28px 32px;overflow:auto;flex:1;}
+    .exam-q-text {font-size:1.08rem;line-height:1.7;color:#111827;font-weight:600;margin-bottom:24px;white-space:pre-wrap;}
+    .exam-option {display:flex;align-items:flex-start;gap:12px;padding:13px 15px;margin-bottom:11px;border:1px solid #d8e0ea;border-radius:7px;background:#fff;cursor:pointer;transition:.15s ease;}
     .exam-option:hover {background:#f8fafc;border-color:#94a3b8;}
     .exam-option.selected {border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 1px #2563eb;}
-    .option-letter {
-      flex:0 0 30px;width:30px;height:30px;border-radius:50%;border:1px solid #cbd5e1;
-      display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;color:#475569;
-      background:#fff;
-    }
+    .option-letter {flex:0 0 30px;width:30px;height:30px;border-radius:50%;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;color:#475569;background:#fff;}
     .exam-option.selected .option-letter {background:#2563eb;color:#fff;border-color:#2563eb;}
     .option-content {font-size:.96rem;line-height:1.5;color:#1f2937;padding-top:3px;}
-    .exam-actions {
-      padding:13px 18px;border-top:1px solid #e5e7eb;background:#fafcff;
-      display:flex;justify-content:space-between;align-items:center;gap:10px;
-    }
+    .exam-actions {padding:12px 18px;border-top:1px solid #e5e7eb;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;}
     .action-left,.action-right {display:flex;gap:8px;align-items:center;}
-    .exam-btn {
-      border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:6px;
-      padding:9px 14px;font-weight:700;cursor:pointer;font-size:.84rem;
-    }
+    .exam-btn {border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:6px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:.84rem;}
     .exam-btn:hover {background:#f1f5f9;}
-    .exam-btn.primary {background:#2563eb;color:#fff;border-color:#2563eb;}
-    .exam-btn.primary:hover {background:#1d4ed8;}
-    .exam-btn.review {color:#92400e;background:#fffbeb;border-color:#fbbf24;}
+    .exam-btn.primary {background:#083783;color:#fff;border-color:#083783;}
+    .exam-btn.primary:hover {background:#062d75;}
+    .exam-btn.review {color:#92400e;background:#fffaf0;border-color:#f5b83d;}
     .palette-panel {padding:0;display:flex;flex-direction:column;overflow:hidden;}
-    .palette-title {padding:15px 17px;border-bottom:1px solid #e5e7eb;font-weight:800;color:#0f172a;}
-    .candidate-card {padding:13px 15px;background:#f8fafc;border-bottom:1px solid #e5e7eb;}
+    .palette-title {padding:18px 18px 13px;border-bottom:1px solid #e5e7eb;font-weight:800;color:#0f172a;font-size:1rem;}
+    .candidate-card {padding:13px 18px;background:#fff;border-bottom:1px solid #e5e7eb;}
     .candidate-card b {display:block;font-size:.9rem;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .candidate-card span {display:block;font-size:.72rem;color:#64748b;margin-top:3px;}
-    .palette-scroll {padding:14px;overflow:auto;flex:1;}
-    .palette-label {font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase;margin-bottom:10px;}
-    .palette-grid {display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-    .palette-btn {
-      height:38px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:#334155;
-      font-weight:800;cursor:pointer;font-size:.82rem;position:relative;
-    }
+    .palette-scroll {padding:16px 18px;overflow:auto;flex:1;}
+    .palette-label {font-size:.72rem;font-weight:800;color:#64748b;text-transform:uppercase;margin-bottom:11px;}
+    .palette-grid {display:grid;grid-template-columns:repeat(5,1fr);gap:9px;}
+    .palette-btn {height:39px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:#334155;font-weight:800;cursor:pointer;font-size:.82rem;position:relative;}
     .palette-btn:hover {border-color:#2563eb;}
     .palette-btn.answered {background:#16a34a;color:#fff;border-color:#16a34a;}
     .palette-btn.not-answered {background:#ef4444;color:#fff;border-color:#ef4444;}
     .palette-btn.review {background:#f59e0b;color:#fff;border-color:#f59e0b;}
-    .palette-btn.current {box-shadow:0 0 0 3px rgba(37,99,235,.2);border-color:#2563eb;}
-    .palette-legend {padding:14px;border-top:1px solid #e5e7eb;background:#fafcff;}
-    .legend-row {display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.7rem;color:#475569;}
+    .palette-btn.current {box-shadow:0 0 0 3px rgba(37,99,235,.18);border-color:#2563eb;}
+    .palette-legend {padding:16px 18px;border-top:1px solid #e5e7eb;background:#fff;}
+    .legend-row {display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:.69rem;color:#475569;}
     .legend-item {display:flex;align-items:center;gap:6px;}
     .legend-dot {width:15px;height:15px;border-radius:3px;border:1px solid #cbd5e1;background:#fff;}
-    .legend-dot.green{background:#16a34a;border-color:#16a34a;}
-    .legend-dot.red{background:#ef4444;border-color:#ef4444;}
-    .legend-dot.orange{background:#f59e0b;border-color:#f59e0b;}
-    .submit-exam-btn {margin-top:12px;width:100%;padding:11px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:800;cursor:pointer;}
-    .submit-exam-btn:hover {background:#b91c1c;}
-    @media (max-width: 800px) {
-      .exam-main {grid-template-columns:1fr;padding:8px;overflow:auto;}
-      .palette-panel {min-height:260px;max-height:320px;}
-      .question-panel {min-height:560px;}
-      .exam-topbar {padding:0 10px;height:60px;}
-      .exam-institute span {display:none;}
-      .question-scroll {padding:18px;}
-      .exam-actions {flex-wrap:wrap;}
+    .legend-dot.green{background:#16a34a;border-color:#16a34a}.legend-dot.red{background:#ef4444;border-color:#ef4444}.legend-dot.orange{background:#f59e0b;border-color:#f59e0b}
+    .submit-exam-btn {margin-top:15px;width:100%;padding:12px;border:0;border-radius:6px;background:#083783;color:#fff;font-weight:800;cursor:pointer;}
+    .submit-exam-btn:hover {background:#062d75;}
+    @media (max-width:900px){
+      .exam-main{grid-template-columns:1fr;overflow:hidden;}
+      .question-panel{min-height:calc(100vh - 72px);border-right:0;}
+      .palette-panel{position:absolute;top:0;right:0;bottom:0;width:min(330px,92vw);min-height:0;border-top:0;border-left:1px solid #dbe3ec;z-index:30;box-shadow:-8px 0 25px rgba(15,23,42,.16);transform:translateX(100%);transition:transform .22s ease;}
+      .palette-panel.mobile-open{transform:translateX(0);}
+      .palette-toggle{display:inline-flex;align-items:center;justify-content:center;}
+      .topbar-stat{display:none;}
     }
-  </style>
+    @media (max-width:600px){
+      #slide-1,#slide-2,#slide-4{width:100%;margin:0;border-radius:0;border:0;min-height:100vh;}
+      .brand-header{padding:24px 15px 20px;}
+      .brand-name{font-size:1.18rem;}
+      #slide-1 h2,#slide-2 h2{padding:20px 18px 0;font-size:1.15rem;}
+      #slide-1 > p.subtitle,#slide-2 > p.subtitle{padding:0 18px;margin-bottom:17px;font-size:.83rem;}
+      #login-form{padding:0 18px 22px;}
+      #slide-2 .negative-marking-box{margin:0 18px 14px;}
+      #slide-2 .exam-config-cards,#slide-2 .instruction-list{padding-left:18px;padding-right:18px;}
+      #slide-2 .btn-group{padding:0 18px 22px;}
+      .exam-topbar{height:60px;padding:0 10px;}
+      .mini-logo{width:38px;height:38px;flex-basis:38px;font-size:.62rem;}
+      .exam-institute strong{font-size:.76rem;}
+      .exam-institute span{font-size:.58rem;}
+      .exam-timer{min-width:86px;padding:7px 9px;font-size:.8rem;}
+      .question-head{padding:13px 16px;}
+      .question-scroll{padding:18px 15px;}
+      .exam-q-text{font-size:1rem;line-height:1.6;}
+      .exam-actions{padding:10px;flex-wrap:wrap;}
+      .action-left{width:100%;justify-content:space-between;}
+      .action-right{width:100%;}
+      #btn-next{width:100%;justify-content:center;}
+      .palette-panel{min-height:300px;}
+    }
+</style>
 </head>
 <body>
 
@@ -257,53 +277,63 @@
     <!-- SLIDE 1: LOGIN -->
     <div class="slide active" id="slide-1">
       <div class="brand-header">
-        <div class="brand-mark"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div class="brand-name">Ashish Competition Centre (ACC)</div>
-        <div class="brand-sub">Daltonganj</div>
+        <div class="brand-mark"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="brand-name">ASHISH COMPETITION CENTRE (ACC)</div>
+        <div class="brand-sub">DALTONGANJ</div>
       </div>
-      <h2><i class="fa-solid fa-right-to-bracket"></i> Candidate Login</h2>
+      <h2><i class="fa-solid fa-user-lock"></i> Candidate Login</h2>
       <p class="subtitle">Enter your details to access the online examination portal.</p>
       <form id="login-form" autocomplete="off" onsubmit="validateAndNext(event)">
         <div class="form-group">
           <label for="student-name">Full Name *</label>
-          <input type="text" id="student-name" placeholder="Enter your full name" required>
+          <input type="text" id="student-name" placeholder="Enter Your Name" required>
         </div>
         <div class="form-group">
           <label for="student-email">Gmail Address *</label>
-          <input type="email" id="student-email" autocomplete="new-password" required>
-          <div class="error-msg" id="email-error">
-            <i class="fa-solid fa-circle-exclamation"></i> Only official @gmail.com addresses are supported.
-          </div>
-          <div class="error-msg" id="duplicate-error">
-            <i class="fa-solid fa-ban"></i> Access Denied: You have already attempted this test!
-          </div>
+          <input type="email" id="student-email" placeholder="Enter Your Email" autocomplete="new-password" required>
+          <div class="error-msg" id="email-error"><i class="fa-solid fa-circle-exclamation"></i> Only official @gmail.com addresses are supported.</div>
+          <div class="error-msg" id="duplicate-error"><i class="fa-solid fa-ban"></i> Access Denied: You have already attempted this test!</div>
         </div>
-        <div style="text-align: right; margin-top: 2rem;">
-          <button type="submit" id="proceed-btn" class="btn">Proceed to Instructions <i class="fa-solid fa-arrow-right"></i></button>
-        </div>
+        <button type="submit" id="proceed-btn" class="btn"><i class="fa-solid fa-arrow-right"></i> Start Test</button>
       </form>
     </div>
 
     <!-- SLIDE 2: INSTRUCTIONS -->
     <div class="slide" id="slide-2">
-      <h2><i class="fa-solid fa-clipboard-list"></i> Test Instructions</h2>
-      <p class="subtitle">Please read all instructions completely before starting.</p>
-      <div class="negative-marking-box">
-        <i class="fa-solid fa-triangle-exclamation"></i> Warning: Negative marking is -0.25 marks per wrong answer. Tab switching causes a -1 mark penalty & question shuffle!
+      <div class="brand-header">
+        <div class="brand-mark"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="brand-name">ASHISH COMPETITION CENTRE (ACC)</div>
+        <div class="brand-sub">DALTONGANJ</div>
       </div>
+      <h2><i class="fa-solid fa-clipboard-list"></i> Instructions</h2>
+      <p class="subtitle">Please read all instructions carefully before starting.</p>
+
+      <div class="negative-marking-box">
+        <i class="fa-solid fa-circle-exclamation"></i> <b>Negative Marking: -0.25</b> marks for each wrong answer.
+      </div>
+
+      <div class="exam-config-cards">
+        <div class="config-card">
+          <div class="config-icon"><i class="fa-solid fa-list-ol"></i></div>
+          <div><span>Total Questions</span><strong id="instruction-question-count">—</strong></div>
+        </div>
+        <div class="config-card">
+          <div class="config-icon"><i class="fa-regular fa-clock"></i></div>
+          <div><span>Total Time</span><strong id="instruction-duration">—</strong></div>
+        </div>
+      </div>
+
       <ul class="instruction-list">
-        <li>
-          <i class="fa-solid fa-circle-chevron-right" style="color: var(--primary-light);"></i>
-          <span>Questions are randomly loaded from total question pool.</span>
-        </li>
-        <li>
-          <i class="fa-solid fa-circle-chevron-right" style="color: var(--primary-light);"></i>
-          <span><b>Strict Security:</b> Background/Tab Switch 1st time = Question Change & -1 Mark penalty. 2nd time = Auto Submit!</span>
-        </li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>The test consists of multiple choice questions.</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>Each question has 4 options (A, B, C &amp; D).</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>Only one option is correct.</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>You can save your answer and move to the next question.</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>You can revisit and change your answer before submitting.</span></li>
       </ul>
+
       <div class="btn-group">
         <button class="btn btn-secondary" onclick="changeSlide(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
-        <button class="btn" id="start-exam-btn" onclick="startTestExam()">Start Examination <i class="fa-solid fa-vial"></i></button>
+        <button class="btn" id="start-exam-btn" onclick="startTestExam()">I Understand, Start Test <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     </div>
 
@@ -312,15 +342,13 @@
       <div class="exam-shell">
         <div class="exam-topbar">
           <div class="exam-institute">
-            <div class="mini-logo">ACC</div>
-            <div>
-              <strong>Ashish Competition Centre (ACC)</strong>
-              <span>Daltonganj • Online Examination</span>
-            </div>
+            <div class="mini-logo"><i class="fa-solid fa-building-columns"></i></div>
+            <div><strong>ASHISH COMPETITION CENTRE (ACC)</strong><span>DALTONGANJ</span></div>
           </div>
-          <div class="exam-timer">
-            <i class="fa-regular fa-clock"></i>
-            <span id="timer-display">30:00</span>
+          <div class="topbar-right">
+            <div class="topbar-stat"><span>Questions</span><b id="top-question-count">0 / 0</b></div>
+            <div class="exam-timer"><i class="fa-regular fa-clock"></i><span id="timer-display">00:00</span></div>
+            <button class="palette-toggle" id="palette-toggle" onclick="toggleMobilePalette()" aria-label="Open question palette"><i class="fa-solid fa-bars"></i></button>
           </div>
         </div>
 
@@ -330,52 +358,35 @@
               <div class="q-number" id="question-counter">Question 1 of 0</div>
               <div class="q-status" id="question-status">Not Answered</div>
             </div>
-
             <div class="question-scroll">
               <div class="exam-q-text" id="q-text">Loading question...</div>
               <div id="options-block"></div>
             </div>
-
             <div class="exam-actions">
               <div class="action-left">
-                <button class="exam-btn" id="btn-prev" onclick="handlePrevious()">
-                  <i class="fa-solid fa-angle-left"></i> Previous
-                </button>
-                <button class="exam-btn review" id="btn-review" onclick="toggleMarkReview()">
-                  <i class="fa-regular fa-bookmark"></i> Mark for Review
-                </button>
-                <button class="exam-btn" onclick="clearResponse()">
-                  <i class="fa-solid fa-rotate-left"></i> Clear Response
-                </button>
+                <button class="exam-btn" id="btn-prev" onclick="handlePrevious()"><i class="fa-solid fa-angle-left"></i> Previous</button>
+                <button class="exam-btn review" id="btn-review" onclick="toggleMarkReview()"><i class="fa-regular fa-bookmark"></i> Mark for Review</button>
+                <button class="exam-btn" onclick="clearResponse()"><i class="fa-solid fa-rotate-left"></i> Clear Response</button>
               </div>
-              <div class="action-right">
-                <button class="exam-btn primary" id="btn-next" onclick="handleNext()">
-                  Save & Next <i class="fa-solid fa-angle-right"></i>
-                </button>
-              </div>
+              <div class="action-right"><button class="exam-btn primary" id="btn-next" onclick="handleNext()">Save &amp; Next <i class="fa-solid fa-angle-right"></i></button></div>
             </div>
           </section>
 
           <aside class="palette-panel">
             <div class="palette-title"><i class="fa-solid fa-table-cells-large"></i> Question Palette</div>
-            <div class="candidate-card">
-              <b id="palette-student-name">Candidate</b>
-              <span id="palette-student-email">candidate@gmail.com</span>
-            </div>
+            <div class="candidate-card"><b id="palette-student-name">Candidate</b><span id="palette-student-email"></span></div>
             <div class="palette-scroll">
-              <div class="palette-label">Questions</div>
+              <div class="palette-label">Question Status</div>
               <div class="palette-grid" id="question-palette"></div>
             </div>
             <div class="palette-legend">
               <div class="legend-row">
+                <div class="legend-item"><span class="legend-dot"></span> Not Visited</div>
                 <div class="legend-item"><span class="legend-dot green"></span> Answered</div>
                 <div class="legend-item"><span class="legend-dot red"></span> Not Answered</div>
-                <div class="legend-item"><span class="legend-dot orange"></span> Review</div>
-                <div class="legend-item"><span class="legend-dot"></span> Not Visited</div>
+                <div class="legend-item"><span class="legend-dot orange"></span> Marked for Review</div>
               </div>
-              <button class="submit-exam-btn" onclick="confirmExamSubmit()">
-                <i class="fa-solid fa-paper-plane"></i> Submit Examination
-              </button>
+              <button class="submit-exam-btn" onclick="confirmExamSubmit()"><i class="fa-solid fa-paper-plane"></i> Submit Examination</button>
             </div>
           </aside>
         </div>
@@ -533,8 +544,13 @@
         const docRef = doc(db, "exam_config", "current_test");
         const snap = await getDoc(docRef);
 
-        if (!snap.exists()) return true;
+        if (!snap.exists()) {
+          examConfigData = null;
+          updateInstructionConfig();
+          return true;
+        }
         examConfigData = snap.data();
+        updateInstructionConfig();
         
         const now = new Date().getTime();
         const start = examConfigData.windowStart || 0;
@@ -565,6 +581,22 @@
           <p style="color:#94a3b8;font-size:1.2rem;">${msg}</p>
         </div>
       `;
+    }
+
+    function updateInstructionConfig() {
+      const questionEl = document.getElementById('instruction-question-count');
+      const durationEl = document.getElementById('instruction-duration');
+
+      const configuredQuestions = examConfigData?.studentLimit;
+      const configuredMinutes = examConfigData?.durationMinutes;
+
+      questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
+        ? Number(configuredQuestions)
+        : '—';
+
+      durationEl.innerText = (Number.isFinite(Number(configuredMinutes)) && Number(configuredMinutes) > 0)
+        ? `${Number(configuredMinutes)} min`
+        : '—';
     }
 
     window.changeSlide = (slideNumber) => {
@@ -628,7 +660,8 @@
         let fullPool = JSON.parse(jsonString);
 
         // Randomly pick limit from pool
-        const limit = examConfigData?.studentLimit || fullPool.length;
+        const limit = Number(examConfigData?.studentLimit);
+        if (!Number.isFinite(limit) || limit <= 0) throw new Error('Exam question count is not configured in Admin Panel.');
         fullPool = fullPool.sort(() => 0.5 - Math.random());
         questionsList = fullPool.slice(0, limit);
         selectedAnswers = {};
@@ -640,7 +673,7 @@
 
         isExamActive = true;
         window.changeSlide(3);
-        startExamTimer(examConfigData?.durationMinutes || 30);
+        startExamTimer(Number(examConfigData?.durationMinutes));
         loadQuestion(0);
       } catch (error) {
         alert("Failed to load test questions.");
@@ -650,6 +683,7 @@
     };
 
     function startExamTimer(durationMins) {
+      if (!Number.isFinite(durationMins) || durationMins <= 0) { alert('Exam duration is not configured in Admin Panel.'); return; }
       let durationMs = durationMins * 60 * 1000;
       const endTime = new Date().getTime() + durationMs;
 
@@ -697,7 +731,7 @@
         btn.className = cls;
         btn.innerText = idx + 1;
         btn.title = `Question ${idx + 1}`;
-        btn.onclick = () => loadQuestion(idx);
+        btn.onclick = () => { loadQuestion(idx); if (window.innerWidth <= 900) toggleMobilePalette(); };
         palette.appendChild(btn);
       });
     }
@@ -712,8 +746,9 @@
       currentQuestionIndex = index;
       if (questionStatus[index] === 'not-visited') questionStatus[index] = 'not-answered';
 
-      document.getElementById('question-counter').innerText =
-        `Question ${index + 1} of ${questionsList.length}`;
+      document.getElementById('question-counter').innerText = `Question ${index + 1} of ${questionsList.length}`;
+      const topCount = document.getElementById('top-question-count');
+      if (topCount) topCount.innerText = `${index + 1} / ${questionsList.length}`;
 
       const statusText = questionStatus[index] === 'answered' ? 'Answered' :
                          questionStatus[index] === 'review' ? 'Marked for Review' :
@@ -759,6 +794,16 @@
 
       renderQuestionPalette();
     }
+
+    window.toggleMobilePalette = () => {
+      const panel = document.querySelector('.palette-panel');
+      const btn = document.getElementById('palette-toggle');
+      if (!panel) return;
+      panel.classList.toggle('mobile-open');
+      if (btn) btn.innerHTML = panel.classList.contains('mobile-open')
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+    };
 
     window.selectOption = (qIdx, optIdx) => {
       selectedAnswers[qIdx] = optIdx;
