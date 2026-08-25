@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -7,6 +7,10 @@
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']], displayMath: [['\\[','\\]'], ['$$','$$']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   
   <style>
     :root {
@@ -202,7 +206,7 @@
     .q-number {font-weight:800;color:#111827;font-size:1rem;}
     .q-status {font-size:.78rem;color:#64748b;}
     .question-scroll {padding:28px 32px;overflow:auto;flex:1;}
-    .exam-q-text {font-size:1.08rem;line-height:1.7;color:#111827;font-weight:600;margin-bottom:24px;white-space:pre-wrap;}
+    .exam-q-text {font-size:1.08rem;line-height:1.7;color:#111827;font-weight:600;margin-bottom:24px;white-space:normal;overflow-wrap:anywhere;} .exam-q-text img,.option-content img{max-width:100%;height:auto;display:block;margin:10px auto;} .exam-q-text svg,.option-content svg{max-width:100%;height:auto;display:block;margin:10px auto;} .exam-q-text table,.option-content table{max-width:100%;border-collapse:collapse;margin:10px auto;} .exam-q-text td,.exam-q-text th,.option-content td,.option-content th{border:1px solid #cbd5e1;padding:6px 9px;}
     .exam-option {display:flex;align-items:flex-start;gap:12px;padding:13px 15px;margin-bottom:11px;border:1px solid #d8e0ea;border-radius:7px;background:#fff;cursor:pointer;transition:.15s ease;}
     .exam-option:hover {background:#f8fafc;border-color:#94a3b8;}
     .exam-option.selected {border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 1px #2563eb;}
@@ -269,7 +273,22 @@
       #btn-next{width:100%;justify-content:center;}
       .palette-panel{min-height:300px;}
     }
-</style>
+
+    /* Professional in-page exam modals: avoids browser "site says" alerts/confirms */
+    .exam-modal-overlay{position:fixed;inset:0;background:rgba(2,12,32,.66);backdrop-filter:blur(4px);z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;}
+    .exam-modal-overlay.show{display:flex;animation:fadeIn .18s ease;}
+    .exam-modal{width:min(430px,100%);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.30);border:1px solid #dbe4ef;}
+    .exam-modal-head{padding:18px 20px;color:#fff;background:linear-gradient(135deg,#062d75,#0b3f95);display:flex;align-items:center;gap:12px;}
+    .exam-modal-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);font-size:1rem;}
+    .exam-modal-head h3{font-size:1rem;margin:0;font-weight:800;}
+    .exam-modal-body{padding:20px;color:#334155;font-size:.92rem;line-height:1.6;}
+    .exam-modal-body strong{color:#0f172a;}
+    .exam-modal-actions{padding:0 20px 20px;display:flex;justify-content:flex-end;gap:10px;}
+    .exam-modal-btn{min-width:92px;padding:10px 16px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:800;cursor:pointer;}
+    .exam-modal-btn.primary{background:#083783;border-color:#083783;color:#fff;}
+    .exam-modal-btn.danger{background:#dc2626;border-color:#dc2626;color:#fff;}
+    .exam-modal-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 9px;border-radius:7px;background:#fff1f2;color:#be123c;font-size:.78rem;font-weight:800;}
+  </style>
 </head>
 <body>
 
@@ -456,17 +475,33 @@
     </div>
   </div>
 
+
+  <div class="exam-modal-overlay" id="exam-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="exam-modal">
+      <div class="exam-modal-head">
+        <div class="exam-modal-icon" id="exam-modal-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3 id="exam-modal-title">Exam Notification</h3>
+      </div>
+      <div class="exam-modal-body" id="exam-modal-message"></div>
+      <div class="exam-modal-actions" id="exam-modal-actions">
+        <button class="exam-modal-btn" id="exam-modal-cancel">Cancel</button>
+        <button class="exam-modal-btn primary" id="exam-modal-confirm">OK</button>
+      </div>
+    </div>
+  </div>
+
   <div class="success-overlay" id="success-modal">
     <div class="success-popup">
       <i class="fa-solid fa-circle-check"></i>
       <h3>Test Submitted Successfully!</h3>
-      <p>Your performance metrics and proctored security log have been securely synced to the Admin Panel.</p>
+      <p>Your performance metrics and security log have been securely synced to the Admin Panel.</p>
+      <button class="btn" style="margin-top:18px;justify-content:center;" onclick="location.reload()">Done</button>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
@@ -494,27 +529,58 @@
     let totalScore = 0;
     let isExamActive = false;
     let examConfigData = null;
+    let draftResultId = sessionStorage.getItem('draftResultId') || '';
+    let submissionInProgress = false;
+    let resultSavedForThisAttempt = false;
+    let securityEventLocked = false;
+    const MAX_TAB_SWITCHES = 5;
 
     // Security track
     let tabSwitches = parseInt(sessionStorage.getItem('tabSwitches') || '0');
     let copiesAttempted = parseInt(sessionStorage.getItem('copiesAttempted') || '0');
     let penaltiesApplied = parseInt(sessionStorage.getItem('penaltiesApplied') || '0');
 
-    // Tab Switch Handler (1st time = -1 mark penalty & question change, 2nd time = Auto Submit)
+    // Security: count each real leave/return cycle only once; maximum 5 tab switches.
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden && isExamActive) {
-        tabSwitches++;
-        sessionStorage.setItem('tabSwitches', tabSwitches);
+      if (!isExamActive) return;
 
-        if (tabSwitches === 1) {
-          penaltiesApplied++;
-          sessionStorage.setItem('penaltiesApplied', penaltiesApplied);
-          alert("SECURITY WARNING 1: Tab switch/Background activity detected!\n- Penalty: -1 Mark deducted\n- Question has been auto-changed!");
-          shuffleCurrentQuestion();
-        } else if (tabSwitches >= 2) {
-          alert("SECURITY VIOLATION 2: Multiple tab switches detected!\nYour test is being automatically submitted now.");
-          calculateAndShowResults();
+      if (document.hidden) {
+        if (securityEventLocked) return;
+        securityEventLocked = true;
+
+        if (tabSwitches >= MAX_TAB_SWITCHES) return;
+
+        tabSwitches = Math.min(MAX_TAB_SWITCHES, tabSwitches + 1);
+        penaltiesApplied = tabSwitches;
+        sessionStorage.setItem('tabSwitches', String(tabSwitches));
+        sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
+
+        // First switch changes the current question; the 5th switch ends the exam.
+        if (tabSwitches === 1) shuffleCurrentQuestion();
+
+        if (tabSwitches >= MAX_TAB_SWITCHES) {
+          showExamModal(
+            'security',
+            'Security Limit Reached',
+            `<strong>Maximum tab/background switch limit reached.</strong><br><span class="exam-modal-badge"><i class="fa-solid fa-triangle-exclamation"></i> Tab Switch ${MAX_TAB_SWITCHES}/${MAX_TAB_SWITCHES}</span><br><br>Your examination will now be submitted automatically.`,
+            'Submit & View Result',
+            null,
+            'danger',
+            () => { clearInterval(timerInterval); isExamActive = false; calculateAndShowResults(); }
+          );
+        } else {
+          showExamModal(
+            'security',
+            `Security Alert — Tab Switch ${tabSwitches}/${MAX_TAB_SWITCHES}`,
+            `<strong>Background/Tab switch detected.</strong><br><span class="exam-modal-badge"><i class="fa-solid fa-triangle-exclamation"></i> Penalty: -1 mark</span><br><br>${tabSwitches === 1 ? 'The current question has been changed as a security measure.' : 'This tab switch has been recorded. Your examination is still active.'}`,
+            'Continue Exam',
+            null,
+            'primary'
+          );
         }
+      } else {
+        // Prevent duplicate visibility events from one mobile/desktop switch.
+        setTimeout(() => { securityEventLocked = false; }, 700);
       }
     });
 
@@ -523,7 +589,7 @@
         e.preventDefault();
         copiesAttempted++;
         sessionStorage.setItem('copiesAttempted', copiesAttempted);
-        alert("Copying test questions is strictly disabled!");
+        showExamModal('security','Copying Disabled','Copying test questions is disabled during the examination.','Continue Exam',null,'primary');
       }
     });
 
@@ -532,7 +598,7 @@
         e.preventDefault();
         copiesAttempted++;
         sessionStorage.setItem('copiesAttempted', copiesAttempted);
-        alert("Pasting content is strictly disabled!");
+        showExamModal('security','Pasting Disabled','Pasting content is disabled during the examination.','Continue Exam',null,'primary');
       }
     });
 
@@ -641,7 +707,7 @@
         currentStudentEmail = emailInput;
         window.changeSlide(2);
       } catch (err) {
-        alert("Network error. Please check internet connection.");
+        showExamModal('security','Connection Error','Please check your internet connection and try again.','Close',null,'primary');
       } finally {
         proceedBtn.disabled = false;
         proceedBtn.innerText = "Proceed to Instructions";
@@ -669,6 +735,11 @@
         sessionStorage.setItem('tabSwitches', '0');
         sessionStorage.setItem('copiesAttempted', '0');
         sessionStorage.setItem('penaltiesApplied', '0');
+        sessionStorage.removeItem('draftResultId');
+        draftResultId = '';
+        resultSavedForThisAttempt = false;
+        submissionInProgress = false;
+        securityEventLocked = false;
         questionsList.forEach((_, i) => questionStatus[i] = 'not-visited');
 
         isExamActive = true;
@@ -676,14 +747,14 @@
         startExamTimer(Number(examConfigData?.durationMinutes));
         loadQuestion(0);
       } catch (error) {
-        alert("Failed to load test questions.");
+        showExamModal('security','Question Load Error','The test questions could not be loaded. Please check that chapter1.html is available and try again.','Close',null,'primary');
         startBtn.disabled = false;
         startBtn.innerText = "Start Examination";
       }
     };
 
     function startExamTimer(durationMins) {
-      if (!Number.isFinite(durationMins) || durationMins <= 0) { alert('Exam duration is not configured in Admin Panel.'); return; }
+      if (!Number.isFinite(durationMins) || durationMins <= 0) { showExamModal('security','Exam Configuration Missing','Exam duration is not configured in the Admin Panel.','Close',null,'primary'); return; }
       let durationMs = durationMins * 60 * 1000;
       const endTime = new Date().getTime() + durationMs;
 
@@ -693,8 +764,7 @@
 
         if (remaining <= 0) {
           clearInterval(timerInterval);
-          alert("Time is up! Submitting exam...");
-          calculateAndShowResults();
+          showExamModal('info','Time Up','Your examination time has ended. Your responses will now be submitted for evaluation.','View Result',null,'primary',()=>calculateAndShowResults());
         } else {
           let mins = Math.floor(remaining / (1000 * 60));
           let secs = Math.floor((remaining % (1000 * 60)) / 1000);
@@ -756,7 +826,7 @@
       document.getElementById('question-status').innerText = statusText;
 
       const qData = questionsList[index];
-      document.getElementById('q-text').innerText = qData.question || qData.q;
+      document.getElementById('q-text').innerHTML = qData.question || qData.q || '';
 
       const optionsBlock = document.getElementById('options-block');
       optionsBlock.innerHTML = '';
@@ -793,6 +863,13 @@
       document.getElementById('palette-student-email').innerText = currentStudentEmail || '';
 
       renderQuestionPalette();
+      typesetExamMath();
+    }
+
+    function typesetExamMath(){
+      if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+        MathJax.typesetPromise([document.getElementById('q-text'), document.getElementById('options-block'), document.getElementById('review-ledger-container')]).catch(()=>{});
+      }
     }
 
     window.toggleMobilePalette = () => {
@@ -837,24 +914,48 @@
     };
 
     window.confirmExamSubmit = () => {
+      if (!isExamActive || submissionInProgress) return;
       const unanswered = questionsList.filter((_, idx) => selectedAnswers[idx] === undefined).length;
       const reviewed = questionsList.filter((_, idx) => questionStatus[idx] === 'review').length;
-      const msg = `Submit examination now?\n\nUnanswered: ${unanswered}\nMarked for Review: ${reviewed}\n\nThis action cannot be undone.`;
-      if (confirm(msg)) {
-        clearInterval(timerInterval);
-        isExamActive = false;
-        calculateAndShowResults();
-      }
+      showExamModal(
+        'submit',
+        'Submit Examination',
+        `<strong>Submit examination now?</strong><br><br><b>Unanswered:</b> ${unanswered}<br><b>Marked for Review:</b> ${reviewed}<br><br><span style="color:#b91c1c;font-weight:700;">This action cannot be undone.</span>`,
+        'Cancel',
+        'Submit Now',
+        'danger',
+        () => {
+          clearInterval(timerInterval);
+          isExamActive = false;
+          calculateAndShowResults();
+        }
+      );
     };
+
+    function confirmFinishExam(){
+      if (!isExamActive || submissionInProgress) return;
+      const unanswered = questionsList.filter((_, idx) => selectedAnswers[idx] === undefined).length;
+      showExamModal(
+        'finish',
+        'Finish Examination',
+        `<strong>You have reached the last question.</strong><br><br>Unanswered questions: <b>${unanswered}</b><br><br>Are you sure you want to finish the test and view your performance?`,
+        'Continue Test',
+        'Finish Test',
+        'primary',
+        () => {
+          clearInterval(timerInterval);
+          isExamActive = false;
+          calculateAndShowResults();
+        }
+      );
+    }
 
     window.handleNext = () => {
       updateQuestionStatusFromAnswer();
       if (currentQuestionIndex < questionsList.length - 1) {
         loadQuestion(currentQuestionIndex + 1);
       } else {
-        clearInterval(timerInterval);
-        isExamActive = false;
-        calculateAndShowResults();
+        confirmFinishExam();
       }
     };
 
@@ -865,7 +966,7 @@
       }
     };
 
-    function calculateAndShowResults() {
+    async function calculateAndShowResults() {
       clearInterval(timerInterval);
       isExamActive = false;
 
@@ -901,7 +1002,7 @@
       const penaltyDeduction = parseInt(sessionStorage.getItem('penaltiesApplied') || '0');
       calculatedScore = Math.max(0, rawScore - penaltyDeduction);
       totalScore = questionsList.length;
-      finalizedScoreString = `${calculatedScore}/${totalScore}`;
+      finalizedScoreString = `${Number.isInteger(calculatedScore) ? calculatedScore : calculatedScore.toFixed(2)}/${totalScore}`;
 
       document.getElementById('res-score').innerText = finalizedScoreString;
       document.getElementById('res-correct').innerText = correctCount;
@@ -913,6 +1014,64 @@
       document.getElementById('log-penalty').innerText = `-${penaltyDeduction} Mark(s)`;
 
       window.changeSlide(4);
+      await saveDraftResult();
+      typesetExamMath();
+    }
+
+    function showExamModal(type, title, message, cancelText='Cancel', confirmText='OK', confirmClass='primary', onConfirm=null){
+      const overlay=document.getElementById('exam-modal');
+      const titleEl=document.getElementById('exam-modal-title');
+      const msgEl=document.getElementById('exam-modal-message');
+      const cancelBtn=document.getElementById('exam-modal-cancel');
+      const confirmBtn=document.getElementById('exam-modal-confirm');
+      const icon=document.getElementById('exam-modal-icon');
+      if(!overlay) return;
+      titleEl.textContent=title;
+      msgEl.innerHTML=message;
+      confirmBtn.className='exam-modal-btn '+(confirmClass||'primary');
+      confirmBtn.textContent=confirmText||'OK';
+      cancelBtn.textContent=cancelText||'Cancel';
+      const iconMap={security:'fa-shield-halved',submit:'fa-paper-plane',finish:'fa-flag-checkered',info:'fa-circle-info'};
+      icon.innerHTML=`<i class="fa-solid ${iconMap[type]||'fa-bell'}"></i>`;
+      const singleButton = confirmText === null;
+      cancelBtn.style.display = singleButton ? '' : '';
+      confirmBtn.style.display = singleButton ? 'none' : '';
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+      const close=()=>{ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); };
+      if(singleButton){
+        cancelBtn.textContent = cancelText || 'OK';
+        cancelBtn.onclick=()=>{ close(); if(typeof onConfirm==='function') onConfirm(); };
+      }else{
+        cancelBtn.onclick=close;
+        confirmBtn.onclick=()=>{ close(); if(typeof onConfirm==='function') onConfirm(); };
+      }
+    }
+
+    async function saveDraftResult(){
+      if(resultSavedForThisAttempt) return;
+      if(!currentStudentEmail || !questionsList.length) return;
+      const payload={
+        name:currentStudentName, email:currentStudentEmail, score:finalizedScoreString,
+        correct:parseInt(document.getElementById('res-correct').innerText||'0'),
+        wrong:parseInt(document.getElementById('res-wrong').innerText||'0'),
+        tabSwitches:Math.min(MAX_TAB_SWITCHES,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
+        copiesAttempted:parseInt(sessionStorage.getItem('copiesAttempted')||'0'),
+        penaltiesApplied:parseInt(sessionStorage.getItem('penaltiesApplied')||'0'),
+        feedback:document.getElementById('feedback-input').value.trim() || 'None',
+        status:'draft', completed:false,
+        submittedAt:new Date(), updatedAt:new Date()
+      };
+      try{
+        if(!draftResultId){
+          draftResultId=doc(collection(db,'results')).id;
+          sessionStorage.setItem('draftResultId',draftResultId);
+        }
+        await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
+        resultSavedForThisAttempt=true;
+      }catch(err){
+        console.error('Draft save error:',err);
+      }
     }
 
     document.querySelectorAll('#stars-container i').forEach(star => {
@@ -935,23 +1094,41 @@
     };
 
     async function submitStudentExam() {
+      if(submissionInProgress) return;
+      submissionInProgress=true;
+      const submitBtn=document.getElementById('submit-all-btn');
+      if(submitBtn){ submitBtn.disabled=true; submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Result...'; }
+
       const resultPayload = {
         name: currentStudentName,
         email: currentStudentEmail,
         score: finalizedScoreString,
-        tabSwitches: parseInt(sessionStorage.getItem('tabSwitches') || '0'),
+        tabSwitches: Math.min(MAX_TAB_SWITCHES, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
         copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
         penaltiesApplied: parseInt(sessionStorage.getItem('penaltiesApplied') || '0'),
-        feedback: document.getElementById('feedback-input').value.trim() || "None",
-        submittedAt: new Date()
+        feedback: document.getElementById('feedback-input').value.trim() || 'None',
+        doubt: document.getElementById('doubt-input').value.trim() || 'None',
+        rating: selectedRating,
+        status: 'completed',
+        completed: true,
+        submittedAt: new Date(),
+        updatedAt: new Date()
       };
 
       try {
-        await addDoc(collection(db, "results"), resultPayload);
+        if(!draftResultId){
+          draftResultId=doc(collection(db,'results')).id;
+          sessionStorage.setItem('draftResultId',draftResultId);
+        }
+        await setDoc(doc(db,'results',draftResultId), resultPayload, {merge:true});
+        resultSavedForThisAttempt=true;
         sessionStorage.clear();
         document.getElementById('success-modal').classList.add('show');
       } catch (e) {
-        alert("Submission Error: " + e.message);
+        submissionInProgress=false;
+        if(submitBtn){ submitBtn.disabled=false; submitBtn.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i> Submit & Complete'; }
+        showExamModal('security','Submission Error','Your result could not be synced right now. Please check your internet connection and try again.','Close',null,'primary');
+        console.error(e);
       }
     }
 
