@@ -725,11 +725,31 @@
         const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
         let fullPool = JSON.parse(jsonString);
 
-        // Randomly pick limit from pool
+        // Read question count from Admin Panel
         const limit = Number(examConfigData?.studentLimit);
         if (!Number.isFinite(limit) || limit <= 0) throw new Error('Exam question count is not configured in Admin Panel.');
-        fullPool = fullPool.sort(() => 0.5 - Math.random());
-        questionsList = fullPool.slice(0, limit);
+
+        /*
+         * QUESTION ORDER CONTROL
+         * Admin Panel saves questionOrder in:
+         * exam_config/current_test
+         *
+         * random     = select questions randomly from the pool
+         * sequential = use the original order from chapter1.html
+         *
+         * For old configurations where questionOrder does not exist,
+         * Random Order remains the default so existing behaviour is preserved.
+         */
+        const questionOrder = examConfigData?.questionOrder || 'random';
+
+        if (questionOrder === 'sequential') {
+          // Normal / Sequential: preserve chapter1.html question order.
+          questionsList = fullPool.slice(0, limit);
+        } else {
+          // Random: preserve the existing random-selection behaviour.
+          fullPool = fullPool.sort(() => 0.5 - Math.random());
+          questionsList = fullPool.slice(0, limit);
+        }
         selectedAnswers = {};
         questionStatus = {};
         sessionStorage.setItem('tabSwitches', '0');
