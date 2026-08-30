@@ -1,14 +1,15 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exam Elite | Admin Dashboard Panel</title>
-  
+
   <!-- Google Fonts & FontAwesome -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <style>
     :root {
       --primary: #1e3a8a;
@@ -22,197 +23,886 @@
       --success: #10b981;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { background-color: #f8fafc; color: var(--text-main); min-height: 100vh; padding: 2rem 1rem; }
-    
-    #login-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.9); z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    #login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .login-card {
-      background: #ffffff; padding: 2.5rem; border-radius: 16px;
-      width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      background: #ffffff;
+      padding: 2.5rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
       text-align: center;
     }
-    .login-card h2 { color: var(--primary); margin-bottom: 0.5rem; }
-    .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
-    
-    .admin-container { max-width: 1000px; margin: 0 auto; display: none; }
-    
+
+    .login-card h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: none;
+    }
+
     header {
-      margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 10px;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    header h1 { color: var(--primary); font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
-    
-    .header-actions { display: flex; gap: 10px; align-items: center; }
 
-    .slide-navigation { display: flex; gap: 10px; margin-bottom: 2rem; background: #e2e8f0; padding: 6px; border-radius: 12px; }
+    header h1 {
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .slide-navigation {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 2rem;
+      background: #e2e8f0;
+      padding: 6px;
+      border-radius: 12px;
+    }
+
     .slide-tab-btn {
-      flex: 1; background: transparent; border: none; padding: 1rem;
-      font-size: 1rem; font-weight: 600; color: var(--text-muted);
-      border-radius: 8px; cursor: pointer; transition: all 0.2s ease;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    .slide-tab-btn.active { background: var(--bg-card); color: var(--primary); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
 
-    .admin-slide-content { display: none; }
-    .admin-slide-content.active { display: block; }
+    .slide-tab-btn.active {
+      background: var(--bg-card);
+      color: var(--primary);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .admin-slide-content {
+      display: none;
+    }
+
+    .admin-slide-content.active {
+      display: block;
+    }
 
     .admin-card {
-      background: var(--bg-card); padding: 2.5rem; border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; margin-bottom: 2rem;
+      background: var(--bg-card);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
     }
-    h3 { font-size: 1.3rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-    p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
 
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 1.5rem; }
-    .form-group { margin-bottom: 1.25rem; text-align: left; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); margin-bottom: 0.5rem; }
-    input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"], textarea, select {
-      width: 100%; padding: 0.85rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.2s; background: white;
+    h3 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    input:focus, textarea:focus, select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    input[type="datetime-local"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
 
     .btn {
-      background: var(--primary); color: white; border: none; padding: 0.85rem 1.5rem;
-      font-size: 0.95rem; font-weight: 600; border-radius: 8px; cursor: pointer;
-      transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-    .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
-    .btn-success { background: var(--success); } .btn-success:hover { background: #059669; }
-    .btn-danger { background: var(--danger); } .btn-danger:hover { background: #dc2626; }
-    .btn-accent { background: var(--accent); color: #0f172a; } .btn-accent:hover { background: #d97706; }
-    .btn-refresh { background: #475569; color: white; } .btn-refresh:hover { background: #334155; }
 
-    .table-responsive { width: 100%; overflow-x: auto; margin-top: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; }
-    table { width: 100%; border-collapse: collapse; text-align: left; background: white; }
-    th, td { padding: 1rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
-    th { background: #f8fafc; color: var(--primary); font-weight: 600; }
-    tr:hover { background: #f1f5f9; }
+    .btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
 
-    .badge-rank { background: #f59e0b; color: white; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.85rem; }
-    .alert-indicator { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
-    .alert-safe { background: #d1fae5; color: #065f46; }
-    .alert-warn { background: #fee2e2; color: #991b1b; }
-    .time-stamp { font-size: 0.8rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-accent:hover {
+      background: #d97706;
+    }
+
+    .btn-refresh {
+      background: #475569;
+      color: white;
+    }
+
+    .btn-refresh:hover {
+      background: #334155;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    .badge-rank {
+      background: #f59e0b;
+      color: white;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+
+    .alert-indicator {
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .alert-safe {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .alert-warn {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .time-stamp {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* QUESTION ORDER CONTROL */
+    .question-order-card {
+      background: linear-gradient(135deg, #eff6ff, #f8fafc);
+      border: 2px solid #bfdbfe;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .question-order-title {
+      color: var(--primary);
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 0.4rem;
+    }
+
+    .question-order-description {
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .order-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .order-option {
+      position: relative;
+    }
+
+    .order-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .order-option label {
+      margin: 0;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 2px solid #dbeafe;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: 0.2s ease;
+    }
+
+    .order-option label:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .order-option input:checked + label {
+      border-color: var(--primary-light);
+      background: #dbeafe;
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+    }
+
+    .order-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eff6ff;
+      color: var(--primary-light);
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .order-option input:checked + label .order-icon {
+      background: var(--primary);
+      color: white;
+    }
+
+    .order-text small {
+      display: block;
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 0.76rem;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .current-order-status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #dbeafe;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .current-order-status strong {
+      color: var(--primary);
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 1rem 0.7rem;
+      }
+
+      .admin-card {
+        padding: 1.25rem;
+      }
+
+      header h1 {
+        font-size: 1.4rem;
+      }
+
+      .slide-navigation {
+        flex-direction: column;
+      }
+
+      .order-options {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <!-- LOGIN OVERLAY -->
   <div id="login-overlay">
     <div class="login-card">
-      <i class="fa-solid fa-user-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <i class="fa-solid fa-user-lock"
+         style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+
       <h2>Admin Login</h2>
       <p>Enter credentials to access admin dashboard</p>
+
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="admin-user" placeholder="Enter username" required>
+          <input
+            type="text"
+            id="admin-user"
+            placeholder="Enter username"
+            required
+          >
         </div>
+
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="admin-pass" placeholder="Enter password" required>
+          <input
+            type="password"
+            id="admin-pass"
+            placeholder="Enter password"
+            required
+          >
         </div>
-        <p id="login-error" style="color: var(--danger); font-size: 0.85rem; display: none; margin-bottom: 1rem;">Invalid username or password!</p>
-        <button type="submit" class="btn" style="width: 100%; justify-content: center;">
-          <i class="fa-solid fa-right-to-bracket"></i> Login to Panel
+
+        <p
+          id="login-error"
+          style="color: var(--danger); font-size: 0.85rem; display: none; margin-bottom: 1rem;"
+        >
+          Invalid username or password!
+        </p>
+
+        <button
+          type="submit"
+          class="btn"
+          style="width: 100%; justify-content: center;"
+        >
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Login to Panel
         </button>
       </form>
     </div>
   </div>
 
+
   <!-- MAIN ADMIN CONTAINER -->
   <div class="admin-container" id="admin-main">
+
     <header>
-      <h1><i class="fa-solid fa-gauge-high"></i> Admin Control Room</h1>
+      <h1>
+        <i class="fa-solid fa-gauge-high"></i>
+        Admin Control Room
+      </h1>
+
       <div class="header-actions">
-        <button onclick="fetchLiveDatabaseRecords()" class="btn btn-refresh" title="Refresh Live Data">
-          <i class="fa-solid fa-rotate"></i> Sync Data
+        <button
+          onclick="fetchLiveDatabaseRecords()"
+          class="btn btn-refresh"
+          title="Refresh Live Data"
+        >
+          <i class="fa-solid fa-rotate"></i>
+          Sync Data
         </button>
-        <button onclick="logoutAdmin()" class="btn btn-danger" style="padding: 0.5rem 1rem;">
-          <i class="fa-solid fa-power-off"></i> Logout
+
+        <button
+          onclick="logoutAdmin()"
+          class="btn btn-danger"
+          style="padding: 0.5rem 1rem;"
+        >
+          <i class="fa-solid fa-power-off"></i>
+          Logout
         </button>
       </div>
     </header>
 
+
     <div class="slide-navigation">
-      <button class="slide-tab-btn active" onclick="switchSlide(1)">
-        <i class="fa-solid fa-plus-minus"></i> Setup & Timer Config
+
+      <button
+        class="slide-tab-btn active"
+        onclick="switchSlide(1, this)"
+      >
+        <i class="fa-solid fa-plus-minus"></i>
+        Setup & Timer Config
       </button>
-      <button class="slide-tab-btn" onclick="switchSlide(2)">
-        <i class="fa-solid fa-shield-halved"></i> Security Analytics
+
+      <button
+        class="slide-tab-btn"
+        onclick="switchSlide(2, this)"
+      >
+        <i class="fa-solid fa-shield-halved"></i>
+        Security Analytics
       </button>
-      <button class="slide-tab-btn" onclick="switchSlide(3)">
-        <i class="fa-solid fa-trophy"></i> Leaderboard & Timing
+
+      <button
+        class="slide-tab-btn"
+        onclick="switchSlide(3, this)"
+      >
+        <i class="fa-solid fa-trophy"></i>
+        Leaderboard & Timing
       </button>
+
     </div>
 
+
+    <!-- ========================================================= -->
     <!-- SLIDE 1: CONFIGURATION & TIMER -->
-    <div id="slide-1-content" class="admin-slide-content active">
+    <!-- ========================================================= -->
+
+    <div
+      id="slide-1-content"
+      class="admin-slide-content active"
+    >
+
       <div class="admin-card">
-        <h3><i class="fa-solid fa-sliders"></i> Test & Timer Configuration Settings</h3>
-        <p class="subtitle">Set question randomization, test time duration, and fixed exam availability window.</p>
-        
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="config-total-pool">Total Pool Questions *</label>
-            <input type="number" id="config-total-pool" placeholder="Example: 10" min="1">
-          </div>
-          <div class="form-group">
-            <label for="config-student-limit">Student Display Limit (Randomized) *</label>
-            <input type="number" id="config-student-limit" placeholder="Example: 6" min="1">
-          </div>
-          <div class="form-group">
-            <label for="config-test-duration">Per Exam Timer (Minutes) *</label>
-            <input type="number" id="config-test-duration" placeholder="e.g. 30" min="1">
-          </div>
-        </div>
+
+        <h3>
+          <i class="fa-solid fa-sliders"></i>
+          Test & Timer Configuration Settings
+        </h3>
+
+        <p class="subtitle">
+          Set question randomization, test time duration, and fixed exam availability window.
+        </p>
+
 
         <div class="form-grid">
+
           <div class="form-group">
-            <label for="config-window-start">Overall Test Window Start Time *</label>
-            <input type="datetime-local" id="config-window-start">
+            <label for="config-total-pool">
+              Total Pool Questions *
+            </label>
+
+            <input
+              type="number"
+              id="config-total-pool"
+              placeholder="Example: 10"
+              min="1"
+            >
           </div>
+
+
           <div class="form-group">
-            <label for="config-window-end">Overall Test Window End Time *</label>
-            <input type="datetime-local" id="config-window-end">
+            <label for="config-student-limit">
+              Student Display Limit *
+            </label>
+
+            <input
+              type="number"
+              id="config-student-limit"
+              placeholder="Example: 6"
+              min="1"
+            >
           </div>
+
+
+          <div class="form-group">
+            <label for="config-test-duration">
+              Per Exam Timer (Minutes) *
+            </label>
+
+            <input
+              type="number"
+              id="config-test-duration"
+              placeholder="e.g. 30"
+              min="1"
+            >
+          </div>
+
         </div>
 
-        <div style="background: #f1f5f9; padding: 1.25rem; border-radius: 10px; margin-bottom: 1.5rem;">
-          <label style="font-weight: 700; color: var(--primary);">Question Upload Method:</label>
-          <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 0.5rem;">
-            <label style="cursor:pointer; display:flex; align-items:center; gap:6px;">
-              <input type="radio" name="upload-mode" value="form" checked> Live Form
-            </label>
-            <label style="cursor:pointer; display:flex; align-items:center; gap:6px;">
-              <input type="radio" name="upload-mode" value="code"> Custom Code
-            </label>
-            <label style="cursor:pointer; display:flex; align-items:center; gap:6px;">
-              <input type="radio" name="upload-mode" value="msword"> MS Word Parse
-            </label>
+
+        <!-- ===================================================== -->
+        <!-- NEW QUESTION ORDER CONTROL -->
+        <!-- ===================================================== -->
+
+        <div class="question-order-card">
+
+          <div class="question-order-title">
+            <i class="fa-solid fa-arrow-down-1-9"></i>
+            Question Order Control
           </div>
+
+          <div class="question-order-description">
+            Choose how questions should be delivered to students.
+            This setting is saved in Firebase and can be changed whenever
+            you want.
+          </div>
+
+
+          <div class="order-options">
+
+            <!-- RANDOM -->
+            <div class="order-option">
+
+              <input
+                type="radio"
+                name="question-order"
+                id="question-order-random"
+                value="random"
+                checked
+              >
+
+              <label for="question-order-random">
+
+                <span class="order-icon">
+                  <i class="fa-solid fa-shuffle"></i>
+                </span>
+
+                <span class="order-text">
+                  Random Order
+                  <small>
+                    Questions are selected/shown in random order.
+                  </small>
+                </span>
+
+              </label>
+
+            </div>
+
+
+            <!-- SEQUENTIAL -->
+            <div class="order-option">
+
+              <input
+                type="radio"
+                name="question-order"
+                id="question-order-sequential"
+                value="sequential"
+              >
+
+              <label for="question-order-sequential">
+
+                <span class="order-icon">
+                  <i class="fa-solid fa-list-ol"></i>
+                </span>
+
+                <span class="order-text">
+                  Normal / Sequential Order
+                  <small>
+                    Questions follow their original numbering/order.
+                  </small>
+                </span>
+
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <div class="current-order-status">
+            <i class="fa-solid fa-circle-info"></i>
+            Current setting:
+            <strong id="question-order-status">
+              Random Order
+            </strong>
+          </div>
+
         </div>
 
-        <button type="button" id="save-config-btn" onclick="saveExamSettings()" class="btn btn-success">
-          <i class="fa-solid fa-lock"></i> Save & Apply Configurations
+
+        <!-- WINDOW SETTINGS -->
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="config-window-start">
+              Overall Test Window Start Time *
+            </label>
+
+            <input
+              type="datetime-local"
+              id="config-window-start"
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="config-window-end">
+              Overall Test Window End Time *
+            </label>
+
+            <input
+              type="datetime-local"
+              id="config-window-end"
+            >
+          </div>
+
+        </div>
+
+
+        <!-- UPLOAD METHOD -->
+
+        <div
+          style="
+            background: #f1f5f9;
+            padding: 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+          "
+        >
+
+          <label
+            style="
+              font-weight: 700;
+              color: var(--primary);
+            "
+          >
+            Question Upload Method:
+          </label>
+
+          <div
+            style="
+              display: flex;
+              gap: 20px;
+              flex-wrap: wrap;
+              margin-top: 0.5rem;
+            "
+          >
+
+            <label
+              style="
+                cursor:pointer;
+                display:flex;
+                align-items:center;
+                gap:6px;
+              "
+            >
+              <input
+                type="radio"
+                name="upload-mode"
+                value="form"
+                checked
+              >
+              Live Form
+            </label>
+
+
+            <label
+              style="
+                cursor:pointer;
+                display:flex;
+                align-items:center;
+                gap:6px;
+              "
+            >
+              <input
+                type="radio"
+                name="upload-mode"
+                value="code"
+              >
+              Custom Code
+            </label>
+
+
+            <label
+              style="
+                cursor:pointer;
+                display:flex;
+                align-items:center;
+                gap:6px;
+              "
+            >
+              <input
+                type="radio"
+                name="upload-mode"
+                value="msword"
+              >
+              MS Word Parse
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          id="save-config-btn"
+          onclick="saveExamSettings()"
+          class="btn btn-success"
+        >
+          <i class="fa-solid fa-lock"></i>
+          Save & Apply Configurations
         </button>
+
       </div>
+
     </div>
 
+
+    <!-- ========================================================= -->
     <!-- SLIDE 2: SECURITY ANALYTICS -->
-    <div id="slide-2-content" class="admin-slide-content">
+    <!-- ========================================================= -->
+
+    <div
+      id="slide-2-content"
+      class="admin-slide-content"
+    >
+
       <div class="admin-card">
-        <h3><i class="fa-solid fa-user-shield"></i> Anti-Cheating & Security Analytics Tracker</h3>
-        <p class="subtitle">Live security logs of tab switches, copy/paste attempts, and penalty marks.</p>
-        
+
+        <h3>
+          <i class="fa-solid fa-user-shield"></i>
+          Anti-Cheating & Security Analytics Tracker
+        </h3>
+
+        <p class="subtitle">
+          Live security logs of tab switches, copy/paste attempts, and penalty marks.
+        </p>
+
+
         <div class="table-responsive">
+
           <table>
+
             <thead>
+
               <tr>
                 <th>Student Details</th>
                 <th>Submit Time</th>
@@ -220,29 +910,88 @@
                 <th>Copy Violations</th>
                 <th>Penalty Marks Deduc.</th>
               </tr>
+
             </thead>
+
             <tbody id="analytics-table-body">
-              <tr><td colspan="5" style="text-align:center;">Loading analytics data...</td></tr>
+
+              <tr>
+                <td
+                  colspan="5"
+                  style="text-align:center;"
+                >
+                  Loading analytics data...
+                </td>
+              </tr>
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
+
     </div>
 
+
+    <!-- ========================================================= -->
     <!-- SLIDE 3: LEADERBOARD -->
-    <div id="slide-3-content" class="admin-slide-content">
+    <!-- ========================================================= -->
+
+    <div
+      id="slide-3-content"
+      class="admin-slide-content"
+    >
+
       <div class="admin-card">
-        <h3><i class="fa-solid fa-trophy"></i> Live Leaderboard & Submission Time Logs</h3>
-        <p class="subtitle">Student scores sorted by performance along with exact submission time.</p>
-        
-        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-          <button onclick="downloadResultsCSV()" class="btn btn-accent"><i class="fa-solid fa-file-excel"></i> Download CSV Report</button>
-          <button onclick="clearAllResults()" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Clear All Records</button>
+
+        <h3>
+          <i class="fa-solid fa-trophy"></i>
+          Live Leaderboard & Submission Time Logs
+        </h3>
+
+        <p class="subtitle">
+          Student scores sorted by performance along with exact submission time.
+        </p>
+
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:1rem;
+            gap:10px;
+            flex-wrap:wrap;
+          "
+        >
+
+          <button
+            onclick="downloadResultsCSV()"
+            class="btn btn-accent"
+          >
+            <i class="fa-solid fa-file-excel"></i>
+            Download CSV Report
+          </button>
+
+
+          <button
+            onclick="clearAllResults()"
+            class="btn btn-danger"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+            Clear All Records
+          </button>
+
         </div>
 
+
         <div class="table-responsive">
+
           <table>
+
             <thead>
+
               <tr>
                 <th>Rank</th>
                 <th>Student Details</th>
@@ -250,255 +999,1182 @@
                 <th>Submitted At</th>
                 <th>Feedback</th>
               </tr>
+
             </thead>
+
             <tbody id="leaderboard-table-body">
-              <tr><td colspan="5" style="text-align:center;">Loading leaderboard data...</td></tr>
+
+              <tr>
+                <td
+                  colspan="5"
+                  style="text-align:center;"
+                >
+                  Loading leaderboard data...
+                </td>
+              </tr>
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
+
+  <!-- =========================================================== -->
+  <!-- FIREBASE + JAVASCRIPT -->
+  <!-- =========================================================== -->
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      getDocs,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+
+    /* ============================================================
+       FIREBASE CONFIG
+       ============================================================ */
 
     const firebaseConfig = {
+
       apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
+
       authDomain: "test-d6ee6.firebaseapp.com",
+
       projectId: "test-d6ee6",
+
       storageBucket: "test-d6ee6.firebasestorage.app",
+
       messagingSenderId: "533839027531",
+
       appId: "1:533839027531:web:98417498dc648e54695cce",
+
       measurementId: "G-KCDLMWNS8S"
+
     };
+
 
     const app = initializeApp(firebaseConfig);
+
     const db = getFirestore(app);
+
     let allStudentResults = [];
 
+
+    /* ============================================================
+       ADMIN LOGIN
+       ============================================================ */
+
     window.handleLogin = (e) => {
+
       e.preventDefault();
-      const user = document.getElementById('admin-user').value.trim();
-      const pass = document.getElementById('admin-pass').value.trim();
+
+      const user =
+        document.getElementById('admin-user').value.trim();
+
+      const pass =
+        document.getElementById('admin-pass').value.trim();
+
 
       if (user === "saurav" && pass === "saurav@123") {
-        sessionStorage.setItem("admin_logged_in", "true");
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('admin-main').style.display = 'block';
+
+        sessionStorage.setItem(
+          "admin_logged_in",
+          "true"
+        );
+
+        document.getElementById(
+          'login-overlay'
+        ).style.display = 'none';
+
+        document.getElementById(
+          'admin-main'
+        ).style.display = 'block';
+
+
         loadExamSettings();
+
         fetchLiveDatabaseRecords();
+
       } else {
-        document.getElementById('login-error').style.display = 'block';
+
+        document.getElementById(
+          'login-error'
+        ).style.display = 'block';
+
       }
+
     };
+
+
+    /* ============================================================
+       LOGOUT
+       ============================================================ */
 
     window.logoutAdmin = () => {
-      sessionStorage.removeItem("admin_logged_in");
+
+      sessionStorage.removeItem(
+        "admin_logged_in"
+      );
+
       location.reload();
+
     };
 
-    if (sessionStorage.getItem("admin_logged_in") === "true") {
-      document.getElementById('login-overlay').style.display = 'none';
-      document.getElementById('admin-main').style.display = 'block';
-      window.addEventListener('DOMContentLoaded', () => {
-        loadExamSettings();
-        fetchLiveDatabaseRecords();
-      });
+
+    /* ============================================================
+       AUTO LOGIN FROM SESSION
+       ============================================================ */
+
+    if (
+      sessionStorage.getItem(
+        "admin_logged_in"
+      ) === "true"
+    ) {
+
+      document.getElementById(
+        'login-overlay'
+      ).style.display = 'none';
+
+      document.getElementById(
+        'admin-main'
+      ).style.display = 'block';
+
+
+      window.addEventListener(
+        'DOMContentLoaded',
+        () => {
+
+          loadExamSettings();
+
+          fetchLiveDatabaseRecords();
+
+        }
+      );
+
     }
 
-    window.switchSlide = (slideNum) => {
-      document.querySelectorAll('.admin-slide-content').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.slide-tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`slide-${slideNum}-content`).classList.add('active');
-      if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+    /* ============================================================
+       SLIDE SWITCHING
+       ============================================================ */
+
+    window.switchSlide = (
+      slideNum,
+      clickedButton
+    ) => {
+
+      document
+        .querySelectorAll('.admin-slide-content')
+        .forEach(
+          s => s.classList.remove('active')
+        );
+
+
+      document
+        .querySelectorAll('.slide-tab-btn')
+        .forEach(
+          b => b.classList.remove('active')
+        );
+
+
+      const target =
+        document.getElementById(
+          `slide-${slideNum}-content`
+        );
+
+
+      if (target) {
+        target.classList.add('active');
+      }
+
+
+      if (clickedButton) {
+        clickedButton.classList.add('active');
+      }
+
     };
+
+
+    /* ============================================================
+       QUESTION ORDER STATUS
+       ============================================================ */
+
+    function updateQuestionOrderStatus() {
+
+      const selected =
+        document.querySelector(
+          'input[name="question-order"]:checked'
+        );
+
+      const status =
+        document.getElementById(
+          'question-order-status'
+        );
+
+
+      if (!selected || !status) {
+        return;
+      }
+
+
+      if (selected.value === "sequential") {
+
+        status.textContent =
+          "Normal / Sequential Order";
+
+      } else {
+
+        status.textContent =
+          "Random Order";
+
+      }
+
+    }
+
+
+    document
+      .querySelectorAll(
+        'input[name="question-order"]'
+      )
+      .forEach(
+        radio => {
+
+          radio.addEventListener(
+            'change',
+            updateQuestionOrderStatus
+          );
+
+        }
+      );
+
+
+    /* ============================================================
+       LOAD EXAM SETTINGS
+       ============================================================ */
 
     async function loadExamSettings() {
+
       try {
-        const docRef = doc(db, "exam_config", "current_test");
-        const docSnap = await getDoc(docRef);
+
+        const docRef =
+          doc(
+            db,
+            "exam_config",
+            "current_test"
+          );
+
+
+        const docSnap =
+          await getDoc(docRef);
+
+
         if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById('config-total-pool').value = data.totalPool || "";
-          document.getElementById('config-student-limit').value = data.studentLimit || "";
-          document.getElementById('config-test-duration').value = data.durationMinutes || 30;
-          
-          if(data.windowStart) {
-            document.getElementById('config-window-start').value = new Date(data.windowStart).toISOString().slice(0, 16);
+
+          const data =
+            docSnap.data();
+
+
+          /* TOTAL POOL */
+
+          document.getElementById(
+            'config-total-pool'
+          ).value =
+            data.totalPool || "";
+
+
+          /* STUDENT LIMIT */
+
+          document.getElementById(
+            'config-student-limit'
+          ).value =
+            data.studentLimit || "";
+
+
+          /* DURATION */
+
+          document.getElementById(
+            'config-test-duration'
+          ).value =
+            data.durationMinutes || 30;
+
+
+          /* WINDOW START */
+
+          if (data.windowStart) {
+
+            document.getElementById(
+              'config-window-start'
+            ).value =
+              new Date(
+                data.windowStart
+              )
+              .toISOString()
+              .slice(0, 16);
+
           }
-          if(data.windowEnd) {
-            document.getElementById('config-window-end').value = new Date(data.windowEnd).toISOString().slice(0, 16);
+
+
+          /* WINDOW END */
+
+          if (data.windowEnd) {
+
+            document.getElementById(
+              'config-window-end'
+            ).value =
+              new Date(
+                data.windowEnd
+              )
+              .toISOString()
+              .slice(0, 16);
+
           }
+
+
+          /* UPLOAD MODE */
 
           if (data.uploadMode) {
-            const radio = document.querySelector(`input[name="upload-mode"][value="${data.uploadMode}"]`);
-            if (radio) radio.checked = true;
+
+            const radio =
+              document.querySelector(
+                `input[name="upload-mode"][value="${data.uploadMode}"]`
+              );
+
+
+            if (radio) {
+
+              radio.checked = true;
+
+            }
+
           }
+
+
+          /* ======================================================
+             QUESTION ORDER
+             ====================================================== */
+
+          const questionOrder =
+            data.questionOrder || "random";
+
+
+          const orderRadio =
+            document.querySelector(
+              `input[name="question-order"][value="${questionOrder}"]`
+            );
+
+
+          if (orderRadio) {
+
+            orderRadio.checked = true;
+
+          } else {
+
+            document.getElementById(
+              'question-order-random'
+            ).checked = true;
+
+          }
+
+
+          updateQuestionOrderStatus();
+
+        } else {
+
+          /*
+             If no configuration exists yet,
+             use Random as default.
+          */
+
+          document.getElementById(
+            'question-order-random'
+          ).checked = true;
+
+          updateQuestionOrderStatus();
+
         }
+
       } catch (e) {
-        console.error("Config load error:", e);
+
+        console.error(
+          "Config load error:",
+          e
+        );
+
       }
+
     }
 
-    window.saveExamSettings = async () => {
-      const totalPool = parseInt(document.getElementById('config-total-pool').value);
-      const studentLimit = parseInt(document.getElementById('config-student-limit').value);
-      const durationMinutes = parseInt(document.getElementById('config-test-duration').value);
-      const windowStartVal = document.getElementById('config-window-start').value;
-      const windowEndVal = document.getElementById('config-window-end').value;
-      const uploadMode = document.querySelector('input[name="upload-mode"]:checked').value;
 
-      if (!totalPool || !studentLimit || !durationMinutes || !windowStartVal || !windowEndVal) {
-        alert("Please fill all configuration & window timing fields.");
+    /* ============================================================
+       SAVE EXAM SETTINGS
+       ============================================================ */
+
+    window.saveExamSettings = async () => {
+
+      const totalPool =
+        parseInt(
+          document.getElementById(
+            'config-total-pool'
+          ).value
+        );
+
+
+      const studentLimit =
+        parseInt(
+          document.getElementById(
+            'config-student-limit'
+          ).value
+        );
+
+
+      const durationMinutes =
+        parseInt(
+          document.getElementById(
+            'config-test-duration'
+          ).value
+        );
+
+
+      const windowStartVal =
+        document.getElementById(
+          'config-window-start'
+        ).value;
+
+
+      const windowEndVal =
+        document.getElementById(
+          'config-window-end'
+        ).value;
+
+
+      const uploadModeElement =
+        document.querySelector(
+          'input[name="upload-mode"]:checked'
+        );
+
+
+      const questionOrderElement =
+        document.querySelector(
+          'input[name="question-order"]:checked'
+        );
+
+
+      const uploadMode =
+        uploadModeElement
+          ? uploadModeElement.value
+          : "form";
+
+
+      const questionOrder =
+        questionOrderElement
+          ? questionOrderElement.value
+          : "random";
+
+
+      /* VALIDATION */
+
+      if (
+        !totalPool ||
+        !studentLimit ||
+        !durationMinutes ||
+        !windowStartVal ||
+        !windowEndVal
+      ) {
+
+        alert(
+          "Please fill all configuration & window timing fields."
+        );
+
         return;
+
       }
 
-      const saveBtn = document.getElementById('save-config-btn');
+
+      if (studentLimit > totalPool) {
+
+        alert(
+          "Student Display Limit cannot be greater than Total Pool Questions."
+        );
+
+        return;
+
+      }
+
+
+      const saveBtn =
+        document.getElementById(
+          'save-config-btn'
+        );
+
+
       saveBtn.disabled = true;
-      saveBtn.innerText = "Saving Settings...";
+
+      saveBtn.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Saving Settings...';
+
 
       try {
-        await setDoc(doc(db, "exam_config", "current_test"), {
-          totalPool,
-          studentLimit,
-          durationMinutes,
-          windowStart: new Date(windowStartVal).getTime(),
-          windowEnd: new Date(windowEndVal).getTime(),
-          uploadMode,
-          updatedAt: new Date()
-        });
-        alert("Configuration & Window settings saved successfully!");
+
+        await setDoc(
+          doc(
+            db,
+            "exam_config",
+            "current_test"
+          ),
+          {
+
+            /*
+              EXISTING SETTINGS
+            */
+
+            totalPool:
+              totalPool,
+
+            studentLimit:
+              studentLimit,
+
+            durationMinutes:
+              durationMinutes,
+
+            windowStart:
+              new Date(
+                windowStartVal
+              ).getTime(),
+
+            windowEnd:
+              new Date(
+                windowEndVal
+              ).getTime(),
+
+            uploadMode:
+              uploadMode,
+
+
+            /*
+              NEW SETTING
+              -------------------------------
+              random     = random questions
+              sequential = original numbering
+            */
+
+            questionOrder:
+              questionOrder,
+
+
+            updatedAt:
+              new Date()
+
+          }
+        );
+
+
+        const readableOrder =
+          questionOrder === "sequential"
+            ? "Normal / Sequential Order"
+            : "Random Order";
+
+
+        updateQuestionOrderStatus();
+
+
+        alert(
+          "Configuration saved successfully!\n\nQuestion Order: " +
+          readableOrder
+        );
+
+
       } catch (err) {
-        alert("Failed to save configuration: " + err.message);
+
+        console.error(
+          "Save configuration error:",
+          err
+        );
+
+
+        alert(
+          "Failed to save configuration: " +
+          err.message
+        );
+
       } finally {
+
         saveBtn.disabled = false;
-        saveBtn.innerText = "Save & Apply Configurations";
+
+        saveBtn.innerHTML =
+          '<i class="fa-solid fa-lock"></i> Save & Apply Configurations';
+
       }
+
     };
+
+
+    /* ============================================================
+       FETCH LIVE DATABASE RECORDS
+       ============================================================ */
 
     window.fetchLiveDatabaseRecords = async () => {
-      const analyticsBody = document.getElementById('analytics-table-body');
-      const leaderboardBody = document.getElementById('leaderboard-table-body');
 
-      analyticsBody.innerHTML = `<tr><td colspan="5" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>`;
-      leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>`;
+      const analyticsBody =
+        document.getElementById(
+          'analytics-table-body'
+        );
+
+
+      const leaderboardBody =
+        document.getElementById(
+          'leaderboard-table-body'
+        );
+
+
+      analyticsBody.innerHTML =
+        `
+        <tr>
+          <td colspan="5" style="text-align:center;">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Fetching records...
+          </td>
+        </tr>
+        `;
+
+
+      leaderboardBody.innerHTML =
+        `
+        <tr>
+          <td colspan="5" style="text-align:center;">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Fetching records...
+          </td>
+        </tr>
+        `;
+
 
       try {
-        const snap = await getDocs(collection(db, "results"));
+
+        const snap =
+          await getDocs(
+            collection(
+              db,
+              "results"
+            )
+          );
+
+
         allStudentResults = [];
 
-        snap.forEach((docSnap) => {
-          const r = docSnap.data();
-          let scoreVal = 0;
-          if (typeof r.score === 'string') {
-            scoreVal = parseFloat(r.score.split('/')[0]) || 0;
-          } else if (typeof r.score === 'number') {
-            scoreVal = r.score;
+
+        snap.forEach(
+          (docSnap) => {
+
+            const r =
+              docSnap.data();
+
+
+            let scoreVal = 0;
+
+
+            if (
+              typeof r.score === 'string'
+            ) {
+
+              scoreVal =
+                parseFloat(
+                  r.score.split('/')[0]
+                ) || 0;
+
+            } else if (
+              typeof r.score === 'number'
+            ) {
+
+              scoreVal =
+                r.score;
+
+            }
+
+
+            let dateObj =
+              new Date(0);
+
+
+            if (r.submittedAt) {
+
+              dateObj =
+                r.submittedAt.toDate
+                  ? r.submittedAt.toDate()
+                  : new Date(
+                      r.submittedAt
+                    );
+
+            } else if (r.timestamp) {
+
+              dateObj =
+                r.timestamp.toDate
+                  ? r.timestamp.toDate()
+                  : new Date(
+                      r.timestamp
+                    );
+
+            }
+
+
+            const submitTimeFormatted =
+              dateObj.getTime() > 0
+                ? dateObj.toLocaleString(
+                    'en-IN',
+                    {
+                      dateStyle: 'medium',
+                      timeStyle: 'short'
+                    }
+                  )
+                : "N/A";
+
+
+            allStudentResults.push({
+
+              id:
+                docSnap.id,
+
+              name:
+                r.name || "Anonymous",
+
+              email:
+                r.email || "No Email",
+
+              scoreText:
+                r.score || "0/0",
+
+              scoreVal:
+                scoreVal,
+
+              rawDate:
+                dateObj,
+
+              tabSwitches:
+                r.tabSwitches !== undefined
+                  ? r.tabSwitches
+                  : (r.tab_switches || 0),
+
+              copiesAttempted:
+                r.copiesAttempted !== undefined
+                  ? r.copiesAttempted
+                  : (r.copy_paste || 0),
+
+              penaltiesApplied:
+                r.penaltiesApplied || 0,
+
+              submittedAtStr:
+                submitTimeFormatted,
+
+              feedback:
+                r.feedback || "None"
+
+            });
+
           }
+        );
 
-          let dateObj = new Date(0);
-          if (r.submittedAt) {
-            dateObj = r.submittedAt.toDate ? r.submittedAt.toDate() : new Date(r.submittedAt);
-          } else if (r.timestamp) {
-            dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
-          }
 
-          const submitTimeFormatted = dateObj.getTime() > 0 ? dateObj.toLocaleString('en-IN', {
-            dateStyle: 'medium',
-            timeStyle: 'short'
-          }) : "N/A";
+        allStudentResults.sort(
+          (a, b) =>
+            b.rawDate - a.rawDate
+        );
 
-          allStudentResults.push({
-            id: docSnap.id,
-            name: r.name || "Anonymous",
-            email: r.email || "No Email",
-            scoreText: r.score || "0/0",
-            scoreVal: scoreVal,
-            rawDate: dateObj,
-            tabSwitches: r.tabSwitches !== undefined ? r.tabSwitches : (r.tab_switches || 0),
-            copiesAttempted: r.copiesAttempted !== undefined ? r.copiesAttempted : (r.copy_paste || 0),
-            penaltiesApplied: r.penaltiesApplied || 0,
-            submittedAtStr: submitTimeFormatted,
-            feedback: r.feedback || "None"
-          });
-        });
 
-        allStudentResults.sort((a, b) => b.rawDate - a.rawDate);
+        /* ========================================================
+           SECURITY ANALYTICS
+           ======================================================== */
 
-        // Render Security Analytics Tab
         analyticsBody.innerHTML = '';
-        if (allStudentResults.length === 0) {
-          analyticsBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No submissions found.</td></tr>`;
-        } else {
-          allStudentResults.forEach(r => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><strong>${r.name}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${r.email}</span></td>
-              <td><span class="time-stamp"><i class="fa-regular fa-clock"></i> ${r.submittedAtStr}</span></td>
-              <td><span class="alert-indicator ${r.tabSwitches > 0 ? 'alert-warn' : 'alert-safe'}">${r.tabSwitches} Times</span></td>
-              <td><span class="alert-indicator ${r.copiesAttempted > 0 ? 'alert-warn' : 'alert-safe'}">${r.copiesAttempted} Times</span></td>
-              <td><span class="alert-indicator ${r.penaltiesApplied > 0 ? 'alert-warn' : 'alert-safe'}">-${r.penaltiesApplied} Mark(s)</span></td>
+
+
+        if (
+          allStudentResults.length === 0
+        ) {
+
+          analyticsBody.innerHTML =
+            `
+            <tr>
+              <td colspan="5" style="text-align:center;">
+                No submissions found.
+              </td>
+            </tr>
             `;
-            analyticsBody.appendChild(tr);
-          });
+
+        } else {
+
+          allStudentResults.forEach(
+            r => {
+
+              const tr =
+                document.createElement(
+                  'tr'
+                );
+
+
+              tr.innerHTML =
+                `
+                <td>
+                  <strong>${escapeHTML(r.name)}</strong>
+                  <br>
+                  <span style="font-size:0.8rem; color:var(--text-muted);">
+                    ${escapeHTML(r.email)}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="time-stamp">
+                    <i class="fa-regular fa-clock"></i>
+                    ${escapeHTML(r.submittedAtStr)}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="alert-indicator ${
+                    r.tabSwitches > 0
+                      ? 'alert-warn'
+                      : 'alert-safe'
+                  }">
+                    ${r.tabSwitches} Times
+                  </span>
+                </td>
+
+                <td>
+                  <span class="alert-indicator ${
+                    r.copiesAttempted > 0
+                      ? 'alert-warn'
+                      : 'alert-safe'
+                  }">
+                    ${r.copiesAttempted} Times
+                  </span>
+                </td>
+
+                <td>
+                  <span class="alert-indicator ${
+                    r.penaltiesApplied > 0
+                      ? 'alert-warn'
+                      : 'alert-safe'
+                  }">
+                    -${r.penaltiesApplied} Mark(s)
+                  </span>
+                </td>
+                `;
+
+
+              analyticsBody.appendChild(
+                tr
+              );
+
+            }
+          );
+
         }
 
-        // Render Leaderboard
-        const leaderboardData = [...allStudentResults].sort((a, b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate);
-        leaderboardBody.innerHTML = '';
-        if (leaderboardData.length === 0) {
-          leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No leaderboard records.</td></tr>`;
-        } else {
-          leaderboardData.forEach((r, idx) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><span class="badge-rank">#${idx + 1}</span></td>
-              <td><strong>${r.name}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${r.email}</span></td>
-              <td><strong style="color:var(--primary-light);">${r.scoreText}</strong></td>
-              <td><span class="time-stamp"><i class="fa-regular fa-clock"></i> ${r.submittedAtStr}</span></td>
-              <td>${r.feedback}</td>
+
+        /* ========================================================
+           LEADERBOARD
+           ======================================================== */
+
+        const leaderboardData =
+          [...allStudentResults].sort(
+            (a, b) =>
+              b.scoreVal - a.scoreVal ||
+              b.rawDate - a.rawDate
+          );
+
+
+        leaderboardBody.innerHTML =
+          '';
+
+
+        if (
+          leaderboardData.length === 0
+        ) {
+
+          leaderboardBody.innerHTML =
+            `
+            <tr>
+              <td colspan="5" style="text-align:center;">
+                No leaderboard records.
+              </td>
+            </tr>
             `;
-            leaderboardBody.appendChild(tr);
-          });
+
+        } else {
+
+          leaderboardData.forEach(
+            (r, idx) => {
+
+              const tr =
+                document.createElement(
+                  'tr'
+                );
+
+
+              tr.innerHTML =
+                `
+                <td>
+                  <span class="badge-rank">
+                    #${idx + 1}
+                  </span>
+                </td>
+
+                <td>
+                  <strong>
+                    ${escapeHTML(r.name)}
+                  </strong>
+                  <br>
+                  <span
+                    style="
+                      font-size:0.8rem;
+                      color:var(--text-muted);
+                    "
+                  >
+                    ${escapeHTML(r.email)}
+                  </span>
+                </td>
+
+                <td>
+                  <strong
+                    style="color:var(--primary-light);"
+                  >
+                    ${escapeHTML(
+                      String(r.scoreText)
+                    )}
+                  </strong>
+                </td>
+
+                <td>
+                  <span class="time-stamp">
+                    <i class="fa-regular fa-clock"></i>
+                    ${escapeHTML(r.submittedAtStr)}
+                  </span>
+                </td>
+
+                <td>
+                  ${escapeHTML(
+                    String(r.feedback)
+                  )}
+                </td>
+                `;
+
+
+              leaderboardBody.appendChild(
+                tr
+              );
+
+            }
+          );
+
         }
+
 
       } catch (err) {
+
         console.error(err);
-        analyticsBody.innerHTML = `<tr><td colspan="5" style="color:var(--danger); text-align:center;">Error loading database data.</td></tr>`;
+
+
+        analyticsBody.innerHTML =
+          `
+          <tr>
+            <td
+              colspan="5"
+              style="
+                color:var(--danger);
+                text-align:center;
+              "
+            >
+              Error loading database data.
+            </td>
+          </tr>
+          `;
+
       }
+
     };
+
+
+    /* ============================================================
+       HTML ESCAPE HELPER
+       ============================================================ */
+
+    function escapeHTML(value) {
+
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
+    }
+
+
+    /* ============================================================
+       DOWNLOAD RESULTS CSV
+       ============================================================ */
 
     window.downloadResultsCSV = () => {
-      if (allStudentResults.length === 0) {
-        alert("No data available to download.");
+
+      if (
+        allStudentResults.length === 0
+      ) {
+
+        alert(
+          "No data available to download."
+        );
+
         return;
+
       }
-      let csv = "Rank,Name,Email,Score,Submitted At,Tab Switches,Copy Violations,Penalties Applied\n";
-      allStudentResults.forEach((r, i) => {
-        csv += `${i+1},"${r.name}","${r.email}","${r.scoreText}","${r.submittedAtStr}",${r.tabSwitches},${r.copiesAttempted},-${r.penaltiesApplied}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.setAttribute('href', url);
-      a.setAttribute('download', `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`);
+
+
+      let csv =
+        "Rank,Name,Email,Score,Submitted At,Tab Switches,Copy Violations,Penalties Applied\n";
+
+
+      allStudentResults.forEach(
+        (r, i) => {
+
+          csv +=
+            `${i + 1},` +
+            `"${String(r.name).replaceAll('"','""')}",` +
+            `"${String(r.email).replaceAll('"','""')}",` +
+            `"${String(r.scoreText).replaceAll('"','""')}",` +
+            `"${String(r.submittedAtStr).replaceAll('"','""')}",` +
+            `${r.tabSwitches},` +
+            `${r.copiesAttempted},` +
+            `-${r.penaltiesApplied}\n`;
+
+        }
+      );
+
+
+      const blob =
+        new Blob(
+          [csv],
+          {
+            type: 'text/csv'
+          }
+        );
+
+
+      const url =
+        window.URL.createObjectURL(
+          blob
+        );
+
+
+      const a =
+        document.createElement(
+          'a'
+        );
+
+
+      a.setAttribute(
+        'href',
+        url
+      );
+
+
+      a.setAttribute(
+        'download',
+        `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`
+      );
+
+
+      document.body.appendChild(a);
+
       a.click();
+
+      document.body.removeChild(a);
+
+      window.URL.revokeObjectURL(url);
+
     };
 
+
+    /* ============================================================
+       CLEAR ALL RESULTS
+       ============================================================ */
+
     window.clearAllResults = async () => {
-      if (!confirm("Are you sure you want to permanently delete all student submissions?")) return;
-      try {
-        const snap = await getDocs(collection(db, "results"));
-        const deletes = snap.docs.map(d => deleteDoc(doc(db, "results", d.id)));
-        await Promise.all(deletes);
-        alert("All student records cleared successfully!");
-        fetchLiveDatabaseRecords();
-      } catch (err) {
-        alert("Failed to clear records: " + err.message);
+
+      if (
+        !confirm(
+          "Are you sure you want to permanently delete all student submissions?"
+        )
+      ) {
+        return;
       }
+
+
+      try {
+
+        const snap =
+          await getDocs(
+            collection(
+              db,
+              "results"
+            )
+          );
+
+
+        const deletes =
+          snap.docs.map(
+            d =>
+              deleteDoc(
+                doc(
+                  db,
+                  "results",
+                  d.id
+                )
+              )
+          );
+
+
+        await Promise.all(
+          deletes
+        );
+
+
+        alert(
+          "All student records cleared successfully!"
+        );
+
+
+        fetchLiveDatabaseRecords();
+
+
+      } catch (err) {
+
+        alert(
+          "Failed to clear records: " +
+          err.message
+        );
+
+      }
+
     };
+
+
   </script>
+
 </body>
 </html>
+```
