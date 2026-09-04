@@ -42,7 +42,19 @@ rules must not be used.
   `logged_in`, `in_progress`, `result_pending_feedback` and `final_submitted`,
   while retaining the question order, answers, timer deadline and security log
   needed for interrupted-exam resume.
+- A session can become `final_submitted` only after its matching completed
+  result exists. If the network fails on the result screen, the student resumes
+  at result submission instead of losing the attempt.
 - Only admins may list results, change exam configuration, or delete records.
+
+## Important production boundary
+
+Browser-only scoring cannot protect an answer key or prove a score against a
+student who deliberately modifies the client. For a high-stakes public exam,
+move question delivery and scoring to a trusted backend (for example, Firebase
+Cloud Functions with App Check) and keep answer keys outside this public
+repository. Fullscreen/focus monitoring is a deterrent; mobile operating-system
+overlays cannot be detected reliably by a normal website.
 
 ## Required before a live examination
 
