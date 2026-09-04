@@ -176,6 +176,9 @@
     #login-form .form-group {margin-bottom:16px;}
     #login-form input {background:#fff;border:1px solid #cfd8e3;border-radius:8px;padding:12px 13px;}
     #login-form .btn {width:100%;justify-content:center;background:#083783;border-radius:7px;}
+    #login-form select {width:100%;padding:12px 13px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#1e293b;font-size:1rem;outline:none;}
+    #login-form select:focus {border-color:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.1);}
+
     #slide-2 .negative-marking-box {margin:0 26px 16px;background:#fff0f0;border:1px solid #ffd1d1;border-left:4px solid #dc2626;color:#c62828;border-radius:7px;}
     #slide-2 .exam-config-cards {padding:0 26px;margin-bottom:12px;}
     #slide-2 .instruction-list {padding:0 26px;margin-bottom:8px;}
@@ -312,6 +315,13 @@
           <input type="email" id="student-email" placeholder="Enter Your Email" autocomplete="new-password" required>
           <div class="error-msg" id="email-error"><i class="fa-solid fa-circle-exclamation"></i> Only official @gmail.com addresses are supported.</div>
           <div class="error-msg" id="duplicate-error"><i class="fa-solid fa-ban"></i> Access Denied: You have already attempted this test!</div>
+        </div>
+        <div class="form-group">
+          <label for="exam-category">Exam Category *</label>
+          <select id="exam-category" required>
+            <option value="">Select Exam Category</option>
+          </select>
+          <div class="error-msg" id="exam-category-error"><i class="fa-solid fa-circle-exclamation"></i> Please select an exam category.</div>
         </div>
         <button type="submit" id="proceed-btn" class="btn"><i class="fa-solid fa-arrow-right"></i> Start Test</button>
       </form>
@@ -524,6 +534,9 @@
     let selectedRating = 0;
     let currentStudentName = "";
     let currentStudentEmail = "";
+    let selectedExamId = "";
+    let selectedExamName = "";
+    let selectedExamConfig = null;
     let finalizedScoreString = "0/0";
     let calculatedScore = 0;
     let totalScore = 0;
@@ -616,6 +629,7 @@
           return true;
         }
         examConfigData = snap.data();
+        populateExamCategories();
         updateInstructionConfig();
         
         const now = new Date().getTime();
@@ -649,12 +663,160 @@
       `;
     }
 
+    function getConfiguredExams() {
+      const raw = examConfigData?.multiExamConfig || examConfigData?.exams || examConfigData?.examCategories;
+      const exams = [];
+
+      const addExam = (id, cfg) => {
+        if (!cfg || typeof cfg !== 'object') return;
+        const name = cfg.name || cfg.examName || id;
+        const subjects = cfg.subjects || {};
+        exams.push({ id: String(id), name: String(name), ...cfg, subjects });
+      };
+
+      if (Array.isArray(raw)) {
+        raw.forEach((cfg, i) => addExam(cfg.id || cfg.examId || cfg.code || `exam_${i+1}`, cfg));
+      } else if (raw && typeof raw === 'object') {
+        Object.entries(raw).forEach(([id, cfg]) => addExam(id, cfg));
+      }
+
+      // Backward-compatible fallback: use current_test as one exam if no multi-exam config exists.
+      if (!exams.length && examConfigData) {
+        addExam(
+          examConfigData.examId || examConfigData.examCode || 'current_test',
+          {
+            ...examConfigData,
+            name: examConfigData.examName || examConfigData.title || 'Current Test',
+            subjects: examConfigData.subjects || {}
+          }
+        );
+      }
+      return exams;
+    }
+
+    function populateExamCategories() {
+      const select = document.getElementById('exam-category');
+      if (!select) return;
+
+      const exams = getConfiguredExams();
+      const current = select.value;
+      select.innerHTML = '<option value="">Select Exam Category</option>';
+
+      exams.forEach(exam => {
+        const option = document.createElement('option');
+        option.value = exam.id;
+        option.textContent = exam.name;
+        select.appendChild(option);
+      });
+
+      if (current && exams.some(e => e.id === current)) select.value = current;
+    }
+
+    function getSelectedExamConfig() {
+      const select = document.getElementById('exam-category');
+      const id = select?.value || '';
+      return getConfiguredExams().find(e => e.id === id) || null;
+    }
+
+    function getSubjectEntries(exam) {
+      if (!exam?.subjects) return [];
+      if (Array.isArray(exam.subjects)) {
+        return exam.subjects.map((s, i) => [s.id || s.code || s.key || `subject_${i+1}`, s]);
+      }
+      return Object.entries(exam.subjects);
+    }
+
+    function resolveSource(cfg) {
+      return cfg?.source || cfg?.file || cfg?.questionSource || cfg?.questionFile || cfg?.path || '';
+    }
+
+    function getSubjectCount(cfg) {
+      const n = Number(cfg?.count ?? cfg?.questionCount ?? cfg?.studentLimit ?? cfg?.limit ?? 0);
+      return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+    }
+
+    function getSubjectOrder(cfg) {
+      const v = String(cfg?.order || cfg?.questionOrder || 'random').toLowerCase();
+      return ['sequential','sequence','normal'].includes(v) ? 'sequential' : 'random';
+    }
+
+    async function loadConfiguredExamQuestions(exam) {
+      const subjects = getSubjectEntries(exam);
+      if (!subjects.length) return null;
+
+      const combined = [];
+      for (const [subjectId, subjectCfg] of subjects) {
+        if (subjectCfg?.enabled === false) continue;
+
+        const source = resolveSource(subjectCfg);
+        const count = getSubjectCount(subjectCfg);
+        if (!source || count <= 0) continue;
+
+        const response = await fetch(source, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Could not load ${source}`);
+
+        const rawText = await response.text();
+        const start = rawText.indexOf('[');
+        const end = rawText.lastIndexOf(']');
+        if (start < 0 || end < start) throw new Error(`Invalid question file: ${source}`);
+
+        const pool = JSON.parse(rawText.substring(start, end + 1));
+        if (!Array.isArray(pool)) throw new Error(`Invalid question dataset: ${source}`);
+
+        const order = getSubjectOrder(subjectCfg);
+        let selectedPool = [...pool];
+
+        if (order === 'random') {
+          for (let i = selectedPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [selectedPool[i], selectedPool[j]] = [selectedPool[j], selectedPool[i]];
+          }
+        }
+
+        selectedPool = selectedPool.slice(0, Math.min(count, selectedPool.length));
+        selectedPool.forEach(q => {
+          combined.push({
+            ...q,
+            _examId: exam.id,
+            _examName: exam.name,
+            _subjectId: String(subjectId),
+            _subjectName: subjectCfg.name || subjectCfg.subjectName || subjectId
+          });
+        });
+      }
+
+      return combined;
+    }
+
+    function getExamTotalQuestions(exam) {
+      const entries = getSubjectEntries(exam);
+      const total = entries.reduce((sum, [, cfg]) => sum + (cfg?.enabled === false ? 0 : getSubjectCount(cfg)), 0);
+      if (total > 0) return total;
+      return Number(exam?.studentLimit || 0);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('exam-category');
+      if (select) {
+        select.addEventListener('change', () => {
+          const selected = getSelectedExamConfig();
+          selectedExamConfig = selected;
+          selectedExamId = selected?.id || '';
+          selectedExamName = selected?.name || '';
+          const error = document.getElementById('exam-category-error');
+          if (error) error.style.display = selected ? 'none' : 'flex';
+          updateInstructionConfig();
+        });
+      }
+    });
+
     function updateInstructionConfig() {
       const questionEl = document.getElementById('instruction-question-count');
       const durationEl = document.getElementById('instruction-duration');
 
-      const configuredQuestions = examConfigData?.studentLimit;
-      const configuredMinutes = examConfigData?.durationMinutes;
+      const activeExam = selectedExamConfig || getSelectedExamConfig();
+      const configuredQuestions = activeExam ? getExamTotalQuestions(activeExam) : examConfigData?.studentLimit;
+      const configuredMinutes = activeExam?.durationMinutes || examConfigData?.durationMinutes;
 
       questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
         ? Number(configuredQuestions)
@@ -679,10 +841,20 @@
       const emailInput = document.getElementById('student-email').value.trim().toLowerCase();
       const emailError = document.getElementById('email-error');
       const duplicateError = document.getElementById('duplicate-error');
+      const examCategoryError = document.getElementById('exam-category-error');
       const proceedBtn = document.getElementById('proceed-btn');
 
       emailError.style.display = 'none';
       duplicateError.style.display = 'none';
+      if (examCategoryError) examCategoryError.style.display = 'none';
+
+      selectedExamConfig = getSelectedExamConfig();
+      if (!selectedExamConfig) {
+        if (examCategoryError) examCategoryError.style.display = 'flex';
+        return;
+      }
+      selectedExamId = selectedExamConfig.id;
+      selectedExamName = selectedExamConfig.name;
 
       if (!emailInput.endsWith('@gmail.com')) {
         emailError.style.display = 'flex';
@@ -695,8 +867,12 @@
       try {
         const qRef = query(collection(db, "results"), where("email", "==", emailInput));
         const snap = await getDocs(qRef);
+        const alreadyAttempted = snap.docs.some(d => {
+          const data = d.data() || {};
+          return data.examId === selectedExamId || (!data.examId && selectedExamId === 'current_test');
+        });
 
-        if (!snap.empty) {
+        if (alreadyAttempted) {
           duplicateError.style.display = 'flex';
           proceedBtn.disabled = false;
           proceedBtn.innerText = "Proceed to Instructions";
@@ -720,35 +896,44 @@
       startBtn.innerText = "Loading Dataset...";
 
       try {
-        const response = await fetch('chapter1.html');
-        const rawText = await response.text();
-        const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
-        let fullPool = JSON.parse(jsonString);
+        if (!selectedExamConfig) {
+          selectedExamConfig = getSelectedExamConfig();
+          if (!selectedExamConfig) throw new Error('Please select an exam category.');
+          selectedExamId = selectedExamConfig.id;
+          selectedExamName = selectedExamConfig.name;
+        }
 
-        // Read question count from Admin Panel
-        const limit = Number(examConfigData?.studentLimit);
-        if (!Number.isFinite(limit) || limit <= 0) throw new Error('Exam question count is not configured in Admin Panel.');
+        const configuredQuestions = getExamTotalQuestions(selectedExamConfig);
 
-        /*
-         * QUESTION ORDER CONTROL
-         * Admin Panel saves questionOrder in:
-         * exam_config/current_test
-         *
-         * random     = select questions randomly from the pool
-         * sequential = use the original order from chapter1.html
-         *
-         * For old configurations where questionOrder does not exist,
-         * Random Order remains the default so existing behaviour is preserved.
-         */
-        const questionOrder = examConfigData?.questionOrder || 'random';
+        // New multi-exam mode: each subject loads only its own configured file/pool.
+        const multiQuestions = await loadConfiguredExamQuestions(selectedExamConfig);
 
-        if (questionOrder === 'sequential') {
-          // Normal / Sequential: preserve chapter1.html question order.
-          questionsList = fullPool.slice(0, limit);
+        if (multiQuestions && multiQuestions.length) {
+          questionsList = multiQuestions;
         } else {
-          // Random: preserve the existing random-selection behaviour.
-          fullPool = fullPool.sort(() => 0.5 - Math.random());
-          questionsList = fullPool.slice(0, limit);
+          // Backward-compatible old single-file mode.
+          const response = await fetch('chapter1.html');
+          const rawText = await response.text();
+          const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
+          let fullPool = JSON.parse(jsonString);
+
+          const limit = Number(selectedExamConfig?.studentLimit ?? examConfigData?.studentLimit);
+          if (!Number.isFinite(limit) || limit <= 0) throw new Error('Exam question count is not configured in Admin Panel.');
+
+          const questionOrder = selectedExamConfig?.questionOrder || examConfigData?.questionOrder || 'random';
+          if (questionOrder === 'sequential') {
+            questionsList = fullPool.slice(0, limit);
+          } else {
+            for (let i = fullPool.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [fullPool[i], fullPool[j]] = [fullPool[j], fullPool[i]];
+            }
+            questionsList = fullPool.slice(0, limit);
+          }
+        }
+
+        if (!questionsList.length) {
+          throw new Error('No questions are configured for the selected exam.'); 
         }
         selectedAnswers = {};
         questionStatus = {};
@@ -764,7 +949,7 @@
 
         isExamActive = true;
         window.changeSlide(3);
-        startExamTimer(Number(examConfigData?.durationMinutes));
+        startExamTimer(Number(selectedExamConfig?.durationMinutes || examConfigData?.durationMinutes));
         loadQuestion(0);
       } catch (error) {
         showExamModal('security','Question Load Error','The test questions could not be loaded. Please check that chapter1.html is available and try again.','Close',null,'primary');
@@ -1009,7 +1194,7 @@
         const reviewItem = document.createElement('div');
         reviewItem.className = `review-item ${selectedIdx === undefined ? '' : (isCorrect ? 'correct-item' : 'wrong-item')}`;
         reviewItem.innerHTML = `
-          <h5>Q${idx + 1}. ${q.question || q.q}</h5>
+          <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${q._subjectName}]</span> ` : ''}${q.question || q.q}</h5>
           <div style="font-size:0.85rem; line-height:1.5;">
             <strong>Your Choice:</strong> ${studentSelectionText} <br>
             <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${correctSelectionText}</span>
@@ -1072,7 +1257,11 @@
       if(resultSavedForThisAttempt) return;
       if(!currentStudentEmail || !questionsList.length) return;
       const payload={
-        name:currentStudentName, email:currentStudentEmail, score:finalizedScoreString,
+        name:currentStudentName, email:currentStudentEmail,
+        examId:selectedExamId || 'current_test',
+        examName:selectedExamName || examConfigData?.examName || 'Current Test',
+        subjects:[...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
+        score:finalizedScoreString,
         correct:parseInt(document.getElementById('res-correct').innerText||'0'),
         wrong:parseInt(document.getElementById('res-wrong').innerText||'0'),
         tabSwitches:Math.min(MAX_TAB_SWITCHES,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
@@ -1122,6 +1311,9 @@
       const resultPayload = {
         name: currentStudentName,
         email: currentStudentEmail,
+        examId: selectedExamId || 'current_test',
+        examName: selectedExamName || examConfigData?.examName || 'Current Test',
+        subjects: [...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
         score: finalizedScoreString,
         tabSwitches: Math.min(MAX_TAB_SWITCHES, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
         copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
