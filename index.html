@@ -706,17 +706,28 @@
       // NEW: only exams activated by Admin are shown to students.
       // Backward compatible: if no active-exam setting exists yet, all configured exams remain visible.
       const activeExamIds = Array.isArray(examConfigData?.activeExamIds)
-        ? examConfigData.activeExamIds.map(String)
+        ? examConfigData.activeExamIds.map(String).filter(Boolean)
         : null;
       const hasActiveFlags = exams.some(e => typeof e.active === 'boolean');
 
-      if (activeExamIds) {
-        return exams.filter(e => activeExamIds.includes(String(e.id)));
-      }
-      if (hasActiveFlags) {
-        return exams.filter(e => e.active === true);
+      // IMPORTANT:
+      // Older/partially saved Firestore configs can contain activeExamIds: []
+      // even though individual exams still have active:true. In that case the
+      // previous logic filtered every exam out and the student dropdown became
+      // empty. Prefer a non-empty activeExamIds list; otherwise fall back to
+      // the per-exam active flags.
+      if (activeExamIds && activeExamIds.length > 0) {
+        const filtered = exams.filter(e => activeExamIds.includes(String(e.id)));
+        if (filtered.length > 0) return filtered;
       }
 
+      if (hasActiveFlags) {
+        const activeByFlag = exams.filter(e => e.active === true);
+        if (activeByFlag.length > 0) return activeByFlag;
+      }
+
+      // If no usable active-exam restriction exists, preserve backward
+      // compatibility and show all configured exams.
       return exams;
     }
 
@@ -725,6 +736,12 @@
       if (!select) return;
 
       const exams = getConfiguredExams();
+      console.log('[Exam Config] Loaded exams:', exams.map(e => ({
+        id: e.id,
+        name: e.name,
+        active: e.active,
+        subjects: Array.isArray(e.subjects) ? e.subjects.length : Object.keys(e.subjects || {}).length
+      })));
       const current = select.value;
       select.innerHTML = '<option value="">Select Exam Category</option>';
 
