@@ -1102,7 +1102,13 @@
       const id=getConfiguredExamId();
       if(!multiExamConfig[id]) return;
       const input=document.getElementById('per-exam-timer');
-      if(input) input.value=Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '';
+      const fixedTimer=id==='railway_group_d'?90:id==='ssc_gd'?60:null;
+      if(fixedTimer!==null) multiExamConfig[id].timerMinutes=fixedTimer;
+      if(input){
+        input.value=fixedTimer??(Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '');
+        input.disabled=fixedTimer!==null;
+        input.title=fixedTimer!==null?'This examination duration is fixed by policy.':'';
+      }
       const penalty=document.getElementById('per-exam-penalty');
       if(penalty) penalty.value=Number.isFinite(Number(multiExamConfig[id].securityPenalty)) ? Number(multiExamConfig[id].securityPenalty) : 1;
     }
@@ -1110,8 +1116,10 @@
     function collectCurrentExamTimer(){
       const id=getConfiguredExamId();
       if(!multiExamConfig[id]) multiExamConfig[id]={examName:getExamDisplayName(id),timerMinutes:0,active:false,subjects:[]};
+      if(id==='railway_group_d') multiExamConfig[id].timerMinutes=90;
+      else if(id==='ssc_gd') multiExamConfig[id].timerMinutes=60;
       const value=Number(document.getElementById('per-exam-timer')?.value);
-      if(Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
+      if(!['railway_group_d','ssc_gd'].includes(id) && Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
       const penalty=Number(document.getElementById('per-exam-penalty')?.value);
       if(Number.isFinite(penalty) && penalty>=0) multiExamConfig[id].securityPenalty=penalty;
     }
@@ -1642,15 +1650,18 @@
         const lockSnap = await getDocs(collection(db, "attempt_locks"));
         const sessionSnap = await getDocs(collection(db, "exam_sessions"));
         const deletes = [
-          ...snap.docs.map(d => deleteDoc(doc(db, "results", d.id))),
-          ...lockSnap.docs.map(d => deleteDoc(doc(db, "attempt_locks", d.id))),
-          ...sessionSnap.docs.map(d => deleteDoc(doc(db, "exam_sessions", d.id)))
+          ...snap.docs.map(d => () => deleteDoc(doc(db, "results", d.id))),
+          ...lockSnap.docs.map(d => () => deleteDoc(doc(db, "attempt_locks", d.id))),
+          ...sessionSnap.docs.map(d => () => deleteDoc(doc(db, "exam_sessions", d.id)))
         ];
 
 
-        await Promise.all(
-          deletes
-        );
+        // Keep concurrent writes bounded. A large examination can otherwise
+        // exhaust the browser/network and leave a partially cleared database.
+        const chunkSize=200;
+        for(let i=0;i<deletes.length;i+=chunkSize){
+          await Promise.all(deletes.slice(i,i+chunkSize).map(remove=>remove()));
+        }
 
 
         alert(
