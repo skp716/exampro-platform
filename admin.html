@@ -650,22 +650,6 @@
           <div class="stat-box"><div class="stat-label">Average Score</div><div class="stat-value" id="stat-average">0%</div></div>
         </div>
 
-        <div class="analytics-toolbar">
-          <div class="form-group">
-            <label for="analytics-exam-filter">Filter by Exam</label>
-            <select id="analytics-exam-filter">
-              <option value="all">All Exams</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="analytics-subject-filter">Filter by Subject</label>
-            <select id="analytics-subject-filter">
-              <option value="all">All Subjects</option>
-            </select>
-          </div>
-          <button type="button" class="btn btn-refresh" onclick="resetAnalyticsFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Reset Filters</button>
-        </div>
-
         <div class="table-responsive">
 
           <table>
@@ -727,6 +711,16 @@
         </p>
 
 
+        <div class="analytics-toolbar">
+          <div class="form-group">
+            <label for="leaderboard-exam-filter">Filter by Exam</label>
+            <select id="leaderboard-exam-filter">
+              <option value="all">All Exams</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-refresh" onclick="resetLeaderboardFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Reset Filters</button>
+        </div>
+
         <div
           style="
             display:flex;
@@ -771,6 +765,7 @@
                 <th>Score</th>
                 <th>Submitted At</th>
                 <th>Feedback</th>
+                <th>Action</th>
               </tr>
 
             </thead>
@@ -1208,47 +1203,69 @@
       return null;
     }
 
-    function populateAnalyticsFilters(results) {
-      const examFilter = document.getElementById('analytics-exam-filter');
-      const subjectFilter = document.getElementById('analytics-subject-filter');
-      if (!examFilter || !subjectFilter) return;
+    function populateLeaderboardFilters(results) {
+      const examFilter = document.getElementById('leaderboard-exam-filter');
+      if (!examFilter) return;
+
       const currentExam = examFilter.value || 'all';
-      const currentSubject = subjectFilter.value || 'all';
-      const exams = [...new Map(results.map(r => [r.examId, r.examName])).entries()].sort((a,b) => a[1].localeCompare(b[1]));
-      const subjects = [...new Set(results.flatMap(r => r.subjects))].sort((a,b) => a.localeCompare(b));
-      examFilter.innerHTML = '<option value="all">All Exams</option>' + exams.map(([id,name]) => `<option value="${escapeHTML(id)}">${escapeHTML(name)}</option>`).join('');
-      subjectFilter.innerHTML = '<option value="all">All Subjects</option>' + subjects.map(s => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join('');
-      examFilter.value = exams.some(([id]) => id === currentExam) ? currentExam : 'all';
-      subjectFilter.value = subjects.includes(currentSubject) ? currentSubject : 'all';
+
+      const exams = [...new Map(
+        results.map(r => [r.examId, r.examName])
+      ).entries()].sort((a,b) => a[1].localeCompare(b[1]));
+
+      examFilter.innerHTML =
+        '<option value="all">All Exams</option>' +
+        exams.map(([id,name]) =>
+          `<option value="${escapeHTML(id)}">${escapeHTML(name)}</option>`
+        ).join('');
+
+      examFilter.value =
+        exams.some(([id]) => id === currentExam) ? currentExam : 'all';
     }
 
-    function getFilteredAnalyticsResults() {
-      const exam = document.getElementById('analytics-exam-filter')?.value || 'all';
-      const subject = document.getElementById('analytics-subject-filter')?.value || 'all';
+    function getFilteredLeaderboardResults() {
+      const exam =
+        document.getElementById('leaderboard-exam-filter')?.value || 'all';
+
       return currentAnalyticsResults.filter(r =>
-        (exam === 'all' || r.examId === exam) &&
-        (subject === 'all' || r.subjects.includes(subject))
+        exam === 'all' || r.examId === exam
       );
     }
 
     function renderAnalyticsRows() {
       const body = document.getElementById('analytics-table-body');
-      const data = getFilteredAnalyticsResults();
+      const data = currentAnalyticsResults;
+
       if (!body) return;
+
       body.innerHTML = '';
-      const alerts = data.filter(r => r.tabSwitches > 0 || r.copiesAttempted > 0 || r.penaltiesApplied > 0).length;
+
+      const alerts = data.filter(r =>
+        r.tabSwitches > 0 ||
+        r.copiesAttempted > 0 ||
+        r.penaltiesApplied > 0
+      ).length;
+
       const percents = data.map(getScorePercent).filter(v => v !== null);
+
       document.getElementById('stat-attempts').textContent = data.length;
-      document.getElementById('stat-exams').textContent = new Set(data.map(r => r.examId)).size;
+      document.getElementById('stat-exams').textContent =
+        new Set(data.map(r => r.examId)).size;
       document.getElementById('stat-alerts').textContent = alerts;
-      document.getElementById('stat-average').textContent = percents.length ? `${(percents.reduce((a,b)=>a+b,0)/percents.length).toFixed(1)}%` : '0%';
+      document.getElementById('stat-average').textContent =
+        percents.length
+          ? `${(percents.reduce((a,b)=>a+b,0)/percents.length).toFixed(1)}%`
+          : '0%';
 
       if (!data.length) {
-        body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No submissions found for the selected filter.</td></tr>';
+        body.innerHTML =
+          '<tr><td colspan="7" style="text-align:center;">No submissions found for the selected filter.</td></tr>';
         return;
       }
+
       data.forEach(r => {
         const tr = document.createElement('tr');
+
         tr.innerHTML = `
           <td><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
           <td><span class="exam-badge">${escapeHTML(r.examName)}</span></td>
@@ -1257,22 +1274,31 @@
           <td><span class="alert-indicator ${r.tabSwitches > 0 ? 'alert-warn' : 'alert-safe'}">${r.tabSwitches} Times</span></td>
           <td><span class="alert-indicator ${r.copiesAttempted > 0 ? 'alert-warn' : 'alert-safe'}">${r.copiesAttempted} Times</span></td>
           <td><span class="alert-indicator ${r.penaltiesApplied > 0 ? 'alert-warn' : 'alert-safe'}">-${r.penaltiesApplied} Mark(s)</span></td>`;
+
         body.appendChild(tr);
       });
     }
 
     function renderLeaderboardRows() {
       const body = document.getElementById('leaderboard-table-body');
+
       if (!body) return;
-      const exam = document.getElementById('analytics-exam-filter')?.value || 'all';
-      const subject = document.getElementById('analytics-subject-filter')?.value || 'all';
-      const data = currentAnalyticsResults.filter(r => (exam === 'all' || r.examId === exam) && (subject === 'all' || r.subjects.includes(subject)))
+
+      const data = getFilteredLeaderboardResults()
         .sort((a,b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate);
+
       body.innerHTML = '';
-      if (!data.length) { body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No leaderboard records for the selected filter.</td></tr>'; return; }
+
+      if (!data.length) {
+        body.innerHTML =
+          '<tr><td colspan="8" style="text-align:center;">No leaderboard records for the selected filter.</td></tr>';
+        return;
+      }
+
       data.forEach((r, idx) => {
         const pct = getScorePercent(r);
         const tr = document.createElement('tr');
+
         tr.innerHTML = `
           <td><span class="badge-rank">#${idx + 1}</span></td>
           <td><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
@@ -1280,19 +1306,29 @@
           <td>${subjectBadges(r.subjects)}</td>
           <td><span class="score-main">${escapeHTML(String(r.scoreText))}</span>${pct !== null ? `<span class="score-percent">${pct.toFixed(1)}%</span>` : ''}</td>
           <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
-          <td>${escapeHTML(String(r.feedback))}</td>`;
+          <td>${escapeHTML(String(r.feedback))}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              style="padding:0.5rem 0.75rem;font-size:0.8rem;"
+              onclick="deleteSingleResult('${r.id}')"
+              title="Delete this student's result"
+            >
+              <i class="fa-solid fa-trash-can"></i> Delete
+            </button>
+          </td>`;
+
         body.appendChild(tr);
       });
     }
 
-    window.resetAnalyticsFilters = () => {
-      const e = document.getElementById('analytics-exam-filter');
-      const s = document.getElementById('analytics-subject-filter');
+    window.resetLeaderboardFilters = () => {
+      const e = document.getElementById('leaderboard-exam-filter');
       if (e) e.value = 'all';
-      if (s) s.value = 'all';
-      renderAnalyticsRows();
       renderLeaderboardRows();
     };
+
 
     window.fetchLiveDatabaseRecords = async () => {
       const analyticsBody = document.getElementById('analytics-table-body');
@@ -1328,11 +1364,10 @@
           });
         });
         currentAnalyticsResults.sort((a,b) => b.rawDate - a.rawDate);
-        populateAnalyticsFilters(currentAnalyticsResults);
+        populateLeaderboardFilters(currentAnalyticsResults);
         renderAnalyticsRows();
         renderLeaderboardRows();
-        document.getElementById('analytics-exam-filter')?.addEventListener('change', () => { renderAnalyticsRows(); renderLeaderboardRows(); });
-        document.getElementById('analytics-subject-filter')?.addEventListener('change', () => { renderAnalyticsRows(); renderLeaderboardRows(); });
+        document.getElementById('leaderboard-exam-filter')?.addEventListener('change', renderLeaderboardRows);
       } catch (err) {
         console.error(err);
         analyticsBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
@@ -1345,7 +1380,7 @@
        ============================================================ */
 
     window.downloadResultsCSV = () => {
-      const data = getFilteredAnalyticsResults();
+      const data = getFilteredLeaderboardResults();
       if (!data.length) { alert('No data available for the selected filter.'); return; }
       let csv = 'Rank,Name,Email,Exam,Subjects,Score,Submitted At,Tab Switches,Copy Violations,Penalties Applied\n';
       data.sort((a,b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate).forEach((r,i) => {
@@ -1358,6 +1393,44 @@
       a.href = url;
       a.download = `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    };
+
+    /* ============================================================
+       DELETE ONE STUDENT RESULT
+       ============================================================ */
+
+    window.deleteSingleResult = async (resultId) => {
+      if (!resultId) {
+        alert('Invalid result selected.');
+        return;
+      }
+
+      const record = currentAnalyticsResults.find(r => r.id === resultId);
+      const studentName = record?.name || 'this student';
+      const studentEmail = record?.email || 'No Email';
+
+      const confirmed = confirm(
+        `Are you sure you want to permanently delete this result?\n\nStudent: ${studentName}\nEmail: ${studentEmail}`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        await deleteDoc(doc(db, 'results', resultId));
+
+        currentAnalyticsResults = currentAnalyticsResults.filter(
+          r => r.id !== resultId
+        );
+
+        populateLeaderboardFilters(currentAnalyticsResults);
+        renderAnalyticsRows();
+        renderLeaderboardRows();
+
+        alert('Student result deleted successfully!');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete student result: ' + err.message);
+      }
     };
 
     /* ============================================================
