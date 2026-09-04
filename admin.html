@@ -622,6 +622,12 @@
             <label for="config-window-end">Overall Entry Close Time *</label>
             <input type="datetime-local" id="config-window-end">
           </div>
+
+          <div class="form-group">
+            <label for="config-max-tab-switches">Maximum Tab Switches *</label>
+            <input type="number" id="config-max-tab-switches" min="1" max="20" step="1" value="2">
+            <small style="display:block;margin-top:6px;color:#64748b;">The examination auto-submits when this limit is reached.</small>
+          </div>
         </div>
 
         <div style="background:#f1f5f9;padding:1.25rem;border-radius:10px;margin-bottom:1.5rem;">
@@ -1263,6 +1269,9 @@
           populateCenterSettings(data);
           if(data.windowStart) document.getElementById('config-window-start').value=new Date(data.windowStart).toISOString().slice(0,16);
           if(data.windowEnd) document.getElementById('config-window-end').value=new Date(data.windowEnd).toISOString().slice(0,16);
+          document.getElementById('config-max-tab-switches').value=
+            Number.isInteger(Number(data.maxTabSwitches)) && Number(data.maxTabSwitches)>=1
+              ? Math.min(20,Number(data.maxTabSwitches)) : 2;
           if(data.uploadMode){
             const radio=document.querySelector(`input[name="upload-mode"][value="${data.uploadMode}"]`);
             if(radio) radio.checked=true;
@@ -1281,14 +1290,16 @@
     window.saveGeneralSettings = async () => {
       const windowStartVal=document.getElementById('config-window-start')?.value;
       const windowEndVal=document.getElementById('config-window-end')?.value;
+      const maxTabSwitches=Number(document.getElementById('config-max-tab-switches')?.value);
       const uploadModeElement=document.querySelector('input[name="upload-mode"]:checked');
       const uploadMode=uploadModeElement?uploadModeElement.value:'form';
       if(!windowStartVal||!windowEndVal){alert('Please fill both Overall Entry Start and Entry Close time.');return;}
       const start=new Date(windowStartVal).getTime(), end=new Date(windowEndVal).getTime();
       if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start){alert('Overall Entry Close Time must be later than Entry Start Time.');return;}
+      if(!Number.isInteger(maxTabSwitches)||maxTabSwitches<1||maxTabSwitches>20){alert('Maximum Tab Switches must be a whole number between 1 and 20.');return;}
       const saveBtn=document.getElementById('save-config-btn');saveBtn.disabled=true;saveBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Settings...';
       try{
-        await setDoc(doc(db,'exam_config','current_test'),{windowStart:start,windowEnd:end,uploadMode,updatedAt:new Date()},{merge:true});
+        await setDoc(doc(db,'exam_config','current_test'),{windowStart:start,windowEnd:end,maxTabSwitches,uploadMode,updatedAt:new Date()},{merge:true});
         alert('Entry window & upload settings saved successfully!');
       }catch(err){console.error('Save general settings error:',err);alert('Failed to save settings: '+err.message);}
       finally{saveBtn.disabled=false;saveBtn.innerHTML='<i class="fa-solid fa-lock"></i> Save Availability & Upload Settings';}
@@ -1359,7 +1370,7 @@
         document.getElementById('leaderboard-exam-filter')?.value || 'all';
 
       return currentAnalyticsResults.filter(r =>
-        r.status === 'final_submitted' && (exam === 'all' || r.examId === exam)
+        ['result_pending_feedback','final_submitted'].includes(r.status) && (exam === 'all' || r.examId === exam)
       );
     }
 
@@ -1487,7 +1498,7 @@
             examId: normalizeExamId(r),
             subjects: normalizeSubjects(r),
             centerName:r.centerName||'Not recorded',centerLocation:r.centerLocation||'',centerAddress:r.centerAddress||'',batch:r.batch||'',
-            status,statusLabel:status==='final_submitted'?'Final Submitted':status==='in_progress'?'Test In Progress':'Logged In',
+            status,statusLabel:status==='final_submitted'?'Final Submitted':status==='result_pending_feedback'?'Result Ready — Feedback Pending':status==='in_progress'?'Test In Progress':'Logged In',
             loginAtStr:loginObj.getTime()>0?loginObj.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'N/A',
             tabSwitches: Number(r.tabSwitches ?? r.tab_switches ?? 0) || 0,
             copiesAttempted: Number(r.copiesAttempted ?? r.copy_paste ?? 0) || 0,
