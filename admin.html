@@ -1044,7 +1044,8 @@
         {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
         {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
     };
-    const EXAM_CONFIG_SCHEMA_VERSION = 3;
+    // v4 repairs previously persisted swapped RRB/SSC timer values.
+    const EXAM_CONFIG_SCHEMA_VERSION = 4;
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
 
     function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
