@@ -617,7 +617,7 @@
 
     document.addEventListener('contextmenu', event => event.preventDefault());
 
-    // Window Schedule & Config Loader
+    // Entry Window & Config Loader
     async function checkOverallExamWindow() {
       try {
         const docRef = doc(db, "exam_config", "current_test");
@@ -637,12 +637,12 @@
         const end = examConfigData.windowEnd || Infinity;
 
         if (now < start) {
-          showTimeStatusOverlay("Test has not started yet!", `This test will open at ${new Date(start).toLocaleString('en-IN')}`);
+          showTimeStatusOverlay("Entry is not open yet!", `This test will open at ${new Date(start).toLocaleString('en-IN')}`);
           return false;
         }
 
         if (now > end) {
-          showTimeStatusOverlay("Sorry for the inconvenience!", "Test window is closed. You can no longer attempt this test.");
+          showTimeStatusOverlay("Entry is closed!", "The student entry period is closed. You can no longer enter this test.");
           return false;
         }
 
@@ -691,6 +691,21 @@
           }
         );
       }
+
+      // NEW: only exams activated by Admin are shown to students.
+      // Backward compatible: if no active-exam setting exists yet, all configured exams remain visible.
+      const activeExamIds = Array.isArray(examConfigData?.activeExamIds)
+        ? examConfigData.activeExamIds.map(String)
+        : null;
+      const hasActiveFlags = exams.some(e => typeof e.active === 'boolean');
+
+      if (activeExamIds) {
+        return exams.filter(e => activeExamIds.includes(String(e.id)));
+      }
+      if (hasActiveFlags) {
+        return exams.filter(e => e.active === true);
+      }
+
       return exams;
     }
 
@@ -816,7 +831,7 @@
 
       const activeExam = selectedExamConfig || getSelectedExamConfig();
       const configuredQuestions = activeExam ? getExamTotalQuestions(activeExam) : examConfigData?.studentLimit;
-      const configuredMinutes = activeExam?.durationMinutes || examConfigData?.durationMinutes;
+      const configuredMinutes = Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes));
 
       questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
         ? Number(configuredQuestions)
@@ -949,7 +964,8 @@
 
         isExamActive = true;
         window.changeSlide(3);
-        startExamTimer(Number(selectedExamConfig?.durationMinutes || examConfigData?.durationMinutes));
+        const examDuration = Number(selectedExamConfig?.timerMinutes) > 0 ? Number(selectedExamConfig.timerMinutes) : (Number(selectedExamConfig?.durationMinutes) > 0 ? Number(selectedExamConfig.durationMinutes) : Number(examConfigData?.durationMinutes));
+        startExamTimer(examDuration);
         loadQuestion(0);
       } catch (error) {
         showExamModal('security','Question Load Error','The test questions could not be loaded. Please check that chapter1.html is available and try again.','Close',null,'primary');
