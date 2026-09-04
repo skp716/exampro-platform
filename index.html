@@ -206,6 +206,15 @@
     .question-panel,.palette-panel {background:#fff;border:0;border-radius:0;box-shadow:none;min-height:0;}
     .question-panel {display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #dbe3ec;}
     .question-head {padding:16px 28px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;}
+    .subject-nav{display:flex;align-items:stretch;gap:8px;padding:10px 18px;background:#f8fafc;border-bottom:1px solid #dbe3ec;overflow-x:auto;scrollbar-width:thin;}
+    .subject-nav-title{font-size:.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;padding:0 4px;white-space:nowrap;}
+    .subject-tab{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:7px;padding:8px 13px;cursor:pointer;font-weight:800;font-size:.78rem;white-space:nowrap;transition:.15s ease;display:inline-flex;align-items:center;gap:7px;}
+    .subject-tab:hover{border-color:#2563eb;color:#1d4ed8;background:#eff6ff;}
+    .subject-tab.active{background:#0b3f95;color:#fff;border-color:#0b3f95;box-shadow:0 2px 5px rgba(15,23,42,.12);}
+    .subject-tab-count{font-size:.68rem;padding:2px 6px;border-radius:10px;background:#e2e8f0;color:#475569;}
+    .subject-tab.active .subject-tab-count{background:rgba(255,255,255,.18);color:#fff;}
+    @media (max-width:600px){.subject-nav{padding:8px 10px;gap:6px}.subject-nav-title{display:none}.subject-tab{padding:8px 10px;font-size:.72rem}}
+
     .q-number {font-weight:800;color:#111827;font-size:1rem;}
     .q-status {font-size:.78rem;color:#64748b;}
     .question-scroll {padding:28px 32px;overflow:auto;flex:1;}
@@ -383,6 +392,7 @@
 
         <div class="exam-main">
           <section class="question-panel">
+            <div class="subject-nav" id="subject-navigation" aria-label="Subject navigation"></div>
             <div class="question-head">
               <div class="q-number" id="question-counter">Question 1 of 0</div>
               <div class="q-status" id="question-status">Not Answered</div>
@@ -537,6 +547,7 @@
     let selectedExamId = "";
     let selectedExamName = "";
     let selectedExamConfig = null;
+    let currentSubjectId = "";
     let finalizedScoreString = "0/0";
     let calculatedScore = 0;
     let totalScore = 0;
@@ -695,18 +706,43 @@
       // NEW: only exams activated by Admin are shown to students.
       // Backward compatible: if no active-exam setting exists yet, all configured exams remain visible.
       const activeExamIds = Array.isArray(examConfigData?.activeExamIds)
-        ? examConfigData.activeExamIds.map(String)
+        ? examConfigData.activeExamIds.map(String).filter(Boolean)
         : null;
       const hasActiveFlags = exams.some(e => typeof e.active === 'boolean');
 
-      if (activeExamIds) {
-        return exams.filter(e => activeExamIds.includes(String(e.id)));
-      }
-      if (hasActiveFlags) {
-        return exams.filter(e => e.active === true);
+      // IMPORTANT:
+      // Older/partially saved Firestore configs can contain activeExamIds: []
+      // even though individual exams still have active:true. In that case the
+      // previous logic filtered every exam out and the student dropdown became
+      // empty. Prefer a non-empty activeExamIds list; otherwise fall back to
+      // the per-exam active flags.
+      if (activeExamIds && activeExamIds.length > 0) {
+        const filtered = exams.filter(e => activeExamIds.includes(String(e.id)));
+        if (filtered.length > 0) return filtered;
       }
 
+      if (hasActiveFlags) {
+        const activeByFlag = exams.filter(e => e.active === true);
+        if (activeByFlag.length > 0) return activeByFlag;
+      }
+
+      // If no usable active-exam restriction exists, preserve backward
+      // compatibility and show all configured exams.
       return exams;
+    }
+
+    function getSubjectEntriesForDiagnostic(subjects) {
+      if (!subjects) return [];
+      const entries = Array.isArray(subjects)
+        ? subjects.map((item, i) => [item?.id || item?.code || item?.key || `subject_${i + 1}`, item])
+        : Object.entries(subjects);
+      return entries.map(([id, cfg]) => ({
+        id,
+        name: cfg?.name || cfg?.subjectName || id,
+        count: getSubjectCount(cfg),
+        order: getSubjectOrder(cfg),
+        source: resolveSource(cfg)
+      }));
     }
 
     function populateExamCategories() {
@@ -714,6 +750,13 @@
       if (!select) return;
 
       const exams = getConfiguredExams();
+      console.log('[Exam Config] Loaded from Admin Panel:', exams.map(e => ({
+        id: e.id,
+        name: e.name,
+        active: e.active,
+        timerMinutes: e.timerMinutes,
+        subjects: getSubjectEntriesForDiagnostic(e.subjects)
+      })));
       const current = select.value;
       select.innerHTML = '<option value="">Select Exam Category</option>';
 
@@ -742,7 +785,35 @@
     }
 
     function resolveSource(cfg) {
-      return cfg?.source || cfg?.file || cfg?.questionSource || cfg?.questionFile || cfg?.path || '';
+      /* Admin may save the source under any of these supported field names. */
+      return String(
+        cfg?.source ||
+        cfg?.file ||
+        cfg?.questionSource ||
+        cfg?.questionFile ||
+        cfg?.path ||
+        cfg?.fileUrl ||
+        cfg?.sourceUrl ||
+        cfg?.url ||
+        ''
+      ).trim();
+    }
+
+    function resolveQuestionSourceUrl(source) {
+      const value = String(source || '').trim();
+      if (!value) return '';
+
+      /*
+       * Relative paths such as a question HTML file, a subject folder file,
+       * or an uploaded/custom source path are resolved from this page URL.
+       * are resolved from the actual index.html URL on GitHub Pages.
+       * Absolute http/https URLs are also supported when Admin stores one.
+       */
+      try {
+        return new URL(value, window.location.href).href;
+      } catch (_) {
+        return value;
+      }
     }
 
     function getSubjectCount(cfg) {
@@ -755,52 +826,188 @@
       return ['sequential','sequence','normal'].includes(v) ? 'sequential' : 'random';
     }
 
+    function extractQuestionArrayFromSource(rawText) {
+      const text = String(rawText || '').trim();
+
+      // 1) Direct JSON array.
+      if (text.startsWith('[')) {
+        try {
+          const direct = JSON.parse(text);
+          if (Array.isArray(direct)) return direct;
+        } catch (_) {}
+      }
+
+      // 2) Find the most likely question-bank array. This supports files such as
+      // const questions = [...], let questionBank = [...], or HTML wrappers.
+      const candidates = [];
+      const preferred = /(questions?|questionBank|mcqs?|data)\s*=\s*\[/gi;
+      let match;
+      while ((match = preferred.exec(text)) !== null) candidates.push(match.index + match[0].lastIndexOf('['));
+      if (!candidates.length) {
+        let pos = text.indexOf('[');
+        while (pos !== -1) { candidates.push(pos); pos = text.indexOf('[', pos + 1); }
+      }
+
+      function balancedArray(start) {
+        let depth = 0, quote = null, escaped = false;
+        for (let i = start; i < text.length; i++) {
+          const ch = text[i];
+          if (quote) {
+            if (escaped) { escaped = false; continue; }
+            if (ch === '\\') { escaped = true; continue; }
+            if (ch === quote) quote = null;
+            continue;
+          }
+          if (ch === '"' || ch === "'") { quote = ch; continue; }
+          if (ch === '[') depth++;
+          else if (ch === ']') {
+            depth--;
+            if (depth === 0) return text.slice(start, i + 1);
+          }
+        }
+        return null;
+      }
+
+      for (const start of candidates) {
+        const candidate = balancedArray(start);
+        if (!candidate) continue;
+        try {
+          const parsed = JSON.parse(candidate);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        } catch (_) {
+          // Some question files use JavaScript object syntax instead of strict JSON.
+          try {
+            const parsed = Function('"use strict"; return (' + candidate + ');')();
+            if (Array.isArray(parsed) && parsed.length) return parsed;
+          } catch (_) {}
+        }
+      }
+
+      throw new Error('No valid question array found in the selected question source.');
+    }
+
     async function loadConfiguredExamQuestions(exam) {
       const subjects = getSubjectEntries(exam);
       if (!subjects.length) return null;
 
       const combined = [];
+      const loadErrors = [];
+
       for (const [subjectId, subjectCfg] of subjects) {
         if (subjectCfg?.enabled === false) continue;
 
         const source = resolveSource(subjectCfg);
+        const sourceUrl = resolveQuestionSourceUrl(source);
         const count = getSubjectCount(subjectCfg);
-        if (!source || count <= 0) continue;
+        const subjectName = subjectCfg.name || subjectCfg.subjectName || subjectId;
 
-        const response = await fetch(source, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Could not load ${source}`);
-
-        const rawText = await response.text();
-        const start = rawText.indexOf('[');
-        const end = rawText.lastIndexOf(']');
-        if (start < 0 || end < start) throw new Error(`Invalid question file: ${source}`);
-
-        const pool = JSON.parse(rawText.substring(start, end + 1));
-        if (!Array.isArray(pool)) throw new Error(`Invalid question dataset: ${source}`);
-
-        const order = getSubjectOrder(subjectCfg);
-        let selectedPool = [...pool];
-
-        if (order === 'random') {
-          for (let i = selectedPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [selectedPool[i], selectedPool[j]] = [selectedPool[j], selectedPool[i]];
-          }
+        if (!source) {
+          loadErrors.push(`${subjectName}: Question Source is empty in Admin Panel.`);
+          continue;
+        }
+        if (count <= 0) {
+          loadErrors.push(`${subjectName}: Question count is not configured correctly in Admin Panel.`);
+          continue;
         }
 
-        selectedPool = selectedPool.slice(0, Math.min(count, selectedPool.length));
-        selectedPool.forEach(q => {
-          combined.push({
-            ...q,
-            _examId: exam.id,
-            _examName: exam.name,
-            _subjectId: String(subjectId),
-            _subjectName: subjectCfg.name || subjectCfg.subjectName || subjectId
+        try {
+          const response = await fetch(sourceUrl, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Could not load ${source} (HTTP ${response.status})`);
+
+          const rawText = await response.text();
+          const pool = extractQuestionArrayFromSource(rawText);
+          if (!Array.isArray(pool)) throw new Error('Question dataset is not an array.');
+          if (pool.length === 0) throw new Error('Question dataset is empty.');
+
+          const order = getSubjectOrder(subjectCfg);
+          let selectedPool = [...pool];
+
+          if (order === 'random') {
+            for (let i = selectedPool.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [selectedPool[i], selectedPool[j]] = [selectedPool[j], selectedPool[i]];
+            }
+          }
+
+          if (pool.length < count) {
+            throw new Error(`${subjectName} has only ${pool.length} questions in ${source}, but Admin requires ${count}.`);
+          }
+
+          selectedPool.slice(0, count).forEach((q, localIndex) => {
+            combined.push({
+              ...q,
+              _examId: exam.id,
+              _examName: exam.name,
+              _subjectId: String(subjectId),
+              _subjectName: String(subjectName),
+              _subjectQuestionNumber: localIndex + 1
+            });
           });
-        });
+        } catch (err) {
+          loadErrors.push(`${subjectName}: ${err.message}`);
+        }
+      }
+
+      if (loadErrors.length) {
+        throw new Error(loadErrors.join('<br>'));
       }
 
       return combined;
+    }
+
+    function getSubjectGroups() {
+      const groups = [];
+      const map = new Map();
+      questionsList.forEach((q, index) => {
+        const id = String(q._subjectId || q._subjectName || 'general');
+        if (!map.has(id)) {
+          const group = { id, name: q._subjectName || 'Questions', indices: [] };
+          map.set(id, group);
+          groups.push(group);
+        }
+        map.get(id).indices.push(index);
+      });
+      return groups;
+    }
+
+    function renderSubjectNavigation() {
+      const nav = document.getElementById('subject-navigation');
+      if (!nav) return;
+      const groups = getSubjectGroups();
+      nav.innerHTML = '';
+
+      if (!groups.length) return;
+
+      const title = document.createElement('span');
+      title.className = 'subject-nav-title';
+      title.innerHTML = '<i class="fa-solid fa-layer-group"></i>&nbsp; Subjects';
+      nav.appendChild(title);
+
+      groups.forEach(group => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `subject-tab ${group.id === currentSubjectId ? 'active' : ''}`;
+        const answered = group.indices.filter(i => selectedAnswers[i] !== undefined).length;
+        btn.innerHTML = `${escapeHtmlSafe(group.name)} <span class="subject-tab-count">${answered}/${group.indices.length}</span>`;
+        btn.onclick = () => switchExamSubject(group.id);
+        nav.appendChild(btn);
+      });
+    }
+
+    function escapeHtmlSafe(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+
+    function switchExamSubject(subjectId) {
+      const group = getSubjectGroups().find(g => g.id === String(subjectId));
+      if (!group || !group.indices.length) return;
+      currentSubjectId = group.id;
+
+      // Keep the student's existing answers/statuses intact and jump to the
+      // first question of the selected subject.
+      const targetIndex = group.indices[0];
+      loadQuestion(targetIndex);
+      renderSubjectNavigation();
     }
 
     function getExamTotalQuestions(exam) {
@@ -918,37 +1125,26 @@
           selectedExamName = selectedExamConfig.name;
         }
 
-        const configuredQuestions = getExamTotalQuestions(selectedExamConfig);
-
-        // New multi-exam mode: each subject loads only its own configured file/pool.
+        /*
+         * ADMIN-DRIVEN QUESTION LOADING
+         * --------------------------------
+         * There is NO hardcoded exam or question file here.
+         * The selected exam, its subjects, question counts, order and source
+         * are read from exam_config/current_test -> multiExamConfig.
+         *
+         * The source saved by Admin is used exactly as configured.
+         * The student page will fetch exactly that file.
+         */
         const multiQuestions = await loadConfiguredExamQuestions(selectedExamConfig);
 
-        if (multiQuestions && multiQuestions.length) {
-          questionsList = multiQuestions;
-        } else {
-          // Backward-compatible old single-file mode.
-          const response = await fetch('chapter1.html');
-          const rawText = await response.text();
-          const jsonString = rawText.substring(rawText.indexOf('['), rawText.lastIndexOf(']') + 1);
-          let fullPool = JSON.parse(jsonString);
-
-          const limit = Number(selectedExamConfig?.studentLimit ?? examConfigData?.studentLimit);
-          if (!Number.isFinite(limit) || limit <= 0) throw new Error('Exam question count is not configured in Admin Panel.');
-
-          const questionOrder = selectedExamConfig?.questionOrder || examConfigData?.questionOrder || 'random';
-          if (questionOrder === 'sequential') {
-            questionsList = fullPool.slice(0, limit);
-          } else {
-            for (let i = fullPool.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [fullPool[i], fullPool[j]] = [fullPool[j], fullPool[i]];
-            }
-            questionsList = fullPool.slice(0, limit);
-          }
+        if (!Array.isArray(multiQuestions) || !multiQuestions.length) {
+          throw new Error('No questions were loaded from the Admin Panel configuration for the selected exam. Please check Subject Name, Questions and Question Source.');
         }
 
+        questionsList = multiQuestions;
+
         if (!questionsList.length) {
-          throw new Error('No questions are configured for the selected exam.'); 
+          throw new Error('No questions are configured for the selected exam in the Admin Panel.');
         }
         selectedAnswers = {};
         questionStatus = {};
@@ -968,7 +1164,7 @@
         startExamTimer(examDuration);
         loadQuestion(0);
       } catch (error) {
-        showExamModal('security','Question Load Error','The test questions could not be loaded. Please check that chapter1.html is available and try again.','Close',null,'primary');
+        showExamModal('security','Question Load Error','The test questions could not be loaded. The student portal is using the exact exam, subject, question count, order and Question Source saved in the Admin Panel. Please check the selected exam configuration and make sure each configured source file exists in the GitHub project.','Close',null,'primary');
         startBtn.disabled = false;
         startBtn.innerText = "Start Examination";
       }
@@ -1047,6 +1243,8 @@
       document.getElementById('question-status').innerText = statusText;
 
       const qData = questionsList[index];
+      currentSubjectId = String(qData._subjectId || qData._subjectName || 'general');
+      renderSubjectNavigation();
       document.getElementById('q-text').innerHTML = qData.question || qData.q || '';
 
       const optionsBlock = document.getElementById('options-block');
