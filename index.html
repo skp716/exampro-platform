@@ -608,9 +608,32 @@
       return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
+    async function withFirebaseRetry(operation, attempts=3){
+      let lastError;
+      for(let attempt=1;attempt<=attempts;attempt++){
+        try{return await operation();}
+        catch(error){
+          lastError=error;
+          const code=String(error?.code||'');
+          const retryable=['unavailable','deadline-exceeded','resource-exhausted','network-request-failed','internal'].some(x=>code.includes(x));
+          if(!retryable||attempt===attempts)break;
+          await new Promise(resolve=>setTimeout(resolve,350*attempt+Math.floor(Math.random()*650)));
+        }
+      }
+      throw lastError;
+    }
+
+    function getConnectionFailureMessage(error){
+      const code=String(error?.code||'');
+      if(code.includes('operation-not-allowed')) return 'Student authentication is not enabled. Enable Anonymous sign-in in Firebase Authentication.';
+      if(code.includes('permission-denied')) return 'Database access was denied. Confirm that the latest Firestore rules are published.';
+      if(code.includes('unavailable')||code.includes('deadline-exceeded')||code.includes('network')) return 'Firebase is responding slowly or the internet connection is unstable. Please retry; your attempt has not been used.';
+      return 'The examination configuration could not be loaded. Please retry or contact the examination administrator.';
+    }
+
     async function validateCenterCode(code){
       const centerId=await sha256(String(code).trim().toUpperCase());
-      const snap=await getDoc(doc(db,'centers',centerId));
+      const snap=await withFirebaseRetry(()=>getDoc(doc(db,'centers',centerId)));
       if(!snap.exists()||snap.data()?.active!==true) throw new Error('invalid-center-code');
       return {centerId,...snap.data()};
     }
@@ -771,7 +794,7 @@
       try {
         await ensureStudentAuth();
         const docRef = doc(db, "exam_config", "current_test");
-        const snap = await getDoc(docRef);
+        const snap = await withFirebaseRetry(()=>getDoc(docRef));
 
         if (!snap.exists()) {
           examConfigData = null;
@@ -799,7 +822,7 @@
         return true;
       } catch (err) {
         console.error("Window Check Error:", err);
-        showExamModal('security','Secure Connection Error','The secure examination session could not be started. Please check your internet connection and try again.','Close',null,'primary');
+        showExamModal('security','Connection Check Failed',getConnectionFailureMessage(err),'Retry',null,'primary',()=>checkOverallExamWindow());
         return false;
       }
     }
