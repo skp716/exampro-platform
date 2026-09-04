@@ -918,19 +918,25 @@
 
     async function loadRailwayQuestionsFromFixedFile(exam) {
       /*
-       * Railway Group D has one fixed question-bank file in the repository:
-       * railway.html
-       *
-       * Only this exam uses the fixed file. Other exams continue to use the
-       * Question Source saved by the Admin Panel.
+       * RAILWAY SPECIAL RULE:
+       * Railway Group D always uses the single repository file railway.html.
+       * Do NOT use the Question Source values saved for Railway subjects.
+       * Admin Panel still controls subject names, question counts and
+       * Random/Sequential order.
        */
       const source = 'railway.html';
       const sourceUrl = resolveQuestionSourceUrl(source);
       const subjects = getSubjectEntries(exam).filter(([, cfg]) => cfg?.enabled !== false);
 
+      if (!subjects.length) {
+        throw new Error('No Railway subjects are configured in the Admin Panel.');
+      }
+
       try {
         const response = await fetch(sourceUrl, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Could not load ${source} (HTTP ${response.status})`);
+        if (!response.ok) {
+          throw new Error(`Could not load railway.html (HTTP ${response.status}). Make sure railway.html is in the same GitHub folder as index.html.`);
+        }
 
         const rawText = await response.text();
         const pool = extractQuestionArrayFromSource(rawText);
@@ -938,14 +944,32 @@
           throw new Error('railway.html does not contain a valid question array.');
         }
 
-        // If railway.html contains subject labels inside each question, use
-        // those labels so the Admin subject counts remain subject-wise.
-        const labelledQuestions = pool.filter(q => getQuestionSubjectValue(q));
-        const hasSubjectLabels = labelledQuestions.length > 0;
+        const requestedTotal = subjects.reduce((sum, [, cfg]) => {
+          return sum + getSubjectCount(cfg);
+        }, 0);
 
+        if (requestedTotal <= 0) {
+          throw new Error('Railway question counts are not configured correctly in the Admin Panel.');
+        }
+
+        if (pool.length < requestedTotal) {
+          throw new Error(`railway.html contains ${pool.length} questions, but Admin requires ${requestedTotal} questions in total.`);
+        }
+
+        /*
+         * Railway.html is treated as ONE master question bank.
+         * We allocate unique questions to subjects in the exact order in which
+         * subjects are saved in Admin. This is intentionally independent of
+         * the per-subject source fields in Admin because Railway has only one
+         * physical file: railway.html.
+         *
+         * Example:
+         * Maths 25 + Reasoning 25 + GK/GS 25
+         * => first 25 belong to Maths, next 25 to Reasoning, next 25 to GK/GS.
+         * Random subjects are shuffled only inside their own allocated block.
+         */
         const combined = [];
-        const errors = [];
-        let unlabelledCursor = 0;
+        let cursor = 0;
 
         for (const [subjectId, subjectCfg] of subjects) {
           const subjectName = subjectCfg?.name || subjectCfg?.subjectName || subjectId;
@@ -953,33 +977,18 @@
           const order = getSubjectOrder(subjectCfg);
 
           if (count <= 0) {
-            errors.push(`${subjectName}: Question count is not configured correctly in Admin Panel.`);
-            continue;
+            throw new Error(`${subjectName}: question count must be greater than 0.`);
           }
 
-          let subjectPool;
-
-          if (hasSubjectLabels) {
-            const wanted = normalizeSubjectText(subjectName);
-            subjectPool = pool.filter(q => {
-              const actual = normalizeSubjectText(getQuestionSubjectValue(q));
-              if (!actual) return false;
-              return actual === wanted || actual.includes(wanted) || wanted.includes(actual);
-            });
-          } else {
-            // railway.html is a single combined bank without subject labels.
-            // Allocate unique questions to subjects in the same order as the
-            // Admin Panel. This prevents duplicate questions between subjects.
-            subjectPool = pool.slice(unlabelledCursor, unlabelledCursor + count);
-            unlabelledCursor += count;
-          }
+          const subjectPool = pool.slice(cursor, cursor + count);
+          cursor += count;
 
           if (subjectPool.length < count) {
-            errors.push(`${subjectName}: railway.html has only ${subjectPool.length} matching questions, but Admin requires ${count}.`);
-            continue;
+            throw new Error(`${subjectName}: railway.html does not contain enough questions for the Admin-configured count of ${count}.`);
           }
 
-          let selectedPool = [...subjectPool];
+          const selectedPool = [...subjectPool];
+
           if (order === 'random') {
             for (let i = selectedPool.length - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1));
@@ -987,9 +996,9 @@
             }
           }
 
-          selectedPool.slice(0, count).forEach((q, localIndex) => {
+          selectedPool.forEach((q, localIndex) => {
             combined.push({
-              ...q,
+              ...(q && typeof q === 'object' ? q : { question: String(q) }),
               _examId: exam.id,
               _examName: exam.name,
               _subjectId: String(subjectId),
@@ -1000,9 +1009,9 @@
           });
         }
 
-        if (errors.length) throw new Error(errors.join('<br>'));
         return combined;
       } catch (err) {
+        console.error('[Railway Question Loader]', err);
         throw new Error(`Railway question file error: ${err.message}`);
       }
     }
