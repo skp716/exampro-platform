@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -453,6 +452,39 @@
       color: var(--primary);
     }
 
+    /* ============================================================
+       MULTI-EXAM / SUBJECT CONFIGURATION
+       ============================================================ */
+    .multi-exam-card { background:linear-gradient(135deg,#f8fbff,#fff); border:2px solid #dbeafe; padding:1.5rem; border-radius:14px; margin-bottom:1.5rem; }
+    .multi-exam-head { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; margin-bottom:15px; flex-wrap:wrap; }
+    .multi-exam-head h4 { color:var(--primary); font-size:1.05rem; margin:0 0 4px; }
+    .multi-exam-head p { color:var(--text-muted); font-size:.83rem; margin:0; line-height:1.5; }
+    .exam-select-wrap { min-width:230px; flex:1; max-width:360px; }
+    .subject-config-list { display:grid; gap:12px; margin-top:14px; }
+    .subject-row { background:#fff; border:1px solid #dbeafe; border-radius:12px; padding:14px; display:grid; grid-template-columns:minmax(150px,1.2fr) minmax(110px,.7fr) minmax(180px,1fr) minmax(170px,1fr) auto; gap:10px; align-items:end; }
+    .subject-row .form-group { margin:0; }
+    .subject-row label { font-size:.72rem; margin-bottom:5px; }
+    .subject-row input,.subject-row select { padding:.68rem .75rem; font-size:.9rem; }
+    .subject-remove { width:40px; height:40px; border:0; border-radius:8px; background:#fee2e2; color:#b91c1c; cursor:pointer; font-size:1rem; }
+    .subject-remove:hover { background:#fecaca; }
+    .multi-exam-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .config-summary { margin-top:12px; padding:11px 13px; border-radius:9px; background:#eff6ff; border:1px solid #bfdbfe; color:#475569; font-size:.82rem; }
+    .config-summary strong { color:var(--primary); }
+    @media (max-width:850px) { .subject-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .subject-row .subject-name { grid-column:1/-1; } .subject-remove { width:100%; } .exam-select-wrap { max-width:none; width:100%; } }
+
+    .analytics-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin:0 0 1rem; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; }
+    .analytics-toolbar .form-group { margin:0; min-width:190px; flex:1; }
+    .analytics-toolbar .form-group label { font-size:.72rem; }
+    .stats-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:0 0 1.25rem; }
+    .stat-box { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; }
+    .stat-box .stat-label { color:#64748b; font-size:.75rem; font-weight:600; text-transform:uppercase; }
+    .stat-box .stat-value { color:var(--primary); font-size:1.35rem; font-weight:700; margin-top:4px; }
+    .exam-badge { display:inline-block; padding:4px 8px; border-radius:999px; background:#dbeafe; color:#1e3a8a; font-size:.75rem; font-weight:700; }
+    .subject-badge { display:inline-block; padding:3px 7px; border-radius:6px; background:#f1f5f9; color:#475569; font-size:.72rem; margin:2px 2px 0 0; }
+    .score-main { font-size:1rem; font-weight:700; color:var(--primary-light); }
+    .score-percent { display:block; font-size:.72rem; color:#64748b; margin-top:2px; }
+    @media (max-width: 850px) { .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
     @media (max-width: 650px) {
       body {
         padding: 1rem 0.7rem;
@@ -746,6 +778,32 @@
         </div>
 
 
+        <!-- ===================================================== -->
+        <!-- MULTI-EXAM + SUBJECT-WISE QUESTION CONTROL -->
+        <!-- ===================================================== -->
+        <div class="multi-exam-card">
+          <div class="multi-exam-head">
+            <div>
+              <h4><i class="fa-solid fa-layer-group"></i> Multi-Exam & Subject-wise Question Control</h4>
+              <p>Configure each exam separately. Every subject has its own question count, question source and Random/Sequential order.</p>
+            </div>
+            <div class="exam-select-wrap">
+              <label for="exam-selector">Active Exam</label>
+              <select id="exam-selector">
+                <option value="railway_group_d">Railway Group D</option>
+                <option value="jharkhand_tet">Jharkhand TET</option>
+                <option value="ssc_gd">SSC GD</option>
+              </select>
+            </div>
+          </div>
+          <div class="subject-config-list" id="subject-config-list"></div>
+          <div class="multi-exam-actions">
+            <button type="button" class="btn" id="add-subject-btn"><i class="fa-solid fa-plus"></i> Add Subject</button>
+            <button type="button" class="btn btn-success" id="save-multi-exam-btn"><i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings</button>
+          </div>
+          <div class="config-summary" id="multi-exam-summary"><strong>Ready:</strong> Select an exam and configure its subjects.</div>
+        </div>
+
         <!-- WINDOW SETTINGS -->
 
         <div class="form-grid">
@@ -897,6 +955,29 @@
         </p>
 
 
+        <div class="stats-grid" id="analytics-stats">
+          <div class="stat-box"><div class="stat-label">Total Attempts</div><div class="stat-value" id="stat-attempts">0</div></div>
+          <div class="stat-box"><div class="stat-label">Active Exams</div><div class="stat-value" id="stat-exams">0</div></div>
+          <div class="stat-box"><div class="stat-label">Security Alerts</div><div class="stat-value" id="stat-alerts">0</div></div>
+          <div class="stat-box"><div class="stat-label">Average Score</div><div class="stat-value" id="stat-average">0%</div></div>
+        </div>
+
+        <div class="analytics-toolbar">
+          <div class="form-group">
+            <label for="analytics-exam-filter">Filter by Exam</label>
+            <select id="analytics-exam-filter">
+              <option value="all">All Exams</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="analytics-subject-filter">Filter by Subject</label>
+            <select id="analytics-subject-filter">
+              <option value="all">All Subjects</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-refresh" onclick="resetAnalyticsFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Reset Filters</button>
+        </div>
+
         <div class="table-responsive">
 
           <table>
@@ -905,6 +986,8 @@
 
               <tr>
                 <th>Student Details</th>
+                <th>Exam</th>
+                <th>Subjects</th>
                 <th>Submit Time</th>
                 <th>Tab Switches</th>
                 <th>Copy Violations</th>
@@ -995,6 +1078,8 @@
               <tr>
                 <th>Rank</th>
                 <th>Student Details</th>
+                <th>Exam</th>
+                <th>Subjects</th>
                 <th>Score</th>
                 <th>Submitted At</th>
                 <th>Feedback</th>
@@ -1266,6 +1351,48 @@
 
 
     /* ============================================================
+       MULTI-EXAM / SUBJECT CONFIGURATION
+       ============================================================ */
+    const DEFAULT_MULTI_EXAM_CONFIG = {
+      railway_group_d:{examName:'Railway Group D',subjects:[
+        {name:'Maths',count:25,order:'random',source:'railway/maths.html'},
+        {name:'Reasoning',count:25,order:'random',source:'railway/reasoning.html'},
+        {name:'GK / GS',count:25,order:'random',source:'railway/gkgs.html'}]},
+      jharkhand_tet:{examName:'Jharkhand TET',subjects:[
+        {name:'Child Development & Pedagogy',count:10,order:'random',source:'jtet/cdp.html'},
+        {name:'Language I',count:10,order:'random',source:'jtet/language1.html'},
+        {name:'Language II',count:10,order:'random',source:'jtet/language2.html'},
+        {name:'Mathematics',count:10,order:'random',source:'jtet/mathematics.html'},
+        {name:'Environmental Studies',count:10,order:'random',source:'jtet/evs.html'}]},
+      ssc_gd:{examName:'SSC GD',subjects:[
+        {name:'General Intelligence & Reasoning',count:20,order:'random',source:'ssc-gd/reasoning.html'},
+        {name:'General Knowledge & General Awareness',count:20,order:'random',source:'ssc-gd/gk-gs.html'},
+        {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
+        {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
+    };
+    let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
+    function getActiveExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
+    function renderSubjectConfig(){
+      const list=document.getElementById('subject-config-list'); if(!list)return;
+      const examId=getActiveExamId(); if(!multiExamConfig[examId])multiExamConfig[examId]={examName:examId,subjects:[]};
+      const subjects=multiExamConfig[examId].subjects||[]; list.innerHTML='';
+      if(!subjects.length) list.innerHTML='<div style="padding:18px;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:10px;">No subjects added. Click <strong>Add Subject</strong>.</div>';
+      subjects.forEach((subject,index)=>{
+        const row=document.createElement('div'); row.className='subject-row';
+        row.innerHTML=`<div class="form-group subject-name"><label>Subject Name *</label><input type="text" data-field="name" value="${escapeHTML(subject.name||'')}" placeholder="e.g. Maths"></div><div class="form-group"><label>Questions *</label><input type="number" data-field="count" min="1" value="${Number(subject.count)||1}"></div><div class="form-group"><label>Question Order *</label><select data-field="order"><option value="random" ${subject.order==='random'?'selected':''}>Random</option><option value="sequential" ${subject.order==='sequential'?'selected':''}>Sequential</option></select></div><div class="form-group"><label>Question Source *</label><input type="text" data-field="source" value="${escapeHTML(subject.source||'')}" placeholder="e.g. railway/maths.html"></div><button type="button" class="subject-remove" title="Remove Subject" data-remove="${index}"><i class="fa-solid fa-trash"></i></button>`;
+        list.appendChild(row);
+      });
+      list.querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click',()=>{multiExamConfig[examId].subjects.splice(Number(btn.dataset.remove),1);renderSubjectConfig();}));
+      list.querySelectorAll('.subject-row').forEach((row,idx)=>row.querySelectorAll('[data-field]').forEach(field=>{const sync=()=>{const key=field.dataset.field;multiExamConfig[examId].subjects[idx][key]=key==='count'?Number(field.value):field.value;updateMultiExamSummary();};field.addEventListener('input',sync);field.addEventListener('change',sync);}));
+      updateMultiExamSummary();
+    }
+    function updateMultiExamSummary(){const el=document.getElementById('multi-exam-summary');if(!el)return;const id=getActiveExamId(),exam=multiExamConfig[id]||{subjects:[]},subjects=exam.subjects||[],total=subjects.reduce((n,s)=>n+(Number(s.count)||0),0);el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} subject(s) configured • ${total} total student questions • Each subject uses its own pool and order setting.`;}
+    function collectVisibleSubjectValues(){const id=getActiveExamId();const rows=[...document.querySelectorAll('#subject-config-list .subject-row')];if(!multiExamConfig[id])multiExamConfig[id]={examName:id,subjects:[]};multiExamConfig[id].subjects=rows.map(row=>({name:row.querySelector('[data-field="name"]').value.trim(),count:Number(row.querySelector('[data-field="count"]').value),order:row.querySelector('[data-field="order"]').value,source:row.querySelector('[data-field="source"]').value.trim()}));return multiExamConfig[id].subjects;}
+    function validateMultiExamConfig(){for(const [id,exam] of Object.entries(multiExamConfig)){if(!exam.subjects?.length)return `${exam.examName||id}: Add at least one subject.`;for(const subject of exam.subjects){if(!subject.name||!Number.isFinite(Number(subject.count))||Number(subject.count)<=0||!subject.source)return `${exam.examName||id}: Every subject needs a name, question count and question source.`;if(!['random','sequential'].includes(subject.order))return `${exam.examName||id}: Invalid question order for ${subject.name}.`;}}return '';}
+    async function saveMultiExamSettings(){collectVisibleSubjectValues();const error=validateMultiExamConfig();if(error){alert(error);return;}const btn=document.getElementById('save-multi-exam-btn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Exam Settings...';try{await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamId:getActiveExamId(),updatedAt:new Date()},{merge:true});alert('Exam & subject-wise settings saved successfully!');}catch(err){console.error(err);alert('Failed to save exam & subject settings: '+err.message);}finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings';}}
+    function initializeMultiExamControls(savedConfig,savedActiveExam){if(savedConfig&&typeof savedConfig==='object')multiExamConfig=JSON.parse(JSON.stringify(savedConfig));const selector=document.getElementById('exam-selector');if(selector){selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';selector.addEventListener('change',renderSubjectConfig);}document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getActiveExamId();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);renderSubjectConfig();}
+
+    /* ============================================================
        LOAD EXAM SETTINGS
        ============================================================ */
 
@@ -1289,6 +1416,8 @@
 
           const data =
             docSnap.data();
+
+          initializeMultiExamControls(data.multiExamConfig, data.activeExamId);
 
 
           /* TOTAL POOL */
@@ -1395,7 +1524,11 @@
 
           updateQuestionOrderStatus();
 
+          if (!data.multiExamConfig) initializeMultiExamControls();
+
         } else {
+
+          initializeMultiExamControls();
 
           /*
              If no configuration exists yet,
@@ -1416,6 +1549,7 @@
           "Config load error:",
           e
         );
+        initializeMultiExamControls();
 
       }
 
@@ -1427,6 +1561,8 @@
        ============================================================ */
 
     window.saveExamSettings = async () => {
+
+      if (document.getElementById('subject-config-list')) collectVisibleSubjectValues();
 
       const totalPool =
         parseInt(
@@ -1577,6 +1713,11 @@
             questionOrder:
               questionOrder,
 
+            multiExamConfig:
+              multiExamConfig,
+
+            activeExamId:
+              getActiveExamId(),
 
             updatedAt:
               new Date()
@@ -1629,385 +1770,173 @@
        FETCH LIVE DATABASE RECORDS
        ============================================================ */
 
-    window.fetchLiveDatabaseRecords = async () => {
-
-      const analyticsBody =
-        document.getElementById(
-          'analytics-table-body'
-        );
-
-
-      const leaderboardBody =
-        document.getElementById(
-          'leaderboard-table-body'
-        );
-
-
-      analyticsBody.innerHTML =
-        `
-        <tr>
-          <td colspan="5" style="text-align:center;">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Fetching records...
-          </td>
-        </tr>
-        `;
-
-
-      leaderboardBody.innerHTML =
-        `
-        <tr>
-          <td colspan="5" style="text-align:center;">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Fetching records...
-          </td>
-        </tr>
-        `;
-
-
-      try {
-
-        const snap =
-          await getDocs(
-            collection(
-              db,
-              "results"
-            )
-          );
-
-
-        allStudentResults = [];
-
-
-        snap.forEach(
-          (docSnap) => {
-
-            const r =
-              docSnap.data();
-
-
-            let scoreVal = 0;
-
-
-            if (
-              typeof r.score === 'string'
-            ) {
-
-              scoreVal =
-                parseFloat(
-                  r.score.split('/')[0]
-                ) || 0;
-
-            } else if (
-              typeof r.score === 'number'
-            ) {
-
-              scoreVal =
-                r.score;
-
-            }
-
-
-            let dateObj =
-              new Date(0);
-
-
-            if (r.submittedAt) {
-
-              dateObj =
-                r.submittedAt.toDate
-                  ? r.submittedAt.toDate()
-                  : new Date(
-                      r.submittedAt
-                    );
-
-            } else if (r.timestamp) {
-
-              dateObj =
-                r.timestamp.toDate
-                  ? r.timestamp.toDate()
-                  : new Date(
-                      r.timestamp
-                    );
-
-            }
-
-
-            const submitTimeFormatted =
-              dateObj.getTime() > 0
-                ? dateObj.toLocaleString(
-                    'en-IN',
-                    {
-                      dateStyle: 'medium',
-                      timeStyle: 'short'
-                    }
-                  )
-                : "N/A";
-
-
-            allStudentResults.push({
-
-              id:
-                docSnap.id,
-
-              name:
-                r.name || "Anonymous",
-
-              email:
-                r.email || "No Email",
-
-              scoreText:
-                r.score || "0/0",
-
-              scoreVal:
-                scoreVal,
-
-              rawDate:
-                dateObj,
-
-              tabSwitches:
-                r.tabSwitches !== undefined
-                  ? r.tabSwitches
-                  : (r.tab_switches || 0),
-
-              copiesAttempted:
-                r.copiesAttempted !== undefined
-                  ? r.copiesAttempted
-                  : (r.copy_paste || 0),
-
-              penaltiesApplied:
-                r.penaltiesApplied || 0,
-
-              submittedAtStr:
-                submitTimeFormatted,
-
-              feedback:
-                r.feedback || "None"
-
-            });
-
-          }
-        );
-
-
-        allStudentResults.sort(
-          (a, b) =>
-            b.rawDate - a.rawDate
-        );
-
-
-        /* ========================================================
-           SECURITY ANALYTICS
-           ======================================================== */
-
-        analyticsBody.innerHTML = '';
-
-
-        if (
-          allStudentResults.length === 0
-        ) {
-
-          analyticsBody.innerHTML =
-            `
-            <tr>
-              <td colspan="5" style="text-align:center;">
-                No submissions found.
-              </td>
-            </tr>
-            `;
-
-        } else {
-
-          allStudentResults.forEach(
-            r => {
-
-              const tr =
-                document.createElement(
-                  'tr'
-                );
-
-
-              tr.innerHTML =
-                `
-                <td>
-                  <strong>${escapeHTML(r.name)}</strong>
-                  <br>
-                  <span style="font-size:0.8rem; color:var(--text-muted);">
-                    ${escapeHTML(r.email)}
-                  </span>
-                </td>
-
-                <td>
-                  <span class="time-stamp">
-                    <i class="fa-regular fa-clock"></i>
-                    ${escapeHTML(r.submittedAtStr)}
-                  </span>
-                </td>
-
-                <td>
-                  <span class="alert-indicator ${
-                    r.tabSwitches > 0
-                      ? 'alert-warn'
-                      : 'alert-safe'
-                  }">
-                    ${r.tabSwitches} Times
-                  </span>
-                </td>
-
-                <td>
-                  <span class="alert-indicator ${
-                    r.copiesAttempted > 0
-                      ? 'alert-warn'
-                      : 'alert-safe'
-                  }">
-                    ${r.copiesAttempted} Times
-                  </span>
-                </td>
-
-                <td>
-                  <span class="alert-indicator ${
-                    r.penaltiesApplied > 0
-                      ? 'alert-warn'
-                      : 'alert-safe'
-                  }">
-                    -${r.penaltiesApplied} Mark(s)
-                  </span>
-                </td>
-                `;
-
-
-              analyticsBody.appendChild(
-                tr
-              );
-
-            }
-          );
-
-        }
-
-
-        /* ========================================================
-           LEADERBOARD
-           ======================================================== */
-
-        const leaderboardData =
-          [...allStudentResults].sort(
-            (a, b) =>
-              b.scoreVal - a.scoreVal ||
-              b.rawDate - a.rawDate
-          );
-
-
-        leaderboardBody.innerHTML =
-          '';
-
-
-        if (
-          leaderboardData.length === 0
-        ) {
-
-          leaderboardBody.innerHTML =
-            `
-            <tr>
-              <td colspan="5" style="text-align:center;">
-                No leaderboard records.
-              </td>
-            </tr>
-            `;
-
-        } else {
-
-          leaderboardData.forEach(
-            (r, idx) => {
-
-              const tr =
-                document.createElement(
-                  'tr'
-                );
-
-
-              tr.innerHTML =
-                `
-                <td>
-                  <span class="badge-rank">
-                    #${idx + 1}
-                  </span>
-                </td>
-
-                <td>
-                  <strong>
-                    ${escapeHTML(r.name)}
-                  </strong>
-                  <br>
-                  <span
-                    style="
-                      font-size:0.8rem;
-                      color:var(--text-muted);
-                    "
-                  >
-                    ${escapeHTML(r.email)}
-                  </span>
-                </td>
-
-                <td>
-                  <strong
-                    style="color:var(--primary-light);"
-                  >
-                    ${escapeHTML(
-                      String(r.scoreText)
-                    )}
-                  </strong>
-                </td>
-
-                <td>
-                  <span class="time-stamp">
-                    <i class="fa-regular fa-clock"></i>
-                    ${escapeHTML(r.submittedAtStr)}
-                  </span>
-                </td>
-
-                <td>
-                  ${escapeHTML(
-                    String(r.feedback)
-                  )}
-                </td>
-                `;
-
-
-              leaderboardBody.appendChild(
-                tr
-              );
-
-            }
-          );
-
-        }
-
-
-      } catch (err) {
-
-        console.error(err);
-
-
-        analyticsBody.innerHTML =
-          `
-          <tr>
-            <td
-              colspan="5"
-              style="
-                color:var(--danger);
-                text-align:center;
-              "
-            >
-              Error loading database data.
-            </td>
-          </tr>
-          `;
-
+    let currentAnalyticsResults = [];
+
+    function normalizeExamName(r) {
+      return r.examName || r.exam || r.examTitle || r.testName || r.exam_id || r.examId || "Unknown Exam";
+    }
+
+    function normalizeExamId(r) {
+      return r.examId || r.exam_id || r.exam || normalizeExamName(r).toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    }
+
+    function normalizeSubjects(r) {
+      const value = r.subjects ?? r.subjectBreakdown ?? r.subjectResults ?? r.subject ?? r.subjectName;
+      if (Array.isArray(value)) {
+        return value.map(v => {
+          if (typeof v === 'string') return v;
+          return v?.name || v?.subjectName || v?.subject || '';
+        }).filter(Boolean);
       }
+      if (value && typeof value === 'object') return Object.keys(value);
+      if (typeof value === 'string') return value.split(',').map(x => x.trim()).filter(Boolean);
+      return [];
+    }
 
+    function subjectBadges(subjects) {
+      if (!subjects.length) return '<span class="subject-badge">Not recorded</span>';
+      return subjects.map(s => `<span class="subject-badge">${escapeHTML(s)}</span>`).join('');
+    }
+
+    function getScorePercent(r) {
+      const raw = String(r.scoreText || '');
+      const m = raw.match(/(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+      if (m && Number(m[2]) > 0) return Math.max(0, Number(m[1]) / Number(m[2]) * 100);
+      if (Number.isFinite(Number(r.scorePercent))) return Number(r.scorePercent);
+      return null;
+    }
+
+    function populateAnalyticsFilters(results) {
+      const examFilter = document.getElementById('analytics-exam-filter');
+      const subjectFilter = document.getElementById('analytics-subject-filter');
+      if (!examFilter || !subjectFilter) return;
+      const currentExam = examFilter.value || 'all';
+      const currentSubject = subjectFilter.value || 'all';
+      const exams = [...new Map(results.map(r => [r.examId, r.examName])).entries()].sort((a,b) => a[1].localeCompare(b[1]));
+      const subjects = [...new Set(results.flatMap(r => r.subjects))].sort((a,b) => a.localeCompare(b));
+      examFilter.innerHTML = '<option value="all">All Exams</option>' + exams.map(([id,name]) => `<option value="${escapeHTML(id)}">${escapeHTML(name)}</option>`).join('');
+      subjectFilter.innerHTML = '<option value="all">All Subjects</option>' + subjects.map(s => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join('');
+      examFilter.value = exams.some(([id]) => id === currentExam) ? currentExam : 'all';
+      subjectFilter.value = subjects.includes(currentSubject) ? currentSubject : 'all';
+    }
+
+    function getFilteredAnalyticsResults() {
+      const exam = document.getElementById('analytics-exam-filter')?.value || 'all';
+      const subject = document.getElementById('analytics-subject-filter')?.value || 'all';
+      return currentAnalyticsResults.filter(r =>
+        (exam === 'all' || r.examId === exam) &&
+        (subject === 'all' || r.subjects.includes(subject))
+      );
+    }
+
+    function renderAnalyticsRows() {
+      const body = document.getElementById('analytics-table-body');
+      const data = getFilteredAnalyticsResults();
+      if (!body) return;
+      body.innerHTML = '';
+      const alerts = data.filter(r => r.tabSwitches > 0 || r.copiesAttempted > 0 || r.penaltiesApplied > 0).length;
+      const percents = data.map(getScorePercent).filter(v => v !== null);
+      document.getElementById('stat-attempts').textContent = data.length;
+      document.getElementById('stat-exams').textContent = new Set(data.map(r => r.examId)).size;
+      document.getElementById('stat-alerts').textContent = alerts;
+      document.getElementById('stat-average').textContent = percents.length ? `${(percents.reduce((a,b)=>a+b,0)/percents.length).toFixed(1)}%` : '0%';
+
+      if (!data.length) {
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No submissions found for the selected filter.</td></tr>';
+        return;
+      }
+      data.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
+          <td><span class="exam-badge">${escapeHTML(r.examName)}</span></td>
+          <td>${subjectBadges(r.subjects)}</td>
+          <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
+          <td><span class="alert-indicator ${r.tabSwitches > 0 ? 'alert-warn' : 'alert-safe'}">${r.tabSwitches} Times</span></td>
+          <td><span class="alert-indicator ${r.copiesAttempted > 0 ? 'alert-warn' : 'alert-safe'}">${r.copiesAttempted} Times</span></td>
+          <td><span class="alert-indicator ${r.penaltiesApplied > 0 ? 'alert-warn' : 'alert-safe'}">-${r.penaltiesApplied} Mark(s)</span></td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    function renderLeaderboardRows() {
+      const body = document.getElementById('leaderboard-table-body');
+      if (!body) return;
+      const exam = document.getElementById('analytics-exam-filter')?.value || 'all';
+      const subject = document.getElementById('analytics-subject-filter')?.value || 'all';
+      const data = currentAnalyticsResults.filter(r => (exam === 'all' || r.examId === exam) && (subject === 'all' || r.subjects.includes(subject)))
+        .sort((a,b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate);
+      body.innerHTML = '';
+      if (!data.length) { body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No leaderboard records for the selected filter.</td></tr>'; return; }
+      data.forEach((r, idx) => {
+        const pct = getScorePercent(r);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="badge-rank">#${idx + 1}</span></td>
+          <td><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
+          <td><span class="exam-badge">${escapeHTML(r.examName)}</span></td>
+          <td>${subjectBadges(r.subjects)}</td>
+          <td><span class="score-main">${escapeHTML(String(r.scoreText))}</span>${pct !== null ? `<span class="score-percent">${pct.toFixed(1)}%</span>` : ''}</td>
+          <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
+          <td>${escapeHTML(String(r.feedback))}</td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    window.resetAnalyticsFilters = () => {
+      const e = document.getElementById('analytics-exam-filter');
+      const s = document.getElementById('analytics-subject-filter');
+      if (e) e.value = 'all';
+      if (s) s.value = 'all';
+      renderAnalyticsRows();
+      renderLeaderboardRows();
     };
 
+    window.fetchLiveDatabaseRecords = async () => {
+      const analyticsBody = document.getElementById('analytics-table-body');
+      const leaderboardBody = document.getElementById('leaderboard-table-body');
+      analyticsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>';
+      leaderboardBody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>';
+      try {
+        const snap = await getDocs(collection(db, 'results'));
+        currentAnalyticsResults = [];
+        snap.forEach(docSnap => {
+          const r = docSnap.data();
+          let scoreVal = 0;
+          if (typeof r.score === 'string') scoreVal = parseFloat(r.score.split('/')[0]) || 0;
+          else if (typeof r.score === 'number') scoreVal = r.score;
+          let dateObj = new Date(0);
+          if (r.submittedAt) dateObj = r.submittedAt.toDate ? r.submittedAt.toDate() : new Date(r.submittedAt);
+          else if (r.timestamp) dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
+          currentAnalyticsResults.push({
+            id: docSnap.id,
+            name: r.name || 'Anonymous',
+            email: r.email || 'No Email',
+            scoreText: r.score || '0/0',
+            scoreVal,
+            rawDate: dateObj,
+            examName: normalizeExamName(r),
+            examId: normalizeExamId(r),
+            subjects: normalizeSubjects(r),
+            tabSwitches: Number(r.tabSwitches ?? r.tab_switches ?? 0) || 0,
+            copiesAttempted: Number(r.copiesAttempted ?? r.copy_paste ?? 0) || 0,
+            penaltiesApplied: Number(r.penaltiesApplied ?? 0) || 0,
+            submittedAtStr: dateObj.getTime() > 0 ? dateObj.toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'}) : 'N/A',
+            feedback: r.feedback || 'None'
+          });
+        });
+        currentAnalyticsResults.sort((a,b) => b.rawDate - a.rawDate);
+        populateAnalyticsFilters(currentAnalyticsResults);
+        renderAnalyticsRows();
+        renderLeaderboardRows();
+        document.getElementById('analytics-exam-filter')?.addEventListener('change', () => { renderAnalyticsRows(); renderLeaderboardRows(); });
+        document.getElementById('analytics-subject-filter')?.addEventListener('change', () => { renderAnalyticsRows(); renderLeaderboardRows(); });
+      } catch (err) {
+        console.error(err);
+        analyticsBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
+        leaderboardBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
+      }
+    };
 
     /* ============================================================
        HTML ESCAPE HELPER
@@ -2030,84 +1959,20 @@
        ============================================================ */
 
     window.downloadResultsCSV = () => {
-
-      if (
-        allStudentResults.length === 0
-      ) {
-
-        alert(
-          "No data available to download."
-        );
-
-        return;
-
-      }
-
-
-      let csv =
-        "Rank,Name,Email,Score,Submitted At,Tab Switches,Copy Violations,Penalties Applied\n";
-
-
-      allStudentResults.forEach(
-        (r, i) => {
-
-          csv +=
-            `${i + 1},` +
-            `"${String(r.name).replaceAll('"','""')}",` +
-            `"${String(r.email).replaceAll('"','""')}",` +
-            `"${String(r.scoreText).replaceAll('"','""')}",` +
-            `"${String(r.submittedAtStr).replaceAll('"','""')}",` +
-            `${r.tabSwitches},` +
-            `${r.copiesAttempted},` +
-            `-${r.penaltiesApplied}\n`;
-
-        }
-      );
-
-
-      const blob =
-        new Blob(
-          [csv],
-          {
-            type: 'text/csv'
-          }
-        );
-
-
-      const url =
-        window.URL.createObjectURL(
-          blob
-        );
-
-
-      const a =
-        document.createElement(
-          'a'
-        );
-
-
-      a.setAttribute(
-        'href',
-        url
-      );
-
-
-      a.setAttribute(
-        'download',
-        `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`
-      );
-
-
-      document.body.appendChild(a);
-
-      a.click();
-
-      document.body.removeChild(a);
-
-      window.URL.revokeObjectURL(url);
-
+      const data = getFilteredAnalyticsResults();
+      if (!data.length) { alert('No data available for the selected filter.'); return; }
+      let csv = 'Rank,Name,Email,Exam,Subjects,Score,Submitted At,Tab Switches,Copy Violations,Penalties Applied\n';
+      data.sort((a,b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate).forEach((r,i) => {
+        const q = v => `"${String(v).replaceAll('"','""')}"`;
+        csv += `${i+1},${q(r.name)},${q(r.email)},${q(r.examName)},${q(r.subjects.join(' | '))},${q(r.scoreText)},${q(r.submittedAtStr)},${r.tabSwitches},${r.copiesAttempted},-${r.penaltiesApplied}\n`;
+      });
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     };
-
 
     /* ============================================================
        CLEAR ALL RESULTS
@@ -2177,4 +2042,3 @@
 
 </body>
 </html>
-```
