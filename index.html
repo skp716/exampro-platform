@@ -522,7 +522,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
@@ -536,6 +537,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     let questionsList = [];
     let currentQuestionIndex = 0;
@@ -558,7 +560,52 @@
     let submissionInProgress = false;
     let resultSavedForThisAttempt = false;
     let securityEventLocked = false;
+    let studentAuthPromise = null;
+    let attemptClaimed = false;
+    let currentAttemptId = sessionStorage.getItem('currentAttemptId') || '';
     const MAX_TAB_SWITCHES = 5;
+
+    async function ensureStudentAuth() {
+      if (auth.currentUser) return auth.currentUser;
+      if (!studentAuthPromise) {
+        studentAuthPromise = signInAnonymously(auth)
+          .then(credential => credential.user)
+          .catch(err => {
+            studentAuthPromise = null;
+            throw err;
+          });
+      }
+      return studentAuthPromise;
+    }
+
+    async function sha256(value) {
+      const bytes = new TextEncoder().encode(String(value));
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function claimExamAttempt() {
+      if (attemptClaimed && currentAttemptId) return currentAttemptId;
+      const user = await ensureStudentAuth();
+      const attemptId = await sha256(`${selectedExamId}|${currentStudentEmail}`);
+
+      // A create-only Firestore rule makes this deterministic document the
+      // single-use lock for one email + one exam. Existing locks cannot be
+      // overwritten from the student portal.
+      await setDoc(doc(db, 'attempt_locks', attemptId), {
+        ownerUid: user.uid,
+        email: currentStudentEmail,
+        examId: selectedExamId,
+        createdAt: new Date()
+      });
+
+      currentAttemptId = attemptId;
+      draftResultId = attemptId;
+      attemptClaimed = true;
+      sessionStorage.setItem('currentAttemptId', attemptId);
+      sessionStorage.setItem('draftResultId', attemptId);
+      return attemptId;
+    }
 
     // Security track
     let tabSwitches = parseInt(sessionStorage.getItem('tabSwitches') || '0');
@@ -632,6 +679,7 @@
     // Entry Window & Config Loader
     async function checkOverallExamWindow() {
       try {
+        await ensureStudentAuth();
         const docRef = doc(db, "exam_config", "current_test");
         const snap = await getDoc(docRef);
 
@@ -661,7 +709,8 @@
         return true;
       } catch (err) {
         console.error("Window Check Error:", err);
-        return true;
+        showExamModal('security','Secure Connection Error','The secure examination session could not be started. Please check your internet connection and try again.','Close',null,'primary');
+        return false;
       }
     }
 
@@ -705,7 +754,7 @@
       }
 
       // NEW: only exams activated by Admin are shown to students.
-      // Backward compatible: if no active-exam setting exists yet, all configured exams remain visible.
+      // Backward compatible: if no active-exam setting exists yet, use explicit active flags.
       const activeExamIds = Array.isArray(examConfigData?.activeExamIds)
         ? examConfigData.activeExamIds.map(String).filter(Boolean)
         : null;
@@ -727,9 +776,9 @@
         if (activeByFlag.length > 0) return activeByFlag;
       }
 
-      // If no usable active-exam restriction exists, preserve backward
-      // compatibility and show all configured exams.
-      return exams;
+      // A configured exam must be explicitly active. Never expose every exam
+      // because an old/empty activeExamIds array was saved.
+      return [];
     }
 
     function getSubjectEntriesForDiagnostic(subjects) {
@@ -1228,20 +1277,7 @@
       proceedBtn.innerText = "Verifying Entry...";
 
       try {
-        const qRef = query(collection(db, "results"), where("email", "==", emailInput));
-        const snap = await getDocs(qRef);
-        const alreadyAttempted = snap.docs.some(d => {
-          const data = d.data() || {};
-          return data.examId === selectedExamId || (!data.examId && selectedExamId === 'current_test');
-        });
-
-        if (alreadyAttempted) {
-          duplicateError.style.display = 'flex';
-          proceedBtn.disabled = false;
-          proceedBtn.innerText = "Proceed to Instructions";
-          return;
-        }
-
+        await ensureStudentAuth();
         currentStudentName = nameInput;
         currentStudentEmail = emailInput;
         window.changeSlide(2);
@@ -1282,6 +1318,19 @@
           throw new Error('No questions were loaded from the Admin Panel configuration for the selected exam. Please check Subject Name, Questions and Question Source.');
         }
 
+        // Claim the one-attempt lock only after every question source loads.
+        // This avoids consuming an attempt when a configured file is missing.
+        try {
+          await claimExamAttempt();
+        } catch (claimError) {
+          console.error('Attempt claim failed:', claimError);
+          const duplicateError = document.getElementById('duplicate-error');
+          if (duplicateError) duplicateError.style.display = 'flex';
+          const duplicate = new Error('This email has already used its attempt for the selected examination.');
+          duplicate.code = 'attempt-already-used';
+          throw duplicate;
+        }
+
         questionsList = multiQuestions;
 
         if (!questionsList.length) {
@@ -1292,8 +1341,7 @@
         sessionStorage.setItem('tabSwitches', '0');
         sessionStorage.setItem('copiesAttempted', '0');
         sessionStorage.setItem('penaltiesApplied', '0');
-        sessionStorage.removeItem('draftResultId');
-        draftResultId = '';
+        draftResultId = currentAttemptId;
         resultSavedForThisAttempt = false;
         submissionInProgress = false;
         securityEventLocked = false;
@@ -1305,7 +1353,11 @@
         startExamTimer(examDuration);
         loadQuestion(0);
       } catch (error) {
-        showExamModal('security','Question Load Error','The test questions could not be loaded. The student portal is using the exact exam, subject, question count, order and Question Source saved in the Admin Panel. Please check the selected exam configuration and make sure each configured source file exists in the GitHub project.','Close',null,'primary');
+        if(error?.code==='attempt-already-used'){
+          showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
+        }else{
+          showExamModal('security','Question Load Error','The test questions could not be loaded. The student portal is using the exact exam, subject, question count, order and Question Source saved in the Admin Panel. Please check the selected exam configuration and make sure each configured source file exists in the GitHub project.','Close',null,'primary');
+        }
         startBtn.disabled = false;
         startBtn.innerText = "Start Examination";
       }
@@ -1883,6 +1935,8 @@
       if(!currentStudentEmail || !questionsList.length) return;
       const payload={
         name:currentStudentName, email:currentStudentEmail,
+        ownerUid:auth.currentUser?.uid || '',
+        attemptId:currentAttemptId,
         examId:selectedExamId || 'current_test',
         examName:selectedExamName || examConfigData?.examName || 'Current Test',
         subjects:[...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
@@ -1897,10 +1951,7 @@
         submittedAt:new Date(), updatedAt:new Date()
       };
       try{
-        if(!draftResultId){
-          draftResultId=doc(collection(db,'results')).id;
-          sessionStorage.setItem('draftResultId',draftResultId);
-        }
+        if(!draftResultId) throw new Error('Secure attempt ID is missing.');
         await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
         resultSavedForThisAttempt=true;
       }catch(err){
@@ -1936,6 +1987,8 @@
       const resultPayload = {
         name: currentStudentName,
         email: currentStudentEmail,
+        ownerUid: auth.currentUser?.uid || '',
+        attemptId: currentAttemptId,
         examId: selectedExamId || 'current_test',
         examName: selectedExamName || examConfigData?.examName || 'Current Test',
         subjects: [...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
@@ -1953,10 +2006,7 @@
       };
 
       try {
-        if(!draftResultId){
-          draftResultId=doc(collection(db,'results')).id;
-          sessionStorage.setItem('draftResultId',draftResultId);
-        }
+        if(!draftResultId) throw new Error('Secure attempt ID is missing.');
         await setDoc(doc(db,'results',draftResultId), resultPayload, {merge:true});
         resultSavedForThisAttempt=true;
         sessionStorage.clear();

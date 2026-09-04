@@ -425,11 +425,12 @@
 
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label>Username</label>
+          <label>Admin Email</label>
           <input
-            type="text"
+            type="email"
             id="admin-user"
-            placeholder="Enter username"
+            placeholder="Enter Firebase admin email"
+            autocomplete="username"
             required
           >
         </div>
@@ -440,6 +441,7 @@
             type="password"
             id="admin-pass"
             placeholder="Enter password"
+            autocomplete="current-password"
             required
           >
         </div>
@@ -448,7 +450,7 @@
           id="login-error"
           style="color: var(--danger); font-size: 0.85rem; display: none; margin-bottom: 1rem;"
         >
-          Invalid username or password!
+          Invalid credentials or this account is not an authorised admin.
         </p>
 
         <button
@@ -545,7 +547,7 @@
             <div class="exam-select-wrap">
               <label for="exam-selector">Exam Configuration</label>
               <select id="exam-selector">
-                <option value="railway_group_d">Railway Group D</option>
+                <option value="railway_group_d">RRB Group D</option>
                 <option value="jharkhand_tet">Jharkhand TET</option>
                 <option value="ssc_gd">SSC GD</option>
               </select>
@@ -814,6 +816,15 @@
       deleteDoc
     } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
+    import {
+      getAuth,
+      browserSessionPersistence,
+      onAuthStateChanged,
+      setPersistence,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
 
     /* ============================================================
        FIREBASE CONFIG
@@ -842,6 +853,8 @@
 
     const db = getFirestore(app);
 
+    const auth = getAuth(app);
+
     let allStudentResults = [];
 
 
@@ -849,43 +862,68 @@
        ADMIN LOGIN
        ============================================================ */
 
-    window.handleLogin = (e) => {
+    let adminBootstrapped = false;
+
+    function setLoginBusy(isBusy) {
+      const button = document.querySelector('#login-overlay button[type="submit"]');
+      if (!button) return;
+      button.disabled = isBusy;
+      button.innerHTML = isBusy
+        ? '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...'
+        : '<i class="fa-solid fa-right-to-bracket"></i> Login to Panel';
+    }
+
+    async function verifyAdminAccess(user) {
+      if (!user) return false;
+      const adminSnap = await getDoc(doc(db, 'admins', user.uid));
+      return adminSnap.exists() && adminSnap.data()?.active === true;
+    }
+
+    function openAdminPanel() {
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('admin-main').style.display = 'block';
+      if (!adminBootstrapped) {
+        adminBootstrapped = true;
+        loadExamSettings();
+        fetchLiveDatabaseRecords();
+      }
+    }
+
+    function closeAdminPanel() {
+      document.getElementById('login-overlay').style.display = 'flex';
+      document.getElementById('admin-main').style.display = 'none';
+      adminBootstrapped = false;
+    }
+
+    window.handleLogin = async (e) => {
 
       e.preventDefault();
 
-      const user =
+      const email =
         document.getElementById('admin-user').value.trim();
 
       const pass =
         document.getElementById('admin-pass').value.trim();
 
 
-      if (user === "saurav" && pass === "saurav@123") {
-
-        sessionStorage.setItem(
-          "admin_logged_in",
-          "true"
-        );
-
-        document.getElementById(
-          'login-overlay'
-        ).style.display = 'none';
-
-        document.getElementById(
-          'admin-main'
-        ).style.display = 'block';
-
-
-        loadExamSettings();
-
-        fetchLiveDatabaseRecords();
-
-      } else {
-
-        document.getElementById(
-          'login-error'
-        ).style.display = 'block';
-
+      const error = document.getElementById('login-error');
+      error.style.display = 'none';
+      setLoginBusy(true);
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+        const credential = await signInWithEmailAndPassword(auth, email, pass);
+        if (!await verifyAdminAccess(credential.user)) {
+          await signOut(auth);
+          throw new Error('not-authorised');
+        }
+        openAdminPanel();
+        document.getElementById('admin-pass').value = '';
+      } catch (err) {
+        console.error('Admin login failed:', err.code || err.message);
+        error.style.display = 'block';
+      } finally {
+        setLoginBusy(false);
       }
 
     };
@@ -895,14 +933,9 @@
        LOGOUT
        ============================================================ */
 
-    window.logoutAdmin = () => {
-
-      sessionStorage.removeItem(
-        "admin_logged_in"
-      );
-
-      location.reload();
-
+    window.logoutAdmin = async () => {
+      await signOut(auth);
+      closeAdminPanel();
     };
 
 
@@ -910,33 +943,22 @@
        AUTO LOGIN FROM SESSION
        ============================================================ */
 
-    if (
-      sessionStorage.getItem(
-        "admin_logged_in"
-      ) === "true"
-    ) {
-
-      document.getElementById(
-        'login-overlay'
-      ).style.display = 'none';
-
-      document.getElementById(
-        'admin-main'
-      ).style.display = 'block';
-
-
-      window.addEventListener(
-        'DOMContentLoaded',
-        () => {
-
-          loadExamSettings();
-
-          fetchLiveDatabaseRecords();
-
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        closeAdminPanel();
+        return;
+      }
+      try {
+        if (await verifyAdminAccess(user)) openAdminPanel();
+        else {
+          await signOut(auth);
+          closeAdminPanel();
         }
-      );
-
-    }
+      } catch (err) {
+        console.error('Admin session verification failed:', err);
+        closeAdminPanel();
+      }
+    });
 
 
     /* ============================================================
@@ -984,22 +1006,24 @@
        MULTI-EXAM / SUBJECT CONFIGURATION
        ============================================================ */
     const DEFAULT_MULTI_EXAM_CONFIG = {
-      railway_group_d:{examName:'Railway Group D',timerMinutes:0,active:true,subjects:[
+      railway_group_d:{examName:'RRB Group D',timerMinutes:90,active:true,subjects:[
         {name:'Maths',count:25,order:'random',source:'railway/maths.html'},
         {name:'Reasoning',count:25,order:'random',source:'railway/reasoning.html'},
-        {name:'GK / GS',count:25,order:'random',source:'railway/gkgs.html'}]},
-      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:0,active:false,subjects:[
+        {name:'General Science',count:25,order:'random',source:'railway/science.html'},
+        {name:'General Awareness & Current Affairs',count:25,order:'random',source:'railway/gk-current-affairs.html'}]},
+      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:120,active:false,subjects:[
         {name:'Child Development & Pedagogy',count:10,order:'random',source:'jtet/cdp.html'},
         {name:'Language I',count:10,order:'random',source:'jtet/language1.html'},
         {name:'Language II',count:10,order:'random',source:'jtet/language2.html'},
         {name:'Mathematics',count:10,order:'random',source:'jtet/mathematics.html'},
         {name:'Environmental Studies',count:10,order:'random',source:'jtet/evs.html'}]},
-      ssc_gd:{examName:'SSC GD',timerMinutes:0,active:false,subjects:[
+      ssc_gd:{examName:'SSC GD',timerMinutes:60,active:true,subjects:[
         {name:'General Intelligence & Reasoning',count:20,order:'random',source:'ssc-gd/reasoning.html'},
         {name:'General Knowledge & General Awareness',count:20,order:'random',source:'ssc-gd/gk-gs.html'},
         {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
         {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
     };
+    const EXAM_CONFIG_SCHEMA_VERSION = 2;
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
 
     function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
@@ -1080,7 +1104,8 @@
     function validateMultiExamConfig(){
       const activeIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
       if(!activeIds.length) return 'Select at least one Active Exam.';
-      for(const [id,exam] of Object.entries(multiExamConfig)){
+      for(const id of activeIds){
+        const exam=multiExamConfig[id];
         const timer=Number(exam.timerMinutes);
         if(!Number.isFinite(timer)||timer<=0) return `${exam.examName||id}: Per Exam Timer must be greater than 0.`;
         if(!exam.subjects?.length)return `${exam.examName||id}: Add at least one subject.`;
@@ -1100,7 +1125,7 @@
       const btn=document.getElementById('save-multi-exam-btn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Exam Settings...';
       try{
         const activeExamIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
-        await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamIds,activeExamId:activeExamIds[0] || '',updatedAt:new Date()},{merge:true});
+        await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamIds,activeExamId:activeExamIds[0] || '',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,updatedAt:new Date()},{merge:true});
         renderActiveExamControls();
         updateMultiExamSummary();
         alert('Exam, timer, subject and active-exam settings saved successfully!');
@@ -1131,6 +1156,28 @@
         const docSnap=await getDoc(doc(db,'exam_config','current_test'));
         if(docSnap.exists()){
           const data=docSnap.data();
+          if(Number(data.schemaVersion||0)<EXAM_CONFIG_SCHEMA_VERSION){
+            const migrated=JSON.parse(JSON.stringify(data.multiExamConfig||DEFAULT_MULTI_EXAM_CONFIG));
+            getExamIds().forEach(id=>{if(!migrated[id])migrated[id]=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]));});
+            migrated.railway_group_d.examName='RRB Group D';
+            migrated.railway_group_d.active=true;
+            migrated.railway_group_d.timerMinutes=Number(migrated.railway_group_d.timerMinutes)>0?Number(migrated.railway_group_d.timerMinutes):90;
+            if((migrated.railway_group_d.subjects||[]).reduce((n,s)=>n+(Number(s.count)||0),0)!==100){
+              migrated.railway_group_d.subjects=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG.railway_group_d.subjects));
+            }
+            migrated.ssc_gd.active=true;
+            migrated.ssc_gd.timerMinutes=Number(migrated.ssc_gd.timerMinutes)>0?Number(migrated.ssc_gd.timerMinutes):60;
+            migrated.jharkhand_tet.active=false;
+            const activeExamIds=['railway_group_d','ssc_gd'];
+            await setDoc(doc(db,'exam_config','current_test'),{
+              multiExamConfig:migrated,
+              activeExamIds,
+              activeExamId:'railway_group_d',
+              schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,
+              updatedAt:new Date()
+            },{merge:true});
+            Object.assign(data,{multiExamConfig:migrated,activeExamIds,activeExamId:'railway_group_d',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION});
+          }
           initializeMultiExamControls(data.multiExamConfig,data.activeExamId,data.activeExamIds);
           if(data.windowStart) document.getElementById('config-window-start').value=new Date(data.windowStart).toISOString().slice(0,16);
           if(data.windowEnd) document.getElementById('config-window-end').value=new Date(data.windowEnd).toISOString().slice(0,16);
@@ -1416,7 +1463,10 @@
       if (!confirmed) return;
 
       try {
-        await deleteDoc(doc(db, 'results', resultId));
+        await Promise.all([
+          deleteDoc(doc(db, 'results', resultId)),
+          deleteDoc(doc(db, 'attempt_locks', resultId))
+        ]);
 
         currentAnalyticsResults = currentAnalyticsResults.filter(
           r => r.id !== resultId
@@ -1459,17 +1509,11 @@
           );
 
 
-        const deletes =
-          snap.docs.map(
-            d =>
-              deleteDoc(
-                doc(
-                  db,
-                  "results",
-                  d.id
-                )
-              )
-          );
+        const lockSnap = await getDocs(collection(db, "attempt_locks"));
+        const deletes = [
+          ...snap.docs.map(d => deleteDoc(doc(db, "results", d.id))),
+          ...lockSnap.docs.map(d => deleteDoc(doc(db, "attempt_locks", d.id)))
+        ];
 
 
         await Promise.all(

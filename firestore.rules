@@ -1,0 +1,100 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    function validAttemptLock() {
+      return signedIn()
+        && request.resource.data.keys().hasOnly([
+          'ownerUid', 'email', 'examId', 'createdAt'
+        ])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 5
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.examId is string
+        && request.resource.data.examId.size() > 0
+        && request.resource.data.examId.size() <= 80
+        && request.resource.data.createdAt is timestamp;
+    }
+
+    function validResultIdentity(resultId) {
+      return signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.attemptId is string
+        && request.resource.data.attemptId == resultId
+        && request.resource.data.email is string
+        && request.resource.data.examId is string;
+    }
+
+    // Admin membership is provisioned from Firebase Console/Admin SDK only.
+    match /admins/{adminId} {
+      allow get: if signedIn() && request.auth.uid == adminId;
+      allow list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /exam_config/{document} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // One deterministic document per email + exam. Student clients may create
+    // a lock exactly once; only an admin can remove it to grant a retake.
+    match /attempt_locks/{attemptId} {
+      allow create: if validAttemptLock();
+      allow get: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid || isAdmin());
+      allow list: if isAdmin();
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /results/{resultId} {
+      allow create: if validResultIdentity(resultId)
+        && request.resource.data.keys().hasOnly([
+          'name', 'email', 'ownerUid', 'attemptId', 'examId', 'examName',
+          'subjects', 'score', 'correct', 'wrong', 'tabSwitches',
+          'copiesAttempted', 'penaltiesApplied', 'feedback', 'doubt',
+          'rating', 'status', 'completed', 'submittedAt', 'updatedAt'
+        ]);
+
+      allow get: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid || isAdmin());
+      allow list: if isAdmin();
+
+      // A student can only finish their own draft. Identity and exam fields
+      // cannot be swapped, and a completed result cannot be edited again.
+      allow update: if isAdmin() || (
+        validResultIdentity(resultId)
+        && resource.data.ownerUid == request.auth.uid
+        && resource.data.attemptId == request.resource.data.attemptId
+        && resource.data.email == request.resource.data.email
+        && resource.data.examId == request.resource.data.examId
+        && resource.data.completed == false
+        && request.resource.data.completed == true
+        && request.resource.data.keys().hasOnly([
+          'name', 'email', 'ownerUid', 'attemptId', 'examId', 'examName',
+          'subjects', 'score', 'correct', 'wrong', 'tabSwitches',
+          'copiesAttempted', 'penaltiesApplied', 'feedback', 'doubt',
+          'rating', 'status', 'completed', 'submittedAt', 'updatedAt'
+        ])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
