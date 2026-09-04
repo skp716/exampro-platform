@@ -657,13 +657,26 @@
       const attemptId=await sha256(`${selectedExamId}|${currentStudentEmail}`);
       const lockRef=doc(db,'attempt_locks',attemptId),sessionRef=doc(db,'exam_sessions',attemptId);
       const now=new Date();
+
+      // Do not read a missing lock: secure rules intentionally deny that read.
+      // Atomically create first. If it already exists, only its owner can read
+      // it and resume; every other device receives email-already-active.
+      try{
+        await setDoc(lockRef,{ownerUid:user.uid,email:currentStudentEmail,examId:selectedExamId,createdAt:now});
+      }catch(lockCreateError){
+        try{
+          const ownedLock=await getDoc(lockRef);
+          if(!ownedLock.exists()||ownedLock.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
+        }catch(lockReadError){
+          if(String(lockReadError?.message||'').includes('email-already-active')) throw lockReadError;
+          throw new Error('email-already-active');
+        }
+      }
+
       const data=await runTransaction(db,async transaction=>{
-        const lockSnap=await transaction.get(lockRef);
         const sessionSnap=await transaction.get(sessionRef);
-        if(lockSnap.exists()&&lockSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
         if(sessionSnap.exists()&&sessionSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
         if(sessionSnap.exists()&&sessionSnap.data()?.status==='final_submitted') throw new Error('attempt-already-used');
-        if(!lockSnap.exists()) transaction.set(lockRef,{ownerUid:user.uid,email:currentStudentEmail,examId:selectedExamId,createdAt:now});
         if(!sessionSnap.exists()){
           transaction.set(sessionRef,{
             sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,
