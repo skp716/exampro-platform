@@ -581,7 +581,7 @@
     let initialFullscreenArea = 0;
     let securitySuppressedUntil = 0;
     let finalMetrics = {};
-    const MAX_TAB_SWITCHES = 5;
+    const MAX_TAB_SWITCHES = 2;
 
     async function ensureStudentAuth() {
       if (auth.currentUser) return auth.currentUser;
@@ -707,7 +707,13 @@
       sessionStorage.setItem('tabSwitches',String(tabSwitches));sessionStorage.setItem('penaltiesApplied',String(penaltiesApplied));
       queueProgressSave(true);
       if(tabSwitches>=MAX_TAB_SWITCHES){
-        showExamModal('security','Security Limit Reached',`Maximum security violation limit reached. Total penalty: -${penaltiesApplied}. Your exam will now be submitted.`,'Submit & View Result',null,'danger',()=>{clearInterval(timerInterval);isExamActive=false;calculateAndShowResults();});
+        clearInterval(timerInterval);
+        isExamActive=false;
+        showExamModal('security','Security Limit Reached',`Maximum security violation limit reached. Total penalty: -${penaltiesApplied}. Your exam is being submitted automatically.`,'Please Wait',null,'danger');
+        setTimeout(()=>{
+          document.getElementById('exam-modal')?.classList.remove('show');
+          calculateAndShowResults();
+        },350);
       }else{
         showExamModal('security',`Security Alert — ${tabSwitches}/${MAX_TAB_SWITCHES}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
       }
@@ -746,7 +752,19 @@
       }
     });
 
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('contextmenu', event => {
+      event.preventDefault();
+      if(isExamActive) recordSecurityViolation('context-menu-or-long-press');
+    });
+
+    document.addEventListener('keydown',event=>{
+      if(!isExamActive) return;
+      const blocked=(event.ctrlKey||event.metaKey) && ['c','x','v','p','s','u'].includes(String(event.key).toLowerCase());
+      if(blocked || event.key==='F12'){
+        event.preventDefault();
+        recordSecurityViolation('blocked-keyboard-command');
+      }
+    });
 
     // Entry Window & Config Loader
     async function checkOverallExamWindow() {
@@ -1387,6 +1405,8 @@
         }
         if(currentSession?.status==='in_progress'){
           document.getElementById('start-exam-btn').innerText='Resume Examination';
+        }else if(currentSession?.status==='result_pending_feedback'){
+          document.getElementById('start-exam-btn').innerText='Resume Result Submission';
         }
         window.changeSlide(2);
       } catch (err) {
@@ -1403,9 +1423,14 @@
       startBtn.innerText = "Loading Dataset...";
 
       try {
-        // Fullscreen must be requested directly from the student's tap/click.
-        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-          await document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(()=>{});
+        // A pending result needs no fullscreen; an active exam must never start
+        // after a rejected/unsupported fullscreen request.
+        if(currentSession?.status!=='result_pending_feedback' && !document.fullscreenElement){
+          if(!document.documentElement.requestFullscreen){
+            throw new Error('Fullscreen examination mode is not supported by this browser.');
+          }
+          await document.documentElement.requestFullscreen({navigationUI:'hide'});
+          if(!document.fullscreenElement) throw new Error('Fullscreen examination mode could not be enabled.');
         }
         if (!selectedExamConfig) {
           selectedExamConfig = getSelectedExamConfig();
@@ -1433,7 +1458,7 @@
 
         const allLoaded = [...multiQuestions, ...reserveQuestions];
         const byKey = new Map(allLoaded.map(q=>[q._questionKey,q]));
-        const canResume = currentSession?.status === 'in_progress' &&
+        const canResume = ['in_progress','result_pending_feedback'].includes(currentSession?.status) &&
           Array.isArray(currentSession.questionOrder) && currentSession.questionOrder.length;
         if (canResume) {
           questionsList = currentSession.questionOrder.map(key=>byKey.get(key)).filter(Boolean);
@@ -1471,13 +1496,18 @@
         resultSavedForThisAttempt = false;
         submissionInProgress = false;
         securityEventLocked = false;
-        isExamActive = true;
-        initialFullscreenArea = innerWidth*innerHeight;
-        window.changeSlide(3);
-        await saveExamProgress({status:'in_progress'});
-        clearInterval(heartbeatTimer); heartbeatTimer=setInterval(()=>saveExamProgress(),60000);
-        startExamTimer();
-        loadQuestion(currentQuestionIndex);
+        if(currentSession?.status==='result_pending_feedback'){
+          isExamActive = false;
+          await calculateAndShowResults();
+        }else{
+          isExamActive = true;
+          initialFullscreenArea = innerWidth*innerHeight;
+          window.changeSlide(3);
+          await saveExamProgress({status:'in_progress'});
+          clearInterval(heartbeatTimer); heartbeatTimer=setInterval(()=>saveExamProgress(),60000);
+          startExamTimer();
+          loadQuestion(currentQuestionIndex);
+        }
       } catch (error) {
         if(error?.code==='attempt-already-used'){
           showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
@@ -1713,6 +1743,19 @@
 
       const template = document.createElement('template');
       template.innerHTML = html;
+
+      // Question sources are data, never executable page content.
+      template.content.querySelectorAll('script,style,object,embed,link,meta,base,form,input,button').forEach(node=>node.remove());
+      template.content.querySelectorAll('*').forEach(node=>{
+        [...node.attributes].forEach(attr=>{
+          const name=attr.name.toLowerCase();
+          const value=String(attr.value||'').trim().toLowerCase();
+          if(name.startsWith('on') || name==='srcdoc' || name==='formaction' ||
+             ((name==='href'||name==='src'||name==='xlink:href') && value.startsWith('javascript:'))){
+            node.removeAttribute(attr.name);
+          }
+        });
+      });
 
       // Resolve every media element, including images embedded in raw HTML/SVG.
       template.content.querySelectorAll('img[src], source[src], video[src], audio[src], iframe[src]').forEach(node => {
@@ -2020,10 +2063,10 @@
         const reviewItem = document.createElement('div');
         reviewItem.className = `review-item ${selectedIdx === undefined ? '' : (isCorrect ? 'correct-item' : 'wrong-item')}`;
         reviewItem.innerHTML = `
-          <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${q._subjectName}]</span> ` : ''}${q.question || q.q}</h5>
+          <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}${prepareRichContent(q.question || q.q,q._questionSourceUrl||window.location.href)}</h5>
           <div style="font-size:0.85rem; line-height:1.5;">
-            <strong>Your Choice:</strong> ${studentSelectionText} <br>
-            <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${correctSelectionText}</span>
+            <strong>Your Choice:</strong> ${selectedIdx===undefined?studentSelectionText:prepareRichContent(studentSelectionText,q._questionSourceUrl||window.location.href)} <br>
+            <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${prepareRichContent(correctSelectionText,q._questionSourceUrl||window.location.href)}</span>
           </div>
         `;
         reviewContainer.appendChild(reviewItem);
@@ -2050,8 +2093,12 @@
 
       window.changeSlide(4);
       if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
-      await saveDraftResult();
-      await saveExamProgress({status:'final_submitted',submittedAt:new Date(),score:finalizedScoreString,...finalMetrics});
+      const draftSaved = await saveDraftResult();
+      if(draftSaved){
+        await saveExamProgress({status:'result_pending_feedback',resultCalculatedAt:new Date(),score:finalizedScoreString,...finalMetrics});
+      }else{
+        showExamModal('security','Result Sync Pending','Your answers remain available for retry, but the draft result could not be synced. Keep this page open and use Submit & Complete again.','Close',null,'primary');
+      }
       typesetExamMath();
     }
 
@@ -2086,8 +2133,8 @@
     }
 
     async function saveDraftResult(){
-      if(resultSavedForThisAttempt) return;
-      if(!currentStudentEmail || !questionsList.length) return;
+      if(resultSavedForThisAttempt) return true;
+      if(!currentStudentEmail || !questionsList.length) return false;
       const payload={
         name:currentStudentName, email:currentStudentEmail,
         ownerUid:auth.currentUser?.uid || '',
@@ -2108,8 +2155,10 @@
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
         await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
         resultSavedForThisAttempt=true;
+        return true;
       }catch(err){
         console.error('Draft save error:',err);
+        return false;
       }
     }
 

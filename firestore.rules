@@ -36,6 +36,15 @@ service cloud.firestore {
         && request.resource.data.examId is string;
     }
 
+    function validSessionStatusTransition() {
+      return request.resource.data.status in ['logged_in', 'in_progress', 'result_pending_feedback', 'final_submitted']
+        && (
+          (resource.data.status == 'logged_in' && request.resource.data.status in ['logged_in', 'in_progress']) ||
+          (resource.data.status == 'in_progress' && request.resource.data.status in ['in_progress', 'result_pending_feedback']) ||
+          (resource.data.status == 'result_pending_feedback' && request.resource.data.status in ['result_pending_feedback', 'final_submitted'])
+        );
+    }
+
     // Admin membership is provisioned from Firebase Console/Admin SDK only.
     match /admins/{adminId} {
       allow get: if signedIn() && request.auth.uid == adminId;
@@ -74,7 +83,11 @@ service cloud.firestore {
       allow list: if isAdmin();
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid
-        && request.resource.data.sessionId == sessionId;
+        && request.resource.data.sessionId == sessionId
+        && request.resource.data.status == 'logged_in'
+        && request.resource.data.email is string
+        && request.resource.data.examId is string
+        && request.resource.data.centerId is string;
       allow update: if isAdmin() || (
         signedIn()
         && resource.data.ownerUid == request.auth.uid
@@ -83,12 +96,20 @@ service cloud.firestore {
         && request.resource.data.email == resource.data.email
         && request.resource.data.examId == resource.data.examId
         && request.resource.data.centerId == resource.data.centerId
+        && resource.data.status != 'final_submitted'
+        && validSessionStatusTransition()
+        && (request.resource.data.status != 'final_submitted' || (
+          exists(/databases/$(database)/documents/results/$(sessionId))
+          && get(/databases/$(database)/documents/results/$(sessionId)).data.completed == true
+        ))
       );
       allow delete: if isAdmin();
     }
 
     match /results/{resultId} {
       allow create: if validResultIdentity(resultId)
+        && request.resource.data.status == 'draft'
+        && request.resource.data.completed == false
         && request.resource.data.keys().hasOnly([
           'name', 'email', 'ownerUid', 'attemptId', 'examId', 'examName',
           'subjects', 'score', 'correct', 'wrong', 'tabSwitches',
@@ -110,6 +131,10 @@ service cloud.firestore {
         && resource.data.examId == request.resource.data.examId
         && resource.data.completed == false
         && request.resource.data.completed == true
+        && request.resource.data.status == 'completed'
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
         && request.resource.data.keys().hasOnly([
           'name', 'email', 'ownerUid', 'attemptId', 'examId', 'examName',
           'subjects', 'score', 'correct', 'wrong', 'tabSwitches',
