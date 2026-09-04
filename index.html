@@ -581,7 +581,7 @@
     let initialFullscreenArea = 0;
     let securitySuppressedUntil = 0;
     let finalMetrics = {};
-    const MAX_TAB_SWITCHES = 2;
+    let maxTabSwitches = 2;
 
     async function ensureStudentAuth() {
       if (auth.currentUser) return auth.currentUser;
@@ -736,13 +736,13 @@
     function recordSecurityViolation(reason){
       if(!isExamActive||Date.now()<securitySuppressedUntil)return;
       const now=Date.now();if(now-lastSecurityEventAt<1200)return;lastSecurityEventAt=now;
-      tabSwitches=Math.min(MAX_TAB_SWITCHES,tabSwitches+1);
+      tabSwitches=Math.min(maxTabSwitches,tabSwitches+1);
       const penalty=getPenaltyPerViolation();penaltiesApplied=Number((penaltiesApplied+penalty).toFixed(2));
       const changed=replaceViolatedQuestion();
       securityEvents.push({reason,at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty,questionChanged:changed});
       sessionStorage.setItem('tabSwitches',String(tabSwitches));sessionStorage.setItem('penaltiesApplied',String(penaltiesApplied));
       queueProgressSave(true);
-      if(tabSwitches>=MAX_TAB_SWITCHES){
+      if(tabSwitches>=maxTabSwitches){
         clearInterval(timerInterval);
         isExamActive=false;
         showExamModal('security','Security Limit Reached',`Maximum security violation limit reached. Total penalty: -${penaltiesApplied}. Your exam is being submitted automatically.`,'Please Wait',null,'danger');
@@ -751,7 +751,7 @@
           calculateAndShowResults();
         },350);
       }else{
-        showExamModal('security',`Security Alert — ${tabSwitches}/${MAX_TAB_SWITCHES}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
+        showExamModal('security',`Security Alert — ${tabSwitches}/${maxTabSwitches}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
       }
     }
 
@@ -815,6 +815,8 @@
           return true;
         }
         examConfigData = snap.data();
+        const configuredTabLimit=Number(examConfigData.maxTabSwitches);
+        maxTabSwitches=Number.isInteger(configuredTabLimit)&&configuredTabLimit>=1&&configuredTabLimit<=20?configuredTabLimit:2;
         populateExamCategories();
         updateInstructionConfig();
         
@@ -2140,7 +2142,7 @@
       if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
       const draftSaved = await saveDraftResult();
       if(draftSaved){
-        await saveExamProgress({status:'result_pending_feedback',resultCalculatedAt:new Date(),score:finalizedScoreString,...finalMetrics});
+        await saveExamProgress({status:'result_pending_feedback',resultCalculatedAt:new Date(),submittedAt:new Date(),score:finalizedScoreString,...finalMetrics});
       }else{
         showExamModal('security','Result Sync Pending','Your answers remain available for retry, but the draft result could not be synced. Keep this page open and use Submit & Complete again.','Close',null,'primary');
       }
@@ -2189,7 +2191,7 @@
         subjects:[...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
         score:finalizedScoreString,
         correct:finalMetrics.correct||0, wrong:finalMetrics.wrong||0,
-        tabSwitches:Math.min(MAX_TAB_SWITCHES,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
+        tabSwitches:Math.min(maxTabSwitches,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
         copiesAttempted:parseInt(sessionStorage.getItem('copiesAttempted')||'0'),
         penaltiesApplied:Number(sessionStorage.getItem('penaltiesApplied')||'0'),
         feedback:document.getElementById('feedback-input').value.trim() || 'None',
@@ -2241,7 +2243,7 @@
         examName: selectedExamName || examConfigData?.examName || 'Current Test',
         subjects: [...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
         score: finalizedScoreString,
-        tabSwitches: Math.min(MAX_TAB_SWITCHES, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
+        tabSwitches: Math.min(maxTabSwitches, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
         copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
         penaltiesApplied: Number(sessionStorage.getItem('penaltiesApplied') || '0'),
         feedback: document.getElementById('feedback-input').value.trim() || 'None',
@@ -2261,7 +2263,7 @@
           correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,
           timeTakenSeconds:finalMetrics.timeTakenSeconds||0,timeTakenText:finalMetrics.timeTakenText||'',
           securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50),
-          tabSwitches:Math.min(MAX_TAB_SWITCHES,tabSwitches),copiesAttempted,penaltiesApplied,
+          tabSwitches:Math.min(maxTabSwitches,tabSwitches),copiesAttempted,penaltiesApplied,
           feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating
         },{merge:true});
         resultSavedForThisAttempt=true;
