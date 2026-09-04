@@ -886,7 +886,135 @@
       throw new Error('No valid question array found in the selected question source.');
     }
 
+    function isRailwayExam(exam) {
+      const id = String(exam?.id || '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const name = String(exam?.name || '').toLowerCase();
+      return id.includes('railway') || name.includes('railway') || name.includes('group d');
+    }
+
+    function normalizeSubjectText(value) {
+      return String(value ?? '')
+        .toLowerCase()
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function getQuestionSubjectValue(question) {
+      if (!question || typeof question !== 'object') return '';
+      return String(
+        question.subject ??
+        question.subjectName ??
+        question.section ??
+        question.sectionName ??
+        question.category ??
+        question.categoryName ??
+        question.topic ??
+        question.examSubject ??
+        ''
+      ).trim();
+    }
+
+    async function loadRailwayQuestionsFromFixedFile(exam) {
+      /*
+       * Railway Group D has one fixed question-bank file in the repository:
+       * railway.html
+       *
+       * Only this exam uses the fixed file. Other exams continue to use the
+       * Question Source saved by the Admin Panel.
+       */
+      const source = 'railway.html';
+      const sourceUrl = resolveQuestionSourceUrl(source);
+      const subjects = getSubjectEntries(exam).filter(([, cfg]) => cfg?.enabled !== false);
+
+      try {
+        const response = await fetch(sourceUrl, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Could not load ${source} (HTTP ${response.status})`);
+
+        const rawText = await response.text();
+        const pool = extractQuestionArrayFromSource(rawText);
+        if (!Array.isArray(pool) || !pool.length) {
+          throw new Error('railway.html does not contain a valid question array.');
+        }
+
+        // If railway.html contains subject labels inside each question, use
+        // those labels so the Admin subject counts remain subject-wise.
+        const labelledQuestions = pool.filter(q => getQuestionSubjectValue(q));
+        const hasSubjectLabels = labelledQuestions.length > 0;
+
+        const combined = [];
+        const errors = [];
+        let unlabelledCursor = 0;
+
+        for (const [subjectId, subjectCfg] of subjects) {
+          const subjectName = subjectCfg?.name || subjectCfg?.subjectName || subjectId;
+          const count = getSubjectCount(subjectCfg);
+          const order = getSubjectOrder(subjectCfg);
+
+          if (count <= 0) {
+            errors.push(`${subjectName}: Question count is not configured correctly in Admin Panel.`);
+            continue;
+          }
+
+          let subjectPool;
+
+          if (hasSubjectLabels) {
+            const wanted = normalizeSubjectText(subjectName);
+            subjectPool = pool.filter(q => {
+              const actual = normalizeSubjectText(getQuestionSubjectValue(q));
+              if (!actual) return false;
+              return actual === wanted || actual.includes(wanted) || wanted.includes(actual);
+            });
+          } else {
+            // railway.html is a single combined bank without subject labels.
+            // Allocate unique questions to subjects in the same order as the
+            // Admin Panel. This prevents duplicate questions between subjects.
+            subjectPool = pool.slice(unlabelledCursor, unlabelledCursor + count);
+            unlabelledCursor += count;
+          }
+
+          if (subjectPool.length < count) {
+            errors.push(`${subjectName}: railway.html has only ${subjectPool.length} matching questions, but Admin requires ${count}.`);
+            continue;
+          }
+
+          let selectedPool = [...subjectPool];
+          if (order === 'random') {
+            for (let i = selectedPool.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [selectedPool[i], selectedPool[j]] = [selectedPool[j], selectedPool[i]];
+            }
+          }
+
+          selectedPool.slice(0, count).forEach((q, localIndex) => {
+            combined.push({
+              ...q,
+              _examId: exam.id,
+              _examName: exam.name,
+              _subjectId: String(subjectId),
+              _subjectName: String(subjectName),
+              _subjectQuestionNumber: localIndex + 1,
+              _questionSource: source
+            });
+          });
+        }
+
+        if (errors.length) throw new Error(errors.join('<br>'));
+        return combined;
+      } catch (err) {
+        throw new Error(`Railway question file error: ${err.message}`);
+      }
+    }
+
     async function loadConfiguredExamQuestions(exam) {
+      // Railway Group D is the one intentional fixed-source exception.
+      // Its question bank is always railway.html. Everything else remains
+      // completely Admin-Panel driven.
+      if (isRailwayExam(exam)) {
+        return await loadRailwayQuestionsFromFixedFile(exam);
+      }
+
       const subjects = getSubjectEntries(exam);
       if (!subjects.length) return null;
 
