@@ -1121,7 +1121,7 @@
         startExamTimer(examDuration);
         loadQuestion(0);
       } catch (error) {
-        showExamModal('security','Question Load Error','The test questions could not be loaded. Please check the selected exam's Subject Source files and question counts in the Admin Panel.','Close',null,'primary');
+        showExamModal('security','Question Load Error','The test questions could not be loaded. Please check the selected exam subject source files and question counts in the Admin Panel.','Close',null,'primary');
         startBtn.disabled = false;
         startBtn.innerText = "Start Examination";
       }
