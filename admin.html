@@ -340,126 +340,29 @@
       gap: 4px;
     }
 
-    /* QUESTION ORDER CONTROL */
-    .question-order-card {
-      background: linear-gradient(135deg, #eff6ff, #f8fafc);
-      border: 2px solid #bfdbfe;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-    }
-
-    .question-order-title {
-      color: var(--primary);
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin-bottom: 0.4rem;
-    }
-
-    .question-order-description {
-      color: var(--text-muted);
-      font-size: 0.84rem;
-      line-height: 1.5;
-      margin-bottom: 1rem;
-    }
-
-    .order-options {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .order-option {
-      position: relative;
-    }
-
-    .order-option input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .order-option label {
-      margin: 0;
-      cursor: pointer;
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border: 2px solid #dbeafe;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: 0.2s ease;
-    }
-
-    .order-option label:hover {
-      border-color: var(--primary-light);
-      transform: translateY(-1px);
-    }
-
-    .order-option input:checked + label {
-      border-color: var(--primary-light);
-      background: #dbeafe;
-      color: var(--primary);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
-    }
-
-    .order-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #eff6ff;
-      color: var(--primary-light);
-      font-size: 1.15rem;
-      flex-shrink: 0;
-    }
-
-    .order-option input:checked + label .order-icon {
-      background: var(--primary);
-      color: white;
-    }
-
-    .order-text small {
-      display: block;
-      color: var(--text-muted);
-      font-weight: 400;
-      font-size: 0.76rem;
-      margin-top: 3px;
-      line-height: 1.4;
-    }
-
-    .current-order-status {
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: #ffffff;
-      border-radius: 8px;
-      border: 1px solid #dbeafe;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .current-order-status strong {
-      color: var(--primary);
-    }
-
     /* ============================================================
        MULTI-EXAM / SUBJECT CONFIGURATION
        ============================================================ */
     .multi-exam-card { background:linear-gradient(135deg,#f8fbff,#fff); border:2px solid #dbeafe; padding:1.5rem; border-radius:14px; margin-bottom:1.5rem; }
-    .multi-exam-head { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; margin-bottom:15px; flex-wrap:wrap; }
+    .multi-exam-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:15px; flex-wrap:wrap; }
     .multi-exam-head h4 { color:var(--primary); font-size:1.05rem; margin:0 0 4px; }
     .multi-exam-head p { color:var(--text-muted); font-size:.83rem; margin:0; line-height:1.5; }
-    .exam-select-wrap { min-width:230px; flex:1; max-width:360px; }
+    .exam-control-grid { display:grid; grid-template-columns:minmax(210px,1fr) minmax(190px,.8fr); gap:10px; min-width:min(100%,520px); flex:1; max-width:600px; }
+    .exam-select-wrap,.per-exam-timer-wrap { min-width:0; }
+    .exam-select-wrap label,.per-exam-timer-wrap label { display:block; font-size:.72rem; font-weight:700; color:var(--primary); margin-bottom:5px; }
+    .exam-select-wrap select,.per-exam-timer-wrap input { width:100%; box-sizing:border-box; padding:.72rem .75rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#1e293b; font-size:.9rem; outline:none; }
+    .exam-select-wrap select:focus,.per-exam-timer-wrap input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.1); }
+    .active-exams-panel { background:#eff6ff; border:1px solid #bfdbfe; border-radius:11px; padding:13px; margin:12px 0 15px; }
+    .active-exams-title { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+    .active-exams-title span { color:var(--primary); font-weight:800; font-size:.9rem; }
+    .active-exams-title small { color:var(--text-muted); font-size:.75rem; line-height:1.4; }
+    .active-exams-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .active-exam-option { position:relative; }
+    .active-exam-option input { position:absolute; opacity:0; pointer-events:none; }
+    .active-exam-label { display:flex; align-items:center; gap:10px; padding:11px 12px; background:#fff; border:1px solid #dbeafe; border-radius:9px; cursor:pointer; font-size:.82rem; font-weight:700; color:#334155; transition:.2s; }
+    .active-exam-label i { color:#94a3b8; }
+    .active-exam-option input:checked + .active-exam-label { border-color:#2563eb; background:#dbeafe; color:#1e3a8a; box-shadow:0 0 0 2px rgba(37,99,235,.08); }
+    .active-exam-option input:checked + .active-exam-label i { color:#2563eb; }
     .subject-config-list { display:grid; gap:12px; margin-top:14px; }
     .subject-row { background:#fff; border:1px solid #dbeafe; border-radius:12px; padding:14px; display:grid; grid-template-columns:minmax(150px,1.2fr) minmax(110px,.7fr) minmax(180px,1fr) minmax(170px,1fr) auto; gap:10px; align-items:end; }
     .subject-row .form-group { margin:0; }
@@ -470,7 +373,7 @@
     .multi-exam-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
     .config-summary { margin-top:12px; padding:11px 13px; border-radius:9px; background:#eff6ff; border:1px solid #bfdbfe; color:#475569; font-size:.82rem; }
     .config-summary strong { color:var(--primary); }
-    @media (max-width:850px) { .subject-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .subject-row .subject-name { grid-column:1/-1; } .subject-remove { width:100%; } .exam-select-wrap { max-width:none; width:100%; } }
+    @media (max-width:850px) { .subject-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .subject-row .subject-name { grid-column:1/-1; } .subject-remove { width:100%; } .exam-control-grid { grid-template-columns:1fr; width:100%; max-width:none; } .active-exams-list { grid-template-columns:1fr; } }
 
     .analytics-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin:0 0 1rem; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; }
     .analytics-toolbar .form-group { margin:0; min-width:190px; flex:1; }
@@ -622,7 +525,7 @@
 
 
     <!-- ========================================================= -->
-    <!-- SLIDE 1: CONFIGURATION & TIMER -->
+    <!-- SLIDE 1: EXAM / SUBJECT CONFIGURATION -->
     <!-- ========================================================= -->
 
     <div
@@ -630,309 +533,94 @@
       class="admin-slide-content active"
     >
 
-      <div class="admin-card">
-
-        <h3>
-          <i class="fa-solid fa-sliders"></i>
-          Test & Timer Configuration Settings
-        </h3>
-
-        <p class="subtitle">
-          Set question randomization, test time duration, and fixed exam availability window.
-        </p>
-
-
-        <div class="form-grid">
-
-          <div class="form-group">
-            <label for="config-total-pool">
-              Total Pool Questions *
-            </label>
-
-            <input
-              type="number"
-              id="config-total-pool"
-              placeholder="Example: 10"
-              min="1"
-            >
+      <!-- MULTI-EXAM + SUBJECT-WISE QUESTION CONTROL -->
+      <div class="multi-exam-card">
+        <div class="multi-exam-head">
+          <div>
+            <h4><i class="fa-solid fa-layer-group"></i> Multi-Exam & Subject-wise Question Control</h4>
+            <p>All exam-specific question count, question source, question order and timer controls are managed here.</p>
           </div>
 
-
-          <div class="form-group">
-            <label for="config-student-limit">
-              Student Display Limit *
-            </label>
-
-            <input
-              type="number"
-              id="config-student-limit"
-              placeholder="Example: 6"
-              min="1"
-            >
-          </div>
-
-
-          <div class="form-group">
-            <label for="config-test-duration">
-              Per Exam Timer (Minutes) *
-            </label>
-
-            <input
-              type="number"
-              id="config-test-duration"
-              placeholder="e.g. 30"
-              min="1"
-            >
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================== -->
-        <!-- NEW QUESTION ORDER CONTROL -->
-        <!-- ===================================================== -->
-
-        <div class="question-order-card">
-
-          <div class="question-order-title">
-            <i class="fa-solid fa-arrow-down-1-9"></i>
-            Question Order Control
-          </div>
-
-          <div class="question-order-description">
-            Choose how questions should be delivered to students.
-            This setting is saved in Firebase and can be changed whenever
-            you want.
-          </div>
-
-
-          <div class="order-options">
-
-            <!-- RANDOM -->
-            <div class="order-option">
-
-              <input
-                type="radio"
-                name="question-order"
-                id="question-order-random"
-                value="random"
-                checked
-              >
-
-              <label for="question-order-random">
-
-                <span class="order-icon">
-                  <i class="fa-solid fa-shuffle"></i>
-                </span>
-
-                <span class="order-text">
-                  Random Order
-                  <small>
-                    Questions are selected/shown in random order.
-                  </small>
-                </span>
-
-              </label>
-
-            </div>
-
-
-            <!-- SEQUENTIAL -->
-            <div class="order-option">
-
-              <input
-                type="radio"
-                name="question-order"
-                id="question-order-sequential"
-                value="sequential"
-              >
-
-              <label for="question-order-sequential">
-
-                <span class="order-icon">
-                  <i class="fa-solid fa-list-ol"></i>
-                </span>
-
-                <span class="order-text">
-                  Normal / Sequential Order
-                  <small>
-                    Questions follow their original numbering/order.
-                  </small>
-                </span>
-
-              </label>
-
-            </div>
-
-          </div>
-
-
-          <div class="current-order-status">
-            <i class="fa-solid fa-circle-info"></i>
-            Current setting:
-            <strong id="question-order-status">
-              Random Order
-            </strong>
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================== -->
-        <!-- MULTI-EXAM + SUBJECT-WISE QUESTION CONTROL -->
-        <!-- ===================================================== -->
-        <div class="multi-exam-card">
-          <div class="multi-exam-head">
-            <div>
-              <h4><i class="fa-solid fa-layer-group"></i> Multi-Exam & Subject-wise Question Control</h4>
-              <p>Configure each exam separately. Every subject has its own question count, question source and Random/Sequential order.</p>
-            </div>
+          <div class="exam-control-grid">
             <div class="exam-select-wrap">
-              <label for="exam-selector">Active Exam</label>
+              <label for="exam-selector">Exam Configuration</label>
               <select id="exam-selector">
                 <option value="railway_group_d">Railway Group D</option>
                 <option value="jharkhand_tet">Jharkhand TET</option>
                 <option value="ssc_gd">SSC GD</option>
               </select>
             </div>
+
+            <div class="per-exam-timer-wrap">
+              <label for="per-exam-timer">Per Exam Timer (Minutes) *</label>
+              <input type="number" id="per-exam-timer" min="1" placeholder="e.g. 30">
+            </div>
           </div>
-          <div class="subject-config-list" id="subject-config-list"></div>
-          <div class="multi-exam-actions">
-            <button type="button" class="btn" id="add-subject-btn"><i class="fa-solid fa-plus"></i> Add Subject</button>
-            <button type="button" class="btn btn-success" id="save-multi-exam-btn"><i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings</button>
-          </div>
-          <div class="config-summary" id="multi-exam-summary"><strong>Ready:</strong> Select an exam and configure its subjects.</div>
         </div>
 
-        <!-- WINDOW SETTINGS -->
+        <!-- ACTIVE EXAMS -->
+        <div class="active-exams-panel">
+          <div class="active-exams-title">
+            <span><i class="fa-solid fa-toggle-on"></i> Active Exam(s)</span>
+            <small>Select one or more exams. Only selected exams will appear on the student login page.</small>
+          </div>
+          <div class="active-exams-list" id="active-exams-list"></div>
+        </div>
+
+        <div class="subject-config-list" id="subject-config-list"></div>
+
+        <div class="multi-exam-actions">
+          <button type="button" class="btn" id="add-subject-btn"><i class="fa-solid fa-plus"></i> Add Subject</button>
+          <button type="button" class="btn btn-success" id="save-multi-exam-btn"><i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings</button>
+        </div>
+
+        <div class="config-summary" id="multi-exam-summary">
+          <strong>Ready:</strong> Configure each exam, set its timer, choose Random/Sequential order for every subject, then select which exams are active.
+        </div>
+      </div>
+
+      <!-- GENERAL SETTINGS THAT ARE NOT EXAM-SPECIFIC -->
+      <div class="admin-card general-config-card">
+        <h3>
+          <i class="fa-solid fa-calendar-check"></i>
+          Test Availability & Upload Settings
+        </h3>
+        <p class="subtitle">These settings control only the student entry period. They do NOT limit the exam duration. Once a student enters before the close time, the selected exam's full configured timer is available.</p>
 
         <div class="form-grid">
+          <div class="form-group">
+            <label for="config-window-start">Overall Entry Start Time *</label>
+            <input type="datetime-local" id="config-window-start">
+          </div>
 
           <div class="form-group">
-            <label for="config-window-start">
-              Overall Test Window Start Time *
-            </label>
-
-            <input
-              type="datetime-local"
-              id="config-window-start"
-            >
+            <label for="config-window-end">Overall Entry Close Time *</label>
+            <input type="datetime-local" id="config-window-end">
           </div>
-
-
-          <div class="form-group">
-            <label for="config-window-end">
-              Overall Test Window End Time *
-            </label>
-
-            <input
-              type="datetime-local"
-              id="config-window-end"
-            >
-          </div>
-
         </div>
 
-
-        <!-- UPLOAD METHOD -->
-
-        <div
-          style="
-            background: #f1f5f9;
-            padding: 1.25rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-          "
-        >
-
-          <label
-            style="
-              font-weight: 700;
-              color: var(--primary);
-            "
-          >
-            Question Upload Method:
-          </label>
-
-          <div
-            style="
-              display: flex;
-              gap: 20px;
-              flex-wrap: wrap;
-              margin-top: 0.5rem;
-            "
-          >
-
-            <label
-              style="
-                cursor:pointer;
-                display:flex;
-                align-items:center;
-                gap:6px;
-              "
-            >
-              <input
-                type="radio"
-                name="upload-mode"
-                value="form"
-                checked
-              >
-              Live Form
+        <div style="background:#f1f5f9;padding:1.25rem;border-radius:10px;margin-bottom:1.5rem;">
+          <label style="font-weight:700;color:var(--primary);">Question Upload Method:</label>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:.5rem;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <input type="radio" name="upload-mode" value="form" checked> Live Form
             </label>
-
-
-            <label
-              style="
-                cursor:pointer;
-                display:flex;
-                align-items:center;
-                gap:6px;
-              "
-            >
-              <input
-                type="radio"
-                name="upload-mode"
-                value="code"
-              >
-              Custom Code
+            <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <input type="radio" name="upload-mode" value="code"> Custom Code
             </label>
-
-
-            <label
-              style="
-                cursor:pointer;
-                display:flex;
-                align-items:center;
-                gap:6px;
-              "
-            >
-              <input
-                type="radio"
-                name="upload-mode"
-                value="msword"
-              >
-              MS Word Parse
+            <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <input type="radio" name="upload-mode" value="msword"> MS Word Parse
             </label>
-
           </div>
-
         </div>
 
-
-        <button
-          type="button"
-          id="save-config-btn"
-          onclick="saveExamSettings()"
-          class="btn btn-success"
-        >
+        <button type="button" id="save-config-btn" onclick="saveGeneralSettings()" class="btn btn-success">
           <i class="fa-solid fa-lock"></i>
-          Save & Apply Configurations
+          Save Availability & Upload Settings
         </button>
-
       </div>
 
     </div>
-
 
     <!-- ========================================================= -->
     <!-- SLIDE 2: SECURITY ANALYTICS -->
@@ -1298,473 +986,187 @@
 
 
     /* ============================================================
-       QUESTION ORDER STATUS
-       ============================================================ */
-
-    function updateQuestionOrderStatus() {
-
-      const selected =
-        document.querySelector(
-          'input[name="question-order"]:checked'
-        );
-
-      const status =
-        document.getElementById(
-          'question-order-status'
-        );
-
-
-      if (!selected || !status) {
-        return;
-      }
-
-
-      if (selected.value === "sequential") {
-
-        status.textContent =
-          "Normal / Sequential Order";
-
-      } else {
-
-        status.textContent =
-          "Random Order";
-
-      }
-
-    }
-
-
-    document
-      .querySelectorAll(
-        'input[name="question-order"]'
-      )
-      .forEach(
-        radio => {
-
-          radio.addEventListener(
-            'change',
-            updateQuestionOrderStatus
-          );
-
-        }
-      );
-
-
-    /* ============================================================
        MULTI-EXAM / SUBJECT CONFIGURATION
        ============================================================ */
     const DEFAULT_MULTI_EXAM_CONFIG = {
-      railway_group_d:{examName:'Railway Group D',subjects:[
+      railway_group_d:{examName:'Railway Group D',timerMinutes:0,active:true,subjects:[
         {name:'Maths',count:25,order:'random',source:'railway/maths.html'},
         {name:'Reasoning',count:25,order:'random',source:'railway/reasoning.html'},
         {name:'GK / GS',count:25,order:'random',source:'railway/gkgs.html'}]},
-      jharkhand_tet:{examName:'Jharkhand TET',subjects:[
+      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:0,active:false,subjects:[
         {name:'Child Development & Pedagogy',count:10,order:'random',source:'jtet/cdp.html'},
         {name:'Language I',count:10,order:'random',source:'jtet/language1.html'},
         {name:'Language II',count:10,order:'random',source:'jtet/language2.html'},
         {name:'Mathematics',count:10,order:'random',source:'jtet/mathematics.html'},
         {name:'Environmental Studies',count:10,order:'random',source:'jtet/evs.html'}]},
-      ssc_gd:{examName:'SSC GD',subjects:[
+      ssc_gd:{examName:'SSC GD',timerMinutes:0,active:false,subjects:[
         {name:'General Intelligence & Reasoning',count:20,order:'random',source:'ssc-gd/reasoning.html'},
         {name:'General Knowledge & General Awareness',count:20,order:'random',source:'ssc-gd/gk-gs.html'},
         {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
         {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
     };
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
-    function getActiveExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
+
+    function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
+    function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand TET',ssc_gd:'SSC GD'}[id]) || id); }
+    function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
+    function escapeHTML(value){ return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+
+    function syncCurrentExamTimer(){
+      const id=getConfiguredExamId();
+      if(!multiExamConfig[id]) return;
+      const input=document.getElementById('per-exam-timer');
+      if(input) input.value=Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '';
+    }
+
+    function collectCurrentExamTimer(){
+      const id=getConfiguredExamId();
+      if(!multiExamConfig[id]) multiExamConfig[id]={examName:getExamDisplayName(id),timerMinutes:0,active:false,subjects:[]};
+      const value=Number(document.getElementById('per-exam-timer')?.value);
+      if(Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
+    }
+
+    function renderActiveExamControls(){
+      const list=document.getElementById('active-exams-list'); if(!list)return;
+      list.innerHTML='';
+      getExamIds().forEach(id=>{
+        if(!multiExamConfig[id]) multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};
+        const wrap=document.createElement('div'); wrap.className='active-exam-option';
+        const checked=multiExamConfig[id].active===true;
+        wrap.innerHTML=`<input type="checkbox" id="active-exam-${id}" data-active-exam="${id}" ${checked?'checked':''}><label class="active-exam-label" for="active-exam-${id}"><i class="fa-solid fa-circle-check"></i><span>${escapeHTML(getExamDisplayName(id))}</span></label>`;
+        list.appendChild(wrap);
+      });
+      list.querySelectorAll('[data-active-exam]').forEach(cb=>cb.addEventListener('change',()=>{
+        multiExamConfig[cb.dataset.activeExam].active=cb.checked;
+        updateMultiExamSummary();
+      }));
+    }
+
     function renderSubjectConfig(){
       const list=document.getElementById('subject-config-list'); if(!list)return;
-      const examId=getActiveExamId(); if(!multiExamConfig[examId])multiExamConfig[examId]={examName:examId,subjects:[]};
-      const subjects=multiExamConfig[examId].subjects||[]; list.innerHTML='';
+      collectCurrentExamTimer();
+      const examId=getConfiguredExamId();
+      if(!multiExamConfig[examId])multiExamConfig[examId]={examName:examId,timerMinutes:0,active:false,subjects:[]};
+      const subjects=multiExamConfig[examId].subjects||[];
+      list.innerHTML='';
       if(!subjects.length) list.innerHTML='<div style="padding:18px;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:10px;">No subjects added. Click <strong>Add Subject</strong>.</div>';
       subjects.forEach((subject,index)=>{
         const row=document.createElement('div'); row.className='subject-row';
         row.innerHTML=`<div class="form-group subject-name"><label>Subject Name *</label><input type="text" data-field="name" value="${escapeHTML(subject.name||'')}" placeholder="e.g. Maths"></div><div class="form-group"><label>Questions *</label><input type="number" data-field="count" min="1" value="${Number(subject.count)||1}"></div><div class="form-group"><label>Question Order *</label><select data-field="order"><option value="random" ${subject.order==='random'?'selected':''}>Random</option><option value="sequential" ${subject.order==='sequential'?'selected':''}>Sequential</option></select></div><div class="form-group"><label>Question Source *</label><input type="text" data-field="source" value="${escapeHTML(subject.source||'')}" placeholder="e.g. railway/maths.html"></div><button type="button" class="subject-remove" title="Remove Subject" data-remove="${index}"><i class="fa-solid fa-trash"></i></button>`;
         list.appendChild(row);
       });
-      list.querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click',()=>{multiExamConfig[examId].subjects.splice(Number(btn.dataset.remove),1);renderSubjectConfig();}));
+      list.querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click',()=>{collectCurrentExamTimer();multiExamConfig[examId].subjects.splice(Number(btn.dataset.remove),1);renderSubjectConfig();}));
       list.querySelectorAll('.subject-row').forEach((row,idx)=>row.querySelectorAll('[data-field]').forEach(field=>{const sync=()=>{const key=field.dataset.field;multiExamConfig[examId].subjects[idx][key]=key==='count'?Number(field.value):field.value;updateMultiExamSummary();};field.addEventListener('input',sync);field.addEventListener('change',sync);}));
+      syncCurrentExamTimer();
       updateMultiExamSummary();
     }
-    function updateMultiExamSummary(){const el=document.getElementById('multi-exam-summary');if(!el)return;const id=getActiveExamId(),exam=multiExamConfig[id]||{subjects:[]},subjects=exam.subjects||[],total=subjects.reduce((n,s)=>n+(Number(s.count)||0),0);el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} subject(s) configured • ${total} total student questions • Each subject uses its own pool and order setting.`;}
-    function collectVisibleSubjectValues(){const id=getActiveExamId();const rows=[...document.querySelectorAll('#subject-config-list .subject-row')];if(!multiExamConfig[id])multiExamConfig[id]={examName:id,subjects:[]};multiExamConfig[id].subjects=rows.map(row=>({name:row.querySelector('[data-field="name"]').value.trim(),count:Number(row.querySelector('[data-field="count"]').value),order:row.querySelector('[data-field="order"]').value,source:row.querySelector('[data-field="source"]').value.trim()}));return multiExamConfig[id].subjects;}
-    function validateMultiExamConfig(){for(const [id,exam] of Object.entries(multiExamConfig)){if(!exam.subjects?.length)return `${exam.examName||id}: Add at least one subject.`;for(const subject of exam.subjects){if(!subject.name||!Number.isFinite(Number(subject.count))||Number(subject.count)<=0||!subject.source)return `${exam.examName||id}: Every subject needs a name, question count and question source.`;if(!['random','sequential'].includes(subject.order))return `${exam.examName||id}: Invalid question order for ${subject.name}.`;}}return '';}
-    async function saveMultiExamSettings(){collectVisibleSubjectValues();const error=validateMultiExamConfig();if(error){alert(error);return;}const btn=document.getElementById('save-multi-exam-btn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Exam Settings...';try{await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamId:getActiveExamId(),updatedAt:new Date()},{merge:true});alert('Exam & subject-wise settings saved successfully!');}catch(err){console.error(err);alert('Failed to save exam & subject settings: '+err.message);}finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings';}}
-    function initializeMultiExamControls(savedConfig,savedActiveExam){if(savedConfig&&typeof savedConfig==='object')multiExamConfig=JSON.parse(JSON.stringify(savedConfig));const selector=document.getElementById('exam-selector');if(selector){selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';selector.addEventListener('change',renderSubjectConfig);}document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getActiveExamId();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);renderSubjectConfig();}
+
+    function updateMultiExamSummary(){
+      const el=document.getElementById('multi-exam-summary');if(!el)return;
+      const id=getConfiguredExamId(),exam=multiExamConfig[id]||{subjects:[],timerMinutes:0};
+      const subjects=exam.subjects||[],total=subjects.reduce((n,s)=>n+(Number(s.count)||0),0);
+      const active=getExamIds().filter(x=>multiExamConfig[x]?.active).map(x=>getExamDisplayName(x));
+      el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} subject(s) • ${total} student questions • Timer: ${Number(exam.timerMinutes)||0} min • Order is controlled per subject. <br><strong>Active:</strong> ${active.length?escapeHTML(active.join(', ')):'None selected'}`;
+    }
+
+    function collectVisibleSubjectValues(){
+      const id=getConfiguredExamId();
+      if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};
+      const rows=[...document.querySelectorAll('#subject-config-list .subject-row')];
+      multiExamConfig[id].subjects=rows.map(row=>({name:row.querySelector('[data-field="name"]').value.trim(),count:Number(row.querySelector('[data-field="count"]').value),order:row.querySelector('[data-field="order"]').value,source:row.querySelector('[data-field="source"]').value.trim()}));
+      collectCurrentExamTimer();
+      return multiExamConfig[id].subjects;
+    }
+
+    function collectAllActiveExamStates(){
+      document.querySelectorAll('[data-active-exam]').forEach(cb=>{if(multiExamConfig[cb.dataset.activeExam])multiExamConfig[cb.dataset.activeExam].active=cb.checked;});
+    }
+
+    function validateMultiExamConfig(){
+      const activeIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
+      if(!activeIds.length) return 'Select at least one Active Exam.';
+      for(const [id,exam] of Object.entries(multiExamConfig)){
+        const timer=Number(exam.timerMinutes);
+        if(!Number.isFinite(timer)||timer<=0) return `${exam.examName||id}: Per Exam Timer must be greater than 0.`;
+        if(!exam.subjects?.length)return `${exam.examName||id}: Add at least one subject.`;
+        for(const subject of exam.subjects){
+          if(!subject.name||!Number.isFinite(Number(subject.count))||Number(subject.count)<=0||!subject.source)return `${exam.examName||id}: Every subject needs a name, question count and question source.`;
+          if(!['random','sequential'].includes(subject.order))return `${exam.examName||id}: Invalid question order for ${subject.name}.`;
+        }
+      }
+      return '';
+    }
+
+    async function saveMultiExamSettings(){
+      collectVisibleSubjectValues();
+      collectAllActiveExamStates();
+      const error=validateMultiExamConfig();
+      if(error){alert(error);return;}
+      const btn=document.getElementById('save-multi-exam-btn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Exam Settings...';
+      try{
+        const activeExamIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
+        await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamIds,activeExamId:activeExamIds[0] || '',updatedAt:new Date()},{merge:true});
+        renderActiveExamControls();
+        updateMultiExamSummary();
+        alert('Exam, timer, subject and active-exam settings saved successfully!');
+      }catch(err){console.error(err);alert('Failed to save exam & subject settings: '+err.message);}
+      finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings';}
+    }
+
+    function initializeMultiExamControls(savedConfig,savedActiveExam,savedActiveExamIds){
+      if(savedConfig&&typeof savedConfig==='object')multiExamConfig=JSON.parse(JSON.stringify(savedConfig));
+      getExamIds().forEach(id=>{if(!multiExamConfig[id])multiExamConfig[id]={...JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]))};if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=0;});
+      if(Array.isArray(savedActiveExamIds)) getExamIds().forEach(id=>multiExamConfig[id].active=savedActiveExamIds.includes(id));
+      const selector=document.getElementById('exam-selector');
+      if(selector){selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';selector.onchange=()=>{renderSubjectConfig();syncCurrentExamTimer();updateMultiExamSummary();};}
+      const timer=document.getElementById('per-exam-timer'); if(timer) timer.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
+      document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getConfiguredExamId();collectCurrentExamTimer();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});
+      document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);
+      renderActiveExamControls();
+      renderSubjectConfig();
+      syncCurrentExamTimer();
+    }
 
     /* ============================================================
        LOAD EXAM SETTINGS
        ============================================================ */
 
     async function loadExamSettings() {
-
       try {
-
-        const docRef =
-          doc(
-            db,
-            "exam_config",
-            "current_test"
-          );
-
-
-        const docSnap =
-          await getDoc(docRef);
-
-
-        if (docSnap.exists()) {
-
-          const data =
-            docSnap.data();
-
-          initializeMultiExamControls(data.multiExamConfig, data.activeExamId);
-
-
-          /* TOTAL POOL */
-
-          document.getElementById(
-            'config-total-pool'
-          ).value =
-            data.totalPool || "";
-
-
-          /* STUDENT LIMIT */
-
-          document.getElementById(
-            'config-student-limit'
-          ).value =
-            data.studentLimit || "";
-
-
-          /* DURATION */
-
-          document.getElementById(
-            'config-test-duration'
-          ).value =
-            data.durationMinutes || 30;
-
-
-          /* WINDOW START */
-
-          if (data.windowStart) {
-
-            document.getElementById(
-              'config-window-start'
-            ).value =
-              new Date(
-                data.windowStart
-              )
-              .toISOString()
-              .slice(0, 16);
-
+        const docSnap=await getDoc(doc(db,'exam_config','current_test'));
+        if(docSnap.exists()){
+          const data=docSnap.data();
+          initializeMultiExamControls(data.multiExamConfig,data.activeExamId,data.activeExamIds);
+          if(data.windowStart) document.getElementById('config-window-start').value=new Date(data.windowStart).toISOString().slice(0,16);
+          if(data.windowEnd) document.getElementById('config-window-end').value=new Date(data.windowEnd).toISOString().slice(0,16);
+          if(data.uploadMode){
+            const radio=document.querySelector(`input[name="upload-mode"][value="${data.uploadMode}"]`);
+            if(radio) radio.checked=true;
           }
-
-
-          /* WINDOW END */
-
-          if (data.windowEnd) {
-
-            document.getElementById(
-              'config-window-end'
-            ).value =
-              new Date(
-                data.windowEnd
-              )
-              .toISOString()
-              .slice(0, 16);
-
-          }
-
-
-          /* UPLOAD MODE */
-
-          if (data.uploadMode) {
-
-            const radio =
-              document.querySelector(
-                `input[name="upload-mode"][value="${data.uploadMode}"]`
-              );
-
-
-            if (radio) {
-
-              radio.checked = true;
-
-            }
-
-          }
-
-
-          /* ======================================================
-             QUESTION ORDER
-             ====================================================== */
-
-          const questionOrder =
-            data.questionOrder || "random";
-
-
-          const orderRadio =
-            document.querySelector(
-              `input[name="question-order"][value="${questionOrder}"]`
-            );
-
-
-          if (orderRadio) {
-
-            orderRadio.checked = true;
-
-          } else {
-
-            document.getElementById(
-              'question-order-random'
-            ).checked = true;
-
-          }
-
-
-          updateQuestionOrderStatus();
-
-          if (!data.multiExamConfig) initializeMultiExamControls();
-
-        } else {
-
+        }else{
           initializeMultiExamControls();
-
-          /*
-             If no configuration exists yet,
-             use Random as default.
-          */
-
-          document.getElementById(
-            'question-order-random'
-          ).checked = true;
-
-          updateQuestionOrderStatus();
-
         }
-
-      } catch (e) {
-
-        console.error(
-          "Config load error:",
-          e
-        );
+      }catch(e){
+        console.error('Config load error:',e);
         initializeMultiExamControls();
-
       }
-
     }
 
-
-    /* ============================================================
-       SAVE EXAM SETTINGS
-       ============================================================ */
-
-    window.saveExamSettings = async () => {
-
-      if (document.getElementById('subject-config-list')) collectVisibleSubjectValues();
-
-      const totalPool =
-        parseInt(
-          document.getElementById(
-            'config-total-pool'
-          ).value
-        );
-
-
-      const studentLimit =
-        parseInt(
-          document.getElementById(
-            'config-student-limit'
-          ).value
-        );
-
-
-      const durationMinutes =
-        parseInt(
-          document.getElementById(
-            'config-test-duration'
-          ).value
-        );
-
-
-      const windowStartVal =
-        document.getElementById(
-          'config-window-start'
-        ).value;
-
-
-      const windowEndVal =
-        document.getElementById(
-          'config-window-end'
-        ).value;
-
-
-      const uploadModeElement =
-        document.querySelector(
-          'input[name="upload-mode"]:checked'
-        );
-
-
-      const questionOrderElement =
-        document.querySelector(
-          'input[name="question-order"]:checked'
-        );
-
-
-      const uploadMode =
-        uploadModeElement
-          ? uploadModeElement.value
-          : "form";
-
-
-      const questionOrder =
-        questionOrderElement
-          ? questionOrderElement.value
-          : "random";
-
-
-      /* VALIDATION */
-
-      if (
-        !totalPool ||
-        !studentLimit ||
-        !durationMinutes ||
-        !windowStartVal ||
-        !windowEndVal
-      ) {
-
-        alert(
-          "Please fill all configuration & window timing fields."
-        );
-
-        return;
-
-      }
-
-
-      if (studentLimit > totalPool) {
-
-        alert(
-          "Student Display Limit cannot be greater than Total Pool Questions."
-        );
-
-        return;
-
-      }
-
-
-      const saveBtn =
-        document.getElementById(
-          'save-config-btn'
-        );
-
-
-      saveBtn.disabled = true;
-
-      saveBtn.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Saving Settings...';
-
-
-      try {
-
-        await setDoc(
-          doc(
-            db,
-            "exam_config",
-            "current_test"
-          ),
-          {
-
-            /*
-              EXISTING SETTINGS
-            */
-
-            totalPool:
-              totalPool,
-
-            studentLimit:
-              studentLimit,
-
-            durationMinutes:
-              durationMinutes,
-
-            windowStart:
-              new Date(
-                windowStartVal
-              ).getTime(),
-
-            windowEnd:
-              new Date(
-                windowEndVal
-              ).getTime(),
-
-            uploadMode:
-              uploadMode,
-
-
-            /*
-              NEW SETTING
-              -------------------------------
-              random     = random questions
-              sequential = original numbering
-            */
-
-            questionOrder:
-              questionOrder,
-
-            multiExamConfig:
-              multiExamConfig,
-
-            activeExamId:
-              getActiveExamId(),
-
-            updatedAt:
-              new Date()
-
-          }
-        );
-
-
-        const readableOrder =
-          questionOrder === "sequential"
-            ? "Normal / Sequential Order"
-            : "Random Order";
-
-
-        updateQuestionOrderStatus();
-
-
-        alert(
-          "Configuration saved successfully!\n\nQuestion Order: " +
-          readableOrder
-        );
-
-
-      } catch (err) {
-
-        console.error(
-          "Save configuration error:",
-          err
-        );
-
-
-        alert(
-          "Failed to save configuration: " +
-          err.message
-        );
-
-      } finally {
-
-        saveBtn.disabled = false;
-
-        saveBtn.innerHTML =
-          '<i class="fa-solid fa-lock"></i> Save & Apply Configurations';
-
-      }
-
+    window.saveGeneralSettings = async () => {
+      const windowStartVal=document.getElementById('config-window-start')?.value;
+      const windowEndVal=document.getElementById('config-window-end')?.value;
+      const uploadModeElement=document.querySelector('input[name="upload-mode"]:checked');
+      const uploadMode=uploadModeElement?uploadModeElement.value:'form';
+      if(!windowStartVal||!windowEndVal){alert('Please fill both Overall Entry Start and Entry Close time.');return;}
+      const start=new Date(windowStartVal).getTime(), end=new Date(windowEndVal).getTime();
+      if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start){alert('Overall Entry Close Time must be later than Entry Start Time.');return;}
+      const saveBtn=document.getElementById('save-config-btn');saveBtn.disabled=true;saveBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Settings...';
+      try{
+        await setDoc(doc(db,'exam_config','current_test'),{windowStart:start,windowEnd:end,uploadMode,updatedAt:new Date()},{merge:true});
+        alert('Entry window & upload settings saved successfully!');
+      }catch(err){console.error('Save general settings error:',err);alert('Failed to save settings: '+err.message);}
+      finally{saveBtn.disabled=false;saveBtn.innerHTML='<i class="fa-solid fa-lock"></i> Save Availability & Upload Settings';}
     };
-
 
     /* ============================================================
        FETCH LIVE DATABASE RECORDS
@@ -1937,22 +1339,6 @@
         leaderboardBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
       }
     };
-
-    /* ============================================================
-       HTML ESCAPE HELPER
-       ============================================================ */
-
-    function escapeHTML(value) {
-
-      return String(value)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-
-    }
-
 
     /* ============================================================
        DOWNLOAD RESULTS CSV
