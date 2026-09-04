@@ -1224,7 +1224,21 @@
       getExamIds().forEach(id=>{if(!multiExamConfig[id])multiExamConfig[id]={...JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]))};if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=0;});
       if(Array.isArray(savedActiveExamIds)) getExamIds().forEach(id=>multiExamConfig[id].active=savedActiveExamIds.includes(id));
       const selector=document.getElementById('exam-selector');
-      if(selector){selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';selector.onchange=()=>{renderSubjectConfig();syncCurrentExamTimer();updateMultiExamSummary();};}
+      if(selector){
+        selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';
+        selector.dataset.previousExamId=selector.value;
+        selector.onchange=()=>{
+          const previousId=selector.dataset.previousExamId;
+          const visiblePenalty=Number(document.getElementById('per-exam-penalty')?.value);
+          if(previousId&&multiExamConfig[previousId]&&Number.isFinite(visiblePenalty)&&visiblePenalty>=0){
+            multiExamConfig[previousId].securityPenalty=visiblePenalty;
+          }
+          selector.dataset.previousExamId=selector.value;
+          syncCurrentExamTimer();
+          renderSubjectConfig();
+          updateMultiExamSummary();
+        };
+      }
       const timer=document.getElementById('per-exam-timer'); if(timer) timer.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
       const penalty=document.getElementById('per-exam-penalty'); if(penalty) penalty.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
       document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getConfiguredExamId();collectCurrentExamTimer();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});
