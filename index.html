@@ -25,7 +25,7 @@
       --success: #10b981;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans', Arial, sans-serif; }
     
     body {
       background:#eef3f8;
@@ -218,7 +218,7 @@
     .q-number {font-weight:800;color:#111827;font-size:1rem;}
     .q-status {font-size:.78rem;color:#64748b;}
     .question-scroll {padding:28px 32px;overflow:auto;flex:1;}
-    .exam-q-text {font-size:1.08rem;line-height:1.7;color:#111827;font-weight:600;margin-bottom:24px;white-space:normal;overflow-wrap:anywhere;} .exam-q-text img,.option-content img{max-width:100%;height:auto;display:block;margin:10px auto;} .exam-q-text svg,.option-content svg{max-width:100%;height:auto;display:block;margin:10px auto;} .exam-q-text table,.option-content table{max-width:100%;border-collapse:collapse;margin:10px auto;} .exam-q-text td,.exam-q-text th,.option-content td,.option-content th{border:1px solid #cbd5e1;padding:6px 9px;}
+    .exam-q-text {font-size:1.08rem;line-height:1.78;color:#111827;font-weight:600;margin-bottom:24px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;hyphens:none;font-family:'Noto Sans Devanagari','Noto Sans','Inter',Arial,sans-serif;} .exam-q-text p,.option-content p{margin:0 0 12px;} .exam-q-text ul,.exam-q-text ol,.option-content ul,.option-content ol{margin:8px 0 12px 28px;} .exam-q-text li,.option-content li{margin:4px 0;} .exam-q-text pre,.option-content pre{white-space:pre-wrap;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f8fafc;padding:10px;border-radius:8px;} .exam-q-text code,.option-content code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;} .exam-q-text img,.option-content img{max-width:100%;height:auto;display:block;margin:14px auto;border-radius:8px;object-fit:contain;} .exam-q-text svg,.option-content svg{max-width:100%;height:auto;display:block;margin:14px auto;} .exam-q-text video,.option-content video,.exam-q-text iframe,.option-content iframe{max-width:100%;display:block;margin:14px auto;} .exam-q-text sub,.option-content sub,.exam-q-text sup,.option-content sup{font-size:.78em;line-height:0;} .question-image-block{display:flex;flex-direction:column;gap:14px;margin:6px 0 22px;} .question-image-block:empty{display:none;} .question-image-block img{display:block;max-width:min(100%,820px);max-height:650px;width:auto;height:auto;object-fit:contain;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;background:#fff;padding:5px;} .question-image-error{display:block;text-align:center;color:#64748b;font-size:.82rem;padding:8px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;} .exam-q-text table,.option-content table{width:auto;max-width:100%;border-collapse:collapse;margin:12px auto;overflow:auto;} .exam-q-text td,.exam-q-text th,.option-content td,.option-content th{border:1px solid #cbd5e1;padding:7px 10px;vertical-align:middle;} .exam-q-text .rich-center,.option-content .rich-center{text-align:center;}
     .exam-option {display:flex;align-items:flex-start;gap:12px;padding:13px 15px;margin-bottom:11px;border:1px solid #d8e0ea;border-radius:7px;background:#fff;cursor:pointer;transition:.15s ease;}
     .exam-option:hover {background:#f8fafc;border-color:#94a3b8;}
     .exam-option.selected {border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 1px #2563eb;}
@@ -399,6 +399,7 @@
             </div>
             <div class="question-scroll">
               <div class="exam-q-text" id="q-text">Loading question...</div>
+              <div class="question-image-block" id="question-image-block" aria-live="polite"></div>
               <div id="options-block"></div>
             </div>
             <div class="exam-actions">
@@ -1004,7 +1005,8 @@
               _subjectId: String(subjectId),
               _subjectName: String(subjectName),
               _subjectQuestionNumber: localIndex + 1,
-              _questionSource: source
+              _questionSource: source,
+              _questionSourceUrl: sourceUrl
             });
           });
         }
@@ -1077,7 +1079,9 @@
               _examName: exam.name,
               _subjectId: String(subjectId),
               _subjectName: String(subjectName),
-              _subjectQuestionNumber: localIndex + 1
+              _subjectQuestionNumber: localIndex + 1,
+              _questionSource: source,
+              _questionSourceUrl: sourceUrl
             });
           });
         } catch (err) {
@@ -1366,6 +1370,257 @@
         selectedAnswers[currentQuestionIndex] !== undefined ? 'answered' : 'not-answered';
     }
 
+    function decodeHtmlEntities(value) {
+      let text = String(value ?? '');
+      if (!text) return text;
+      // Decode entities more than once because some question banks store
+      // HTML as escaped JSON strings (for example &lt;img ...&gt;).
+      for (let i = 0; i < 3 && /&(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-f]+);/i.test(text); i++) {
+        const ta = document.createElement('textarea');
+        ta.innerHTML = text;
+        const decoded = ta.value;
+        if (decoded === text) break;
+        text = decoded;
+      }
+      return text;
+    }
+
+    function normalizeRichText(value) {
+      let text = decodeHtmlEntities(value);
+      // Some files contain the two characters \\n and \\r\\n instead of
+      // actual line breaks. Convert those only when they are not inside HTML.
+      text = text.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+      return text;
+    }
+
+    function resolveMediaUrl(value, baseUrl) {
+      let src = decodeHtmlEntities(String(value ?? '').trim());
+      if (!src) return '';
+      src = src.replace(/^['"]|['"]$/g, '').trim();
+      if (/^(data:|blob:|https?:|\/\/|#)/i.test(src)) {
+        return src.startsWith('//') ? `${window.location.protocol}${src}` : src;
+      }
+      try {
+        return new URL(src, baseUrl || window.location.href).href;
+      } catch (_) {
+        try { return new URL(src, window.location.href).href; } catch (_) { return src; }
+      }
+    }
+
+    function getMediaUrlCandidates(value, baseUrl) {
+      const src = decodeHtmlEntities(String(value ?? '').trim()).replace(/^['"]|['"]$/g, '').trim();
+      if (!src) return [];
+      const candidates = [];
+      const add = (v) => { if (v && !candidates.includes(v)) candidates.push(v); };
+      add(resolveMediaUrl(src, baseUrl));
+
+      // If the source file is inside a subject folder, also try the same
+      // path relative to index.html. This covers common repo layouts such as
+      // /ssc-gd/reasoning.html + /images/q1.png.
+      if (!/^(data:|blob:|https?:|\/\/|#)/i.test(src)) {
+        add(resolveMediaUrl(src.replace(/^\.\//, ''), window.location.href));
+        const clean = src.replace(/^\.\//, '').replace(/^\//, '');
+        if (baseUrl) {
+          try {
+            const u = new URL(baseUrl, window.location.href);
+            const parts = u.pathname.split('/');
+            parts.pop();
+            const sourceDir = parts.join('/');
+            const sourceDirName = sourceDir.split('/').filter(Boolean).pop() || '';
+            if (sourceDirName && clean.startsWith(sourceDirName + '/')) {
+              add(new URL(clean.slice(sourceDirName.length + 1), window.location.origin + '/').href);
+            }
+          } catch (_) {}
+        }
+      }
+      return candidates;
+    }
+
+    function isLikelyImageUrl(value) {
+      const src = decodeHtmlEntities(String(value ?? '').trim());
+      return /^(data:image\/|blob:|https?:\/\/|\/\/)/i.test(src) ||
+             /\.(?:png|jpe?g|gif|webp|svg|bmp|avif|ico)(?:[?#].*)?$/i.test(src) ||
+             /(?:\/|\\)(?:image|img|images|figure|figures|diagram|diagrams)(?:\/|\\)/i.test(src);
+    }
+
+    function collectImageCandidates(value, out = []) {
+      if (value == null) return out;
+      if (Array.isArray(value)) {
+        value.forEach(v => collectImageCandidates(v, out));
+        return out;
+      }
+      if (typeof value === 'object') {
+        const keys = [
+          'src','url','href','path','file','filename','fileName','image','imageUrl','imageURL','image_url',
+          'imageSrc','image_src','imagePath','image_path','img','imgSrc','img_src','diagram','figure',
+          'figureImage','figureUrl','media','mediaUrl','mediaURL','source'
+        ];
+        for (const key of keys) {
+          if (value[key] != null) collectImageCandidates(value[key], out);
+        }
+        return out;
+      }
+      const text = decodeHtmlEntities(String(value)).trim();
+      if (text && (isLikelyImageUrl(text) || /^https?:\/\//i.test(text))) out.push(text);
+      return out;
+    }
+
+    function getQuestionImageValues(qData) {
+      const candidates = [];
+      const keys = [
+        'images','image','questionImage','questionImages','questionImageUrl','questionImageURL','question_image',
+        'imageUrl','imageURL','image_url','imageSrc','image_src','imagePath','image_path','img','imgSrc','img_src',
+        'imgUrl','imgURL','diagram','diagramImage','diagramUrl','figure','figureImage','figureUrl','media','mediaUrl'
+      ];
+      keys.forEach(key => {
+        if (qData && qData[key] != null) collectImageCandidates(qData[key], candidates);
+      });
+      return [...new Set(candidates.map(v => String(v).trim()).filter(Boolean))];
+    }
+
+    function escapeRichText(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function containsRichHtml(text) {
+      return /<\/?(?:img|picture|source|svg|table|thead|tbody|tfoot|tr|td|th|br|p|div|span|strong|b|em|i|u|sub|sup|small|mark|ol|ul|li|pre|code|blockquote|math|mrow|mi|mn|mo|msup|msub|video|audio|iframe)\b[^>]*>/i.test(text);
+    }
+
+    function convertPlainImageMarkers(text, baseUrl) {
+      let html = text;
+
+      // Markdown image: ![alt](path)
+      html = html.replace(/!\[([^\]]*)\]\(\s*<?([^)>]+)>?\s*\)/g, (_, alt, src) => {
+        const safeAlt = escapeRichText(alt || 'Question image');
+        const safeSrc = escapeRichText(resolveMediaUrl(src, baseUrl));
+        return `<img src="${safeSrc}" alt="${safeAlt}" loading="eager" data-rich-image="1">`;
+      });
+
+      // Common image markers found in exported question banks.
+      html = html.replace(/\[\s*(?:image|img|figure|diagram)\s*[:=]\s*([^\]]+)\]/gi, (_, src) => {
+        const safeSrc = escapeRichText(resolveMediaUrl(src.trim(), baseUrl));
+        return `<img src="${safeSrc}" alt="Question image" loading="eager" data-rich-image="1">`;
+      });
+
+      // Bare image paths/URLs in otherwise plain text.
+      html = html.replace(/(^|[\s(])((?:https?:\/\/|\.\.\/|\.\/|\/)?[^\s<>"']+\.(?:png|jpe?g|gif|webp|svg|bmp|avif|ico)(?:[?#][^\s<>"']*)?)(?=$|[\s).,;])/gi,
+        (_, prefix, src) => `${prefix}<img src="${escapeRichText(resolveMediaUrl(src, baseUrl))}" alt="Question image" loading="eager" data-rich-image="1">`);
+
+      return html;
+    }
+
+    function prepareRichContent(value, baseUrl) {
+      let text = normalizeRichText(value);
+      if (!text) return '';
+
+      /*
+       * IMPORTANT:
+       * Plain question text must NOT be pushed directly into innerHTML because
+       * symbols such as <, >, &, quotes, etc. can otherwise be interpreted as
+       * HTML and disappear/change. Only known rich HTML is allowed through.
+       */
+      const hasRichHtml = containsRichHtml(text);
+      let html = hasRichHtml ? text : escapeRichText(text);
+
+      // Restore image syntax/markers after escaping plain text.
+      html = convertPlainImageMarkers(html, baseUrl);
+
+      // Lightweight Markdown bold. This is safe because the source has already
+      // been escaped when it is plain text.
+      html = html.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
+
+      // Preserve paragraph/line spacing for exported plain-text question banks.
+      if (!hasRichHtml) {
+        html = html.replace(/\r\n|\r|\n/g, '<br>');
+      }
+
+      const template = document.createElement('template');
+      template.innerHTML = html;
+
+      // Resolve every media element, including images embedded in raw HTML/SVG.
+      template.content.querySelectorAll('img[src], source[src], video[src], audio[src], iframe[src]').forEach(node => {
+        const attr = node.getAttribute('src');
+        if (attr) {
+          const candidates = getMediaUrlCandidates(attr, baseUrl);
+          node.setAttribute('src', candidates[0] || resolveMediaUrl(attr, baseUrl));
+          node.dataset.mediaCandidates = JSON.stringify(candidates);
+          node.dataset.mediaCandidateIndex = '0';
+        }
+        if (node.tagName === 'IMG') {
+          node.setAttribute('loading', 'eager');
+          node.setAttribute('decoding', 'async');
+          node.setAttribute('referrerpolicy', 'no-referrer');
+          node.classList.add('rich-media-image');
+        }
+      });
+
+      template.content.querySelectorAll('svg').forEach(svg => {
+        svg.style.maxWidth = '100%';
+        svg.style.height = 'auto';
+      });
+
+      return template.innerHTML;
+    }
+
+    function attachRichMediaFallbacks(container, baseUrl) {
+      if (!container) return;
+      container.querySelectorAll('img,source,video,audio,iframe').forEach(node => {
+        if (node.dataset.richFallbackAttached === '1') return;
+        node.dataset.richFallbackAttached = '1';
+
+        const original = node.getAttribute('src') || '';
+        const candidates = (() => {
+          try { return JSON.parse(node.dataset.mediaCandidates || '[]'); } catch (_) { return []; }
+        })();
+        if (!candidates.length) candidates.push(...getMediaUrlCandidates(original, baseUrl));
+        let idx = Number(node.dataset.mediaCandidateIndex || 0);
+
+        const onError = () => {
+          idx += 1;
+          if (idx < candidates.length) {
+            node.dataset.mediaCandidateIndex = String(idx);
+            node.setAttribute('src', candidates[idx]);
+            return;
+          }
+          // Keep the question usable even if a referenced asset is missing.
+          if (node.tagName === 'IMG') {
+            const fallback = document.createElement('div');
+            fallback.className = 'question-image-error';
+            fallback.textContent = 'Question image could not be loaded from the saved source path.';
+            node.replaceWith(fallback);
+          }
+        };
+        node.addEventListener('error', onError);
+      });
+    }
+
+    function renderQuestionImages(qData, baseUrl) {
+      const block = document.getElementById('question-image-block');
+      if (!block) return;
+      block.innerHTML = '';
+
+      const values = getQuestionImageValues(qData);
+      values.forEach((src, imageIndex) => {
+        const img = document.createElement('img');
+        const candidates = getMediaUrlCandidates(src, baseUrl);
+        img.src = candidates[0] || resolveMediaUrl(src, baseUrl);
+        img.alt = `Question figure ${imageIndex + 1}`;
+        img.loading = 'eager';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        img.dataset.mediaCandidates = JSON.stringify(candidates);
+        img.dataset.mediaCandidateIndex = '0';
+        block.appendChild(img);
+      });
+      attachRichMediaFallbacks(block, baseUrl);
+    }
+
     function loadQuestion(index) {
       currentQuestionIndex = index;
       if (questionStatus[index] === 'not-visited') questionStatus[index] = 'not-answered';
@@ -1379,26 +1634,43 @@
                          'Not Answered';
       document.getElementById('question-status').innerText = statusText;
 
-      const qData = questionsList[index];
+      const qData = questionsList[index] || {};
       currentSubjectId = String(qData._subjectId || qData._subjectName || 'general');
       renderSubjectNavigation();
-      document.getElementById('q-text').innerHTML = qData.question || qData.q || '';
+
+      const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
+      const questionValue = qData.question ?? qData.q ?? qData.text ?? qData.questionText ?? '';
+      document.getElementById('q-text').innerHTML = prepareRichContent(questionValue, sourceBaseUrl);
+      renderQuestionImages(qData, sourceBaseUrl);
 
       const optionsBlock = document.getElementById('options-block');
       optionsBlock.innerHTML = '';
       const letters = ['A', 'B', 'C', 'D'];
+      const options = Array.isArray(qData.options) ? qData.options :
+                      Array.isArray(qData.choices) ? qData.choices :
+                      Array.isArray(qData.answers) ? qData.answers : [];
 
-      qData.options.forEach((opt, idx) => {
+      options.forEach((opt, idx) => {
         const isSelected = selectedAnswers[index] === idx;
         const label = document.createElement('label');
         label.className = `exam-option ${isSelected ? 'selected' : ''}`;
-        label.innerHTML = `
-          <span class="option-letter">${letters[idx] || idx + 1}</span>
-          <span class="option-content">${opt}</span>
-        `;
+        label.innerHTML = `<span class="option-letter">${letters[idx] || idx + 1}</span>`;
+
+        const content = document.createElement('span');
+        content.className = 'option-content';
+        const optionValue = typeof opt === 'object'
+          ? (opt.text ?? opt.label ?? opt.value ?? opt.answer ?? '')
+          : opt;
+        content.innerHTML = prepareRichContent(optionValue, sourceBaseUrl);
+        label.appendChild(content);
+
         label.onclick = () => selectOption(index, idx);
         optionsBlock.appendChild(label);
       });
+
+      if (!options.length) {
+        optionsBlock.innerHTML = '<p style="color:#ef4444;">Question options are missing.</p>';
+      }
 
       document.getElementById('btn-prev').style.visibility =
         index === 0 ? 'hidden' : 'visible';
@@ -1418,6 +1690,8 @@
       document.getElementById('palette-student-name').innerText = currentStudentName || 'Candidate';
       document.getElementById('palette-student-email').innerText = currentStudentEmail || '';
 
+      attachRichMediaFallbacks(document.getElementById('q-text'), sourceBaseUrl);
+      attachRichMediaFallbacks(document.getElementById('options-block'), sourceBaseUrl);
       renderQuestionPalette();
       typesetExamMath();
     }
