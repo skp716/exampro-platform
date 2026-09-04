@@ -35,7 +35,25 @@ rules must not be used.
 - `attempt_locks/{sha256(examId|email)}` is create-only for students. Deleting a
   result from the admin panel also deletes its lock and grants that attempt a
   retake.
+- `centers/{sha256(centerCode)}` stores only the one-way code hash plus the
+  institute, location, address and batch. Create/replace it from the Admin
+  Panel's **Examination Center Access** card before admitting students.
+- `exam_sessions/{sha256(examId|email)}` is the live admin row. It moves through
+  `logged_in`, `in_progress`, `result_pending_feedback` and `final_submitted`,
+  while retaining the question order, answers, timer deadline and security log
+  needed for interrupted-exam resume.
 - Only admins may list results, change exam configuration, or delete records.
+
+## Required before a live examination
+
+1. Deploy the current `firestore.rules`; the new center/session collections are
+   denied by older rules and will otherwise show as a connection error.
+2. Open Admin Panel and save one active center code. Give that exact code to the
+   supervised students.
+3. Confirm RRB displays 90 minutes and SSC GD displays 60 minutes in Admin.
+4. Run one disposable student attempt, interrupt it, resume it, submit it and
+   confirm the same live row changes to **Final Submitted**. Delete that test row
+   from Admin afterward to release its email lock.
 
 For verified Gmail ownership, replace anonymous student sign-in with Google
 Sign-In in a future migration.

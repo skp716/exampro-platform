@@ -8,6 +8,7 @@
   <!-- Google Fonts & FontAwesome -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 
   <style>
     :root {
@@ -347,10 +348,10 @@
     .multi-exam-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:15px; flex-wrap:wrap; }
     .multi-exam-head h4 { color:var(--primary); font-size:1.05rem; margin:0 0 4px; }
     .multi-exam-head p { color:var(--text-muted); font-size:.83rem; margin:0; line-height:1.5; }
-    .exam-control-grid { display:grid; grid-template-columns:minmax(210px,1fr) minmax(190px,.8fr); gap:10px; min-width:min(100%,520px); flex:1; max-width:600px; }
-    .exam-select-wrap,.per-exam-timer-wrap { min-width:0; }
-    .exam-select-wrap label,.per-exam-timer-wrap label { display:block; font-size:.72rem; font-weight:700; color:var(--primary); margin-bottom:5px; }
-    .exam-select-wrap select,.per-exam-timer-wrap input { width:100%; box-sizing:border-box; padding:.72rem .75rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#1e293b; font-size:.9rem; outline:none; }
+    .exam-control-grid { display:grid; grid-template-columns:minmax(190px,1fr) minmax(150px,.7fr) minmax(150px,.7fr); gap:10px; min-width:min(100%,650px); flex:1; max-width:720px; }
+    .exam-select-wrap,.per-exam-timer-wrap,.per-exam-penalty-wrap { min-width:0; }
+    .exam-select-wrap label,.per-exam-timer-wrap label,.per-exam-penalty-wrap label { display:block; font-size:.72rem; font-weight:700; color:var(--primary); margin-bottom:5px; }
+    .exam-select-wrap select,.per-exam-timer-wrap input,.per-exam-penalty-wrap input { width:100%; box-sizing:border-box; padding:.72rem .75rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#1e293b; font-size:.9rem; outline:none; }
     .exam-select-wrap select:focus,.per-exam-timer-wrap input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.1); }
     .active-exams-panel { background:#eff6ff; border:1px solid #bfdbfe; border-radius:11px; padding:13px; margin:12px 0 15px; }
     .active-exams-title { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
@@ -386,6 +387,10 @@
     .subject-badge { display:inline-block; padding:3px 7px; border-radius:6px; background:#f1f5f9; color:#475569; font-size:.72rem; margin:2px 2px 0 0; }
     .score-main { font-size:1rem; font-weight:700; color:var(--primary-light); }
     .score-percent { display:block; font-size:.72rem; color:#64748b; margin-top:2px; }
+    .status-badge { display:inline-block;padding:4px 8px;border-radius:999px;font-size:.72rem;font-weight:800;white-space:nowrap; }
+    .status-logged_in { background:#dbeafe;color:#1d4ed8; }
+    .status-in_progress { background:#fef3c7;color:#92400e; }
+    .status-final_submitted { background:#d1fae5;color:#065f46; }
     @media (max-width: 850px) { .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 
     @media (max-width: 650px) {
@@ -557,6 +562,10 @@
               <label for="per-exam-timer">Per Exam Timer (Minutes) *</label>
               <input type="number" id="per-exam-timer" min="1" placeholder="e.g. 30">
             </div>
+            <div class="per-exam-penalty-wrap">
+              <label for="per-exam-penalty">Penalty / Violation *</label>
+              <input type="number" id="per-exam-penalty" min="0" step="0.25" placeholder="e.g. 1">
+            </div>
           </div>
         </div>
 
@@ -579,6 +588,20 @@
         <div class="config-summary" id="multi-exam-summary">
           <strong>Ready:</strong> Configure each exam, set its timer, choose Random/Sequential order for every subject, then select which exams are active.
         </div>
+      </div>
+
+      <div class="admin-card">
+        <h3><i class="fa-solid fa-location-dot"></i> Examination Center Access</h3>
+        <p class="subtitle">Only students with the active center code can enter. Institute details are used automatically in the live dashboard and branded report.</p>
+        <div class="form-grid">
+          <div class="form-group"><label for="center-code">Center Code *</label><input type="text" id="center-code" placeholder="e.g. ACC-2026" autocomplete="off"></div>
+          <div class="form-group"><label for="center-name">Institute Name *</label><input type="text" id="center-name" value="ASHISH COMPETITION CENTRE (ACC)"></div>
+          <div class="form-group"><label for="center-location">Institute Location *</label><input type="text" id="center-location" value="DALTONGANJ"></div>
+          <div class="form-group"><label for="center-address">Full Address</label><input type="text" id="center-address" placeholder="Institute address"></div>
+          <div class="form-group"><label for="center-batch">Batch / Category</label><input type="text" id="center-batch" placeholder="e.g. R Batch"></div>
+        </div>
+        <button type="button" class="btn btn-success" onclick="saveCenterSettings()"><i class="fa-solid fa-key"></i> Activate Center Code</button>
+        <div class="config-summary" id="center-summary">No center code loaded.</div>
       </div>
 
       <!-- GENERAL SETTINGS THAT ARE NOT EXAM-SPECIFIC -->
@@ -641,7 +664,7 @@
         </h3>
 
         <p class="subtitle">
-          Live security logs of tab switches, copy/paste attempts, and penalty marks.
+          Live login status and completed personal analysis update automatically.
         </p>
 
 
@@ -659,13 +682,13 @@
             <thead>
 
               <tr>
-                <th>Student Details</th>
+                <th>Status / Student</th>
                 <th>Exam</th>
-                <th>Subjects</th>
-                <th>Submit Time</th>
-                <th>Tab Switches</th>
-                <th>Copy Violations</th>
-                <th>Penalty Marks Deduc.</th>
+                <th>Center</th>
+                <th>Login / Submit</th>
+                <th>Time Taken</th>
+                <th>Correct / Wrong / Attempted</th>
+                <th>Security / Penalty</th>
               </tr>
 
             </thead>
@@ -734,11 +757,11 @@
         >
 
           <button
-            onclick="downloadResultsCSV()"
+            onclick="downloadBrandedExcel()"
             class="btn btn-accent"
           >
             <i class="fa-solid fa-file-excel"></i>
-            Download CSV Report
+            Download Branded Excel Report
           </button>
 
 
@@ -813,7 +836,8 @@
       getDoc,
       collection,
       getDocs,
-      deleteDoc
+      deleteDoc,
+      onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     import {
@@ -1006,24 +1030,21 @@
        MULTI-EXAM / SUBJECT CONFIGURATION
        ============================================================ */
     const DEFAULT_MULTI_EXAM_CONFIG = {
-      railway_group_d:{examName:'RRB Group D',timerMinutes:90,active:true,subjects:[
-        {name:'Maths',count:25,order:'random',source:'railway/maths.html'},
-        {name:'Reasoning',count:25,order:'random',source:'railway/reasoning.html'},
-        {name:'General Science',count:25,order:'random',source:'railway/science.html'},
-        {name:'General Awareness & Current Affairs',count:25,order:'random',source:'railway/gk-current-affairs.html'}]},
-      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:120,active:false,subjects:[
+      railway_group_d:{examName:'RRB Group D',timerMinutes:90,securityPenalty:1,active:true,subjects:[
+        {name:'All Questions',count:100,order:'random',source:'railway.html'}]},
+      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:120,securityPenalty:1,active:false,subjects:[
         {name:'Child Development & Pedagogy',count:10,order:'random',source:'jtet/cdp.html'},
         {name:'Language I',count:10,order:'random',source:'jtet/language1.html'},
         {name:'Language II',count:10,order:'random',source:'jtet/language2.html'},
         {name:'Mathematics',count:10,order:'random',source:'jtet/mathematics.html'},
         {name:'Environmental Studies',count:10,order:'random',source:'jtet/evs.html'}]},
-      ssc_gd:{examName:'SSC GD',timerMinutes:60,active:true,subjects:[
+      ssc_gd:{examName:'SSC GD',timerMinutes:60,securityPenalty:1,active:true,subjects:[
         {name:'General Intelligence & Reasoning',count:20,order:'random',source:'ssc-gd/reasoning.html'},
         {name:'General Knowledge & General Awareness',count:20,order:'random',source:'ssc-gd/gk-gs.html'},
         {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
         {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
     };
-    const EXAM_CONFIG_SCHEMA_VERSION = 2;
+    const EXAM_CONFIG_SCHEMA_VERSION = 3;
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
 
     function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
@@ -1031,11 +1052,59 @@
     function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
     function escapeHTML(value){ return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
+    async function sha256(value){
+      const bytes=new TextEncoder().encode(String(value).trim().toUpperCase());
+      const digest=await crypto.subtle.digest('SHA-256',bytes);
+      return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    let currentCenterSettings={};
+    window.saveCenterSettings=async()=>{
+      const code=document.getElementById('center-code').value.trim().toUpperCase();
+      const instituteName=document.getElementById('center-name').value.trim();
+      const location=document.getElementById('center-location').value.trim();
+      const address=document.getElementById('center-address').value.trim();
+      const batch=document.getElementById('center-batch').value.trim();
+      if(!code||!instituteName||!location){alert('Center Code, Institute Name and Location are required.');return;}
+      try{
+        const centerId=await sha256(code);
+        const previousCenterId=currentCenterSettings.centerId||'';
+        currentCenterSettings={centerId,instituteName,location,address,batch,active:true};
+        await setDoc(doc(db,'centers',centerId),{...currentCenterSettings,updatedAt:new Date()},{merge:true});
+        if(previousCenterId&&previousCenterId!==centerId){
+          await setDoc(doc(db,'centers',previousCenterId),{active:false,replacedAt:new Date()},{merge:true});
+        }
+        await setDoc(doc(db,'exam_config','current_test'),{activeCenterId:centerId,instituteName,instituteLocation:location,instituteAddress:address,batchName:batch,updatedAt:new Date()},{merge:true});
+        document.getElementById('center-summary').innerHTML=`<strong>Active:</strong> ${escapeHTML(instituteName)} • ${escapeHTML(location)} • Code configured successfully.`;
+        alert('Center code activated. Share it only with students inside the examination center.');
+      }catch(err){console.error(err);alert('Center code could not be saved: '+err.message);}
+    };
+
+    function populateCenterSettings(data={}){
+      currentCenterSettings={
+        centerId:data.activeCenterId||'',
+        instituteName:data.instituteName||'ASHISH COMPETITION CENTRE (ACC)',
+        location:data.instituteLocation||'DALTONGANJ',
+        address:data.instituteAddress||'',
+        batch:data.batchName||''
+      };
+      document.getElementById('center-name').value=currentCenterSettings.instituteName;
+      document.getElementById('center-location').value=currentCenterSettings.location;
+      document.getElementById('center-address').value=currentCenterSettings.address;
+      document.getElementById('center-batch').value=currentCenterSettings.batch;
+      document.getElementById('center-code').value='';
+      document.getElementById('center-summary').innerHTML=currentCenterSettings.centerId
+        ? `<strong>Active:</strong> ${escapeHTML(currentCenterSettings.instituteName)} • ${escapeHTML(currentCenterSettings.location)} • Enter a new code only to replace it.`
+        : '<strong>Required:</strong> Create the center code before admitting students.';
+    }
+
     function syncCurrentExamTimer(){
       const id=getConfiguredExamId();
       if(!multiExamConfig[id]) return;
       const input=document.getElementById('per-exam-timer');
       if(input) input.value=Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '';
+      const penalty=document.getElementById('per-exam-penalty');
+      if(penalty) penalty.value=Number.isFinite(Number(multiExamConfig[id].securityPenalty)) ? Number(multiExamConfig[id].securityPenalty) : 1;
     }
 
     function collectCurrentExamTimer(){
@@ -1043,6 +1112,8 @@
       if(!multiExamConfig[id]) multiExamConfig[id]={examName:getExamDisplayName(id),timerMinutes:0,active:false,subjects:[]};
       const value=Number(document.getElementById('per-exam-timer')?.value);
       if(Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
+      const penalty=Number(document.getElementById('per-exam-penalty')?.value);
+      if(Number.isFinite(penalty) && penalty>=0) multiExamConfig[id].securityPenalty=penalty;
     }
 
     function renderActiveExamControls(){
@@ -1085,7 +1156,7 @@
       const id=getConfiguredExamId(),exam=multiExamConfig[id]||{subjects:[],timerMinutes:0};
       const subjects=exam.subjects||[],total=subjects.reduce((n,s)=>n+(Number(s.count)||0),0);
       const active=getExamIds().filter(x=>multiExamConfig[x]?.active).map(x=>getExamDisplayName(x));
-      el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} subject(s) • ${total} student questions • Timer: ${Number(exam.timerMinutes)||0} min • Order is controlled per subject. <br><strong>Active:</strong> ${active.length?escapeHTML(active.join(', ')):'None selected'}`;
+      el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} section(s) • ${total} student questions • Timer: ${Number(exam.timerMinutes)||0} min • Penalty: ${Number(exam.securityPenalty)||0}/violation. <br><strong>Active:</strong> ${active.length?escapeHTML(active.join(', ')):'None selected'}`;
     }
 
     function collectVisibleSubjectValues(){
@@ -1140,6 +1211,7 @@
       const selector=document.getElementById('exam-selector');
       if(selector){selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';selector.onchange=()=>{renderSubjectConfig();syncCurrentExamTimer();updateMultiExamSummary();};}
       const timer=document.getElementById('per-exam-timer'); if(timer) timer.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
+      const penalty=document.getElementById('per-exam-penalty'); if(penalty) penalty.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
       document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getConfiguredExamId();collectCurrentExamTimer();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});
       document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);
       renderActiveExamControls();
@@ -1161,12 +1233,12 @@
             getExamIds().forEach(id=>{if(!migrated[id])migrated[id]=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]));});
             migrated.railway_group_d.examName='RRB Group D';
             migrated.railway_group_d.active=true;
-            migrated.railway_group_d.timerMinutes=Number(migrated.railway_group_d.timerMinutes)>0?Number(migrated.railway_group_d.timerMinutes):90;
-            if((migrated.railway_group_d.subjects||[]).reduce((n,s)=>n+(Number(s.count)||0),0)!==100){
-              migrated.railway_group_d.subjects=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG.railway_group_d.subjects));
-            }
+            migrated.railway_group_d.timerMinutes=90;
+            migrated.railway_group_d.securityPenalty=Number.isFinite(Number(migrated.railway_group_d.securityPenalty))?Number(migrated.railway_group_d.securityPenalty):1;
+            migrated.railway_group_d.subjects=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG.railway_group_d.subjects));
             migrated.ssc_gd.active=true;
-            migrated.ssc_gd.timerMinutes=Number(migrated.ssc_gd.timerMinutes)>0?Number(migrated.ssc_gd.timerMinutes):60;
+            migrated.ssc_gd.timerMinutes=60;
+            migrated.ssc_gd.securityPenalty=Number.isFinite(Number(migrated.ssc_gd.securityPenalty))?Number(migrated.ssc_gd.securityPenalty):1;
             migrated.jharkhand_tet.active=false;
             const activeExamIds=['railway_group_d','ssc_gd'];
             await setDoc(doc(db,'exam_config','current_test'),{
@@ -1179,6 +1251,7 @@
             Object.assign(data,{multiExamConfig:migrated,activeExamIds,activeExamId:'railway_group_d',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION});
           }
           initializeMultiExamControls(data.multiExamConfig,data.activeExamId,data.activeExamIds);
+          populateCenterSettings(data);
           if(data.windowStart) document.getElementById('config-window-start').value=new Date(data.windowStart).toISOString().slice(0,16);
           if(data.windowEnd) document.getElementById('config-window-end').value=new Date(data.windowEnd).toISOString().slice(0,16);
           if(data.uploadMode){
@@ -1187,10 +1260,12 @@
           }
         }else{
           initializeMultiExamControls();
+          populateCenterSettings();
         }
       }catch(e){
         console.error('Config load error:',e);
         initializeMultiExamControls();
+        populateCenterSettings();
       }
     }
 
@@ -1275,7 +1350,7 @@
         document.getElementById('leaderboard-exam-filter')?.value || 'all';
 
       return currentAnalyticsResults.filter(r =>
-        exam === 'all' || r.examId === exam
+        r.status === 'final_submitted' && (exam === 'all' || r.examId === exam)
       );
     }
 
@@ -1287,11 +1362,7 @@
 
       body.innerHTML = '';
 
-      const alerts = data.filter(r =>
-        r.tabSwitches > 0 ||
-        r.copiesAttempted > 0 ||
-        r.penaltiesApplied > 0
-      ).length;
+      const alerts = data.reduce((sum,r)=>sum+(Number(r.securityViolations)||0),0);
 
       const percents = data.map(getScorePercent).filter(v => v !== null);
 
@@ -1314,13 +1385,13 @@
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
-          <td><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
+          <td><span class="status-badge status-${escapeHTML(r.status)}">${escapeHTML(r.statusLabel)}</span><br><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
           <td><span class="exam-badge">${escapeHTML(r.examName)}</span></td>
-          <td>${subjectBadges(r.subjects)}</td>
-          <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
-          <td><span class="alert-indicator ${r.tabSwitches > 0 ? 'alert-warn' : 'alert-safe'}">${r.tabSwitches} Times</span></td>
-          <td><span class="alert-indicator ${r.copiesAttempted > 0 ? 'alert-warn' : 'alert-safe'}">${r.copiesAttempted} Times</span></td>
-          <td><span class="alert-indicator ${r.penaltiesApplied > 0 ? 'alert-warn' : 'alert-safe'}">-${r.penaltiesApplied} Mark(s)</span></td>`;
+          <td>${escapeHTML(r.centerName)}<br><small>${escapeHTML(r.centerLocation)}</small></td>
+          <td><span class="time-stamp">Login: ${escapeHTML(r.loginAtStr)}</span><span class="time-stamp">Submit: ${escapeHTML(r.submittedAtStr)}</span></td>
+          <td>${escapeHTML(r.timeTakenText)}</td>
+          <td><strong>${r.correct}</strong> / <span style="color:#b91c1c">${r.wrong}</span> / ${r.attempted}</td>
+          <td><span class="alert-indicator ${r.securityViolations>0?'alert-warn':'alert-safe'}">${r.securityViolations} violation(s)</span><br><small>Tab/Focus: ${r.tabSwitches} • Copy: ${r.copiesAttempted} • Penalty: -${r.penaltiesApplied}</small></td>`;
 
         body.appendChild(tr);
       });
@@ -1377,22 +1448,25 @@
     };
 
 
+    let liveSessionsUnsubscribe=null;
     window.fetchLiveDatabaseRecords = async () => {
       const analyticsBody = document.getElementById('analytics-table-body');
       const leaderboardBody = document.getElementById('leaderboard-table-body');
       analyticsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>';
       leaderboardBody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>';
       try {
-        const snap = await getDocs(collection(db, 'results'));
+        if(liveSessionsUnsubscribe) liveSessionsUnsubscribe();
+        liveSessionsUnsubscribe=onSnapshot(collection(db,'exam_sessions'),snap=>{
         currentAnalyticsResults = [];
         snap.forEach(docSnap => {
           const r = docSnap.data();
           let scoreVal = 0;
           if (typeof r.score === 'string') scoreVal = parseFloat(r.score.split('/')[0]) || 0;
           else if (typeof r.score === 'number') scoreVal = r.score;
-          let dateObj = new Date(0);
+          let dateObj = new Date(0), loginObj=new Date(0);
           if (r.submittedAt) dateObj = r.submittedAt.toDate ? r.submittedAt.toDate() : new Date(r.submittedAt);
-          else if (r.timestamp) dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
+          if (r.loginAt) loginObj = r.loginAt.toDate ? r.loginAt.toDate() : new Date(r.loginAt);
+          const status=r.status||'logged_in';
           currentAnalyticsResults.push({
             id: docSnap.id,
             name: r.name || 'Anonymous',
@@ -1403,9 +1477,15 @@
             examName: normalizeExamName(r),
             examId: normalizeExamId(r),
             subjects: normalizeSubjects(r),
+            centerName:r.centerName||'Not recorded',centerLocation:r.centerLocation||'',centerAddress:r.centerAddress||'',batch:r.batch||'',
+            status,statusLabel:status==='final_submitted'?'Final Submitted':status==='in_progress'?'Test In Progress':'Logged In',
+            loginAtStr:loginObj.getTime()>0?loginObj.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'N/A',
             tabSwitches: Number(r.tabSwitches ?? r.tab_switches ?? 0) || 0,
             copiesAttempted: Number(r.copiesAttempted ?? r.copy_paste ?? 0) || 0,
             penaltiesApplied: Number(r.penaltiesApplied ?? 0) || 0,
+            securityViolations:Number(r.securityViolations??0)||0,
+            correct:Number(r.correct??0)||0,wrong:Number(r.wrong??0)||0,attempted:Number(r.attempted??0)||0,
+            timeTakenSeconds:Number(r.timeTakenSeconds??0)||0,timeTakenText:r.timeTakenText||'—',rating:Number(r.rating??0)||0,doubt:r.doubt||'None',
             submittedAtStr: dateObj.getTime() > 0 ? dateObj.toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'}) : 'N/A',
             feedback: r.feedback || 'None'
           });
@@ -1415,11 +1495,12 @@
         renderAnalyticsRows();
         renderLeaderboardRows();
         document.getElementById('leaderboard-exam-filter')?.addEventListener('change', renderLeaderboardRows);
-      } catch (err) {
+        },err=>{
         console.error(err);
         analyticsBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
         leaderboardBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
-      }
+        });
+      } catch (err) { console.error(err); }
     };
 
     /* ============================================================
@@ -1440,6 +1521,54 @@
       a.href = url;
       a.download = `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    };
+
+    window.downloadBrandedExcel = async () => {
+      const data=getFilteredLeaderboardResults();
+      if(!data.length){alert('No completed student records are available for this report.');return;}
+      if(!window.ExcelJS){alert('Excel report library could not load. Check the internet connection and retry.');return;}
+      const sorted=[...data].sort((a,b)=>b.scoreVal-a.scoreVal||b.rawDate-a.rawDate);
+      const first=sorted[0]||{};
+      const institute=first.centerName||currentCenterSettings.instituteName||'Examination Institute';
+      const location=first.centerLocation||currentCenterSettings.location||'';
+      const address=first.centerAddress||currentCenterSettings.address||'';
+      const batch=first.batch||currentCenterSettings.batch||'';
+      const workbook=new ExcelJS.Workbook();
+      workbook.creator='Bookesh';workbook.created=new Date();
+      const sheet=workbook.addWorksheet('Student Test Report',{views:[{state:'frozen',ySplit:8}]});
+      const columns=['Rank','Name','Email','Status','Exam','Center / Batch','Score','Rating','Login At','Submitted At','Correct','Wrong','Attempted','Time Taken','Security Violations','Tab / Focus','Copy / Paste','Penalty','Feedback','Doubt'];
+      sheet.columns=columns.map((header,i)=>({header,key:'c'+i,width:[8,22,30,16,18,23,12,9,22,22,10,10,11,16,18,14,14,10,24,24][i]}));
+      sheet.spliceRows(1,1);
+      sheet.mergeCells('A1:Q1');sheet.getCell('A1').value=institute;sheet.getCell('A1').font={bold:true,size:18,color:{argb:'FF0B326B'}};sheet.getCell('A1').alignment={horizontal:'center'};
+      sheet.mergeCells('A2:Q2');sheet.getCell('A2').value=[location,address].filter(Boolean).join(' • ');sheet.getCell('A2').font={size:11,color:{argb:'FF64748B'}};sheet.getCell('A2').alignment={horizontal:'center'};
+      // Create a clean Bookesh mark locally so the report keeps its branding
+      // even when no external image server is available during download.
+      const brandSvg=`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="90" viewBox="0 0 300 90"><rect width="300" height="90" fill="white"/><path d="M34 20h18l8 37h66l10-26H62" fill="none" stroke="#0B326B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 18h52v30H72z" fill="#0B326B"/><path d="M78 23h40v20H78z" fill="white"/><circle cx="72" cy="70" r="7" fill="#0B326B"/><circle cx="120" cy="70" r="7" fill="#0B326B"/><text x="150" y="54" font-family="Arial,sans-serif" font-size="31" font-weight="700" fill="#0B326B">book</text><text x="226" y="54" font-family="Arial,sans-serif" font-size="31" font-weight="700" fill="#F59E0B">esh</text><text x="151" y="72" font-family="Arial,sans-serif" font-size="9" fill="#64748B">LEARNING INFRASTRUCTURE</text></svg>`;
+      try{
+        const logoData=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>{const canvas=document.createElement('canvas');canvas.width=300;canvas.height=90;canvas.getContext('2d').drawImage(image,0,0);resolve(canvas.toDataURL('image/png'));};image.onerror=reject;image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(brandSvg);});
+        const logoId=workbook.addImage({base64:logoData,extension:'png'});
+        sheet.addImage(logoId,{tl:{col:17.2,row:.05},ext:{width:180,height:54}});
+      }catch(err){console.warn('Report logo render skipped:',err);sheet.mergeCells('R1:T2');sheet.getCell('R1').value='BOOKESH';sheet.getCell('R1').font={bold:true,size:15,color:{argb:'FF0B326B'}};sheet.getCell('R1').alignment={horizontal:'center',vertical:'middle'};}
+      sheet.mergeCells('A3:T3');sheet.getCell('A3').value='STUDENT TEST REPORT';sheet.getCell('A3').font={bold:true,size:13,color:{argb:'FFFFFFFF'}};sheet.getCell('A3').fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0B326B'}};sheet.getCell('A3').alignment={horizontal:'center'};
+      sheet.mergeCells('A4:T4');sheet.getCell('A4').value="Test conducted by Bookesh — India's Students Learning Infrastructure";sheet.getCell('A4').font={bold:true,size:11,color:{argb:'FF0B326B'}};sheet.getCell('A4').alignment={horizontal:'center'};
+      sheet.mergeCells('A5:T5');sheet.getCell('A5').value='Secure digital assessment • Live monitoring • Transparent evaluation • Detailed performance analytics';sheet.getCell('A5').font={italic:true,size:10,color:{argb:'FF64748B'}};sheet.getCell('A5').alignment={horizontal:'center'};
+      sheet.mergeCells('A6:G6');sheet.getCell('A6').value=`Institute / Batch: ${institute}${batch?' / '+batch:''}`;
+      sheet.mergeCells('H6:N6');sheet.getCell('H6').value=`Report Date: ${new Date().toLocaleDateString('en-IN')}`;sheet.getCell('H6').alignment={horizontal:'center'};
+      sheet.mergeCells('O6:T6');sheet.getCell('O6').value=`Exam: ${document.getElementById('leaderboard-exam-filter')?.selectedOptions?.[0]?.text||'All Exams'}`;sheet.getCell('O6').alignment={horizontal:'right'};
+      ['A6','H6','O6'].forEach(ref=>{sheet.getCell(ref).font={bold:true,color:{argb:'FF0B326B'}};sheet.getCell(ref).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFEAF2F8'}};});
+      const headerRow=sheet.getRow(8);headerRow.values=columns;headerRow.height=34;
+      headerRow.eachCell(cell=>{cell.font={bold:true,color:{argb:'FFFFFFFF'}};cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0B326B'}};cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};cell.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};});
+      sorted.forEach((r,i)=>{
+        const row=sheet.addRow([i+1,r.name,r.email,r.statusLabel,r.examName,[r.centerName,r.batch].filter(Boolean).join(' / '),r.scoreText,r.rating,r.loginAtStr,r.submittedAtStr,r.correct,r.wrong,r.attempted,r.timeTakenText,r.securityViolations,r.tabSwitches,r.copiesAttempted,r.penaltiesApplied,r.feedback,r.doubt]);
+        row.alignment={vertical:'middle',wrapText:true};
+        row.eachCell(cell=>{cell.border={top:{style:'thin',color:{argb:'FFB8C2CC'}},left:{style:'thin',color:{argb:'FFB8C2CC'}},bottom:{style:'thin',color:{argb:'FFB8C2CC'}},right:{style:'thin',color:{argb:'FFB8C2CC'}}};});
+        if(i%2) row.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF5F8FB'}};
+      });
+      sheet.autoFilter={from:'A8',to:'T8'};sheet.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9,margins:{left:.25,right:.25,top:.4,bottom:.4,header:.2,footer:.2}};
+      sheet.headerFooter.oddFooter='Bookesh • Secure Examination & Student Analytics';
+      const buffer=await workbook.xlsx.writeBuffer();
+      const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Bookesh_${institute.replace(/[^a-z0-9]+/gi,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
     };
 
     /* ============================================================
@@ -1465,7 +1594,8 @@
       try {
         await Promise.all([
           deleteDoc(doc(db, 'results', resultId)),
-          deleteDoc(doc(db, 'attempt_locks', resultId))
+          deleteDoc(doc(db, 'attempt_locks', resultId)),
+          deleteDoc(doc(db, 'exam_sessions', resultId))
         ]);
 
         currentAnalyticsResults = currentAnalyticsResults.filter(
@@ -1510,9 +1640,11 @@
 
 
         const lockSnap = await getDocs(collection(db, "attempt_locks"));
+        const sessionSnap = await getDocs(collection(db, "exam_sessions"));
         const deletes = [
           ...snap.docs.map(d => deleteDoc(doc(db, "results", d.id))),
-          ...lockSnap.docs.map(d => deleteDoc(doc(db, "attempt_locks", d.id)))
+          ...lockSnap.docs.map(d => deleteDoc(doc(db, "attempt_locks", d.id))),
+          ...sessionSnap.docs.map(d => deleteDoc(doc(db, "exam_sessions", d.id)))
         ];
 
 

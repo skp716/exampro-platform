@@ -300,6 +300,7 @@
     .exam-modal-btn.primary{background:#083783;border-color:#083783;color:#fff;}
     .exam-modal-btn.danger{background:#dc2626;border-color:#dc2626;color:#fff;}
     .exam-modal-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 9px;border-radius:7px;background:#fff1f2;color:#be123c;font-size:.78rem;font-weight:800;}
+    .passage-box{white-space:pre-wrap;background:#f8fafc;border:1px solid #cbd5e1;border-left:5px solid var(--primary);border-radius:10px;padding:16px;margin-bottom:20px;font-weight:500;max-height:none;overflow:visible;}
   </style>
 </head>
 <body>
@@ -331,6 +332,11 @@
             <option value="">Select Exam Category</option>
           </select>
           <div class="error-msg" id="exam-category-error"><i class="fa-solid fa-circle-exclamation"></i> Please select an exam category.</div>
+        </div>
+        <div class="form-group">
+          <label for="center-code">Center Code *</label>
+          <input type="text" id="center-code" placeholder="Enter code provided at the exam center" autocomplete="off" required>
+          <div class="error-msg" id="center-code-error"><i class="fa-solid fa-circle-exclamation"></i> Invalid or inactive center code.</div>
         </div>
         <button type="submit" id="proceed-btn" class="btn"><i class="fa-solid fa-arrow-right"></i> Start Test</button>
       </form>
@@ -522,8 +528,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
@@ -563,17 +569,35 @@
     let studentAuthPromise = null;
     let attemptClaimed = false;
     let currentAttemptId = sessionStorage.getItem('currentAttemptId') || '';
+    let currentCenter = null;
+    let currentSession = null;
+    let examStartTime = 0;
+    let examEndTime = 0;
+    let progressSaveTimer = null;
+    let heartbeatTimer = null;
+    let reserveQuestions = [];
+    let securityEvents = [];
+    let lastSecurityEventAt = 0;
+    let initialFullscreenArea = 0;
+    let securitySuppressedUntil = 0;
+    let finalMetrics = {};
     const MAX_TAB_SWITCHES = 5;
 
     async function ensureStudentAuth() {
       if (auth.currentUser) return auth.currentUser;
       if (!studentAuthPromise) {
-        studentAuthPromise = signInAnonymously(auth)
-          .then(credential => credential.user)
-          .catch(err => {
-            studentAuthPromise = null;
-            throw err;
-          });
+        studentAuthPromise = new Promise((resolve,reject)=>{
+          let settled=false;
+          const timeout=setTimeout(()=>{if(!settled){settled=true;studentAuthPromise=null;reject(new Error('Authentication timed out.'));}},12000);
+          const unsubscribe=onAuthStateChanged(auth,async user=>{
+            if(settled)return;
+            if(user){settled=true;clearTimeout(timeout);unsubscribe();resolve(user);return;}
+            try{
+              const credential=await signInAnonymously(auth);
+              if(!settled){settled=true;clearTimeout(timeout);unsubscribe();resolve(credential.user);}
+            }catch(err){if(!settled){settled=true;clearTimeout(timeout);unsubscribe();studentAuthPromise=null;reject(err);}}
+          },err=>{if(!settled){settled=true;clearTimeout(timeout);studentAuthPromise=null;reject(err);}});
+        });
       }
       return studentAuthPromise;
     }
@@ -584,83 +608,130 @@
       return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
-    async function claimExamAttempt() {
-      if (attemptClaimed && currentAttemptId) return currentAttemptId;
-      const user = await ensureStudentAuth();
-      const attemptId = await sha256(`${selectedExamId}|${currentStudentEmail}`);
+    async function validateCenterCode(code){
+      const centerId=await sha256(String(code).trim().toUpperCase());
+      const snap=await getDoc(doc(db,'centers',centerId));
+      if(!snap.exists()||snap.data()?.active!==true) throw new Error('invalid-center-code');
+      return {centerId,...snap.data()};
+    }
 
-      // A create-only Firestore rule makes this deterministic document the
-      // single-use lock for one email + one exam. Existing locks cannot be
-      // overwritten from the student portal.
-      await setDoc(doc(db, 'attempt_locks', attemptId), {
-        ownerUid: user.uid,
-        email: currentStudentEmail,
-        examId: selectedExamId,
-        createdAt: new Date()
+    function applyCenterBranding(center){
+      const institute=center?.instituteName||'Examination Center';
+      const location=center?.location||'';
+      document.querySelectorAll('.brand-name').forEach(el=>el.textContent=institute);
+      document.querySelectorAll('.brand-sub').forEach(el=>el.textContent=location);
+      const examInstitute=document.querySelector('.exam-institute');
+      if(examInstitute){
+        const title=examInstitute.querySelector('strong');
+        const sub=examInstitute.querySelector('span');
+        if(title)title.textContent=institute;
+        if(sub)sub.textContent=location;
+      }
+    }
+
+    async function claimLoginSession(){
+      const user=await ensureStudentAuth();
+      const attemptId=await sha256(`${selectedExamId}|${currentStudentEmail}`);
+      const lockRef=doc(db,'attempt_locks',attemptId),sessionRef=doc(db,'exam_sessions',attemptId);
+      const now=new Date();
+      const data=await runTransaction(db,async transaction=>{
+        const lockSnap=await transaction.get(lockRef);
+        const sessionSnap=await transaction.get(sessionRef);
+        if(lockSnap.exists()&&lockSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
+        if(sessionSnap.exists()&&sessionSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
+        if(sessionSnap.exists()&&sessionSnap.data()?.status==='final_submitted') throw new Error('attempt-already-used');
+        if(!lockSnap.exists()) transaction.set(lockRef,{ownerUid:user.uid,email:currentStudentEmail,examId:selectedExamId,createdAt:now});
+        if(!sessionSnap.exists()){
+          transaction.set(sessionRef,{
+            sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,
+            examId:selectedExamId,examName:selectedExamName,centerId:currentCenter.centerId,
+            centerName:currentCenter.instituteName||'Examination Center',centerLocation:currentCenter.location||'',
+            centerAddress:currentCenter.address||'',batch:currentCenter.batch||'',status:'logged_in',
+            loginAt:now,lastSeen:now,securityViolations:0,tabSwitches:0,copiesAttempted:0,penaltiesApplied:0
+          });
+          return {status:'logged_in'};
+        }
+        transaction.set(sessionRef,{lastSeen:now,name:currentStudentName},{merge:true});
+        return sessionSnap.data();
       });
+      currentAttemptId=attemptId;draftResultId=attemptId;attemptClaimed=true;currentSession=data;
+      sessionStorage.setItem('currentAttemptId',attemptId);sessionStorage.setItem('draftResultId',attemptId);
+      return data;
+    }
 
-      currentAttemptId = attemptId;
-      draftResultId = attemptId;
-      attemptClaimed = true;
-      sessionStorage.setItem('currentAttemptId', attemptId);
-      sessionStorage.setItem('draftResultId', attemptId);
-      return attemptId;
+    function getPenaltyPerViolation(){
+      const value=Number(selectedExamConfig?.securityPenalty??examConfigData?.securityPenalty??1);
+      return Number.isFinite(value)&&value>=0?value:1;
+    }
+
+    function queueProgressSave(immediate=false){
+      clearTimeout(progressSaveTimer);
+      progressSaveTimer=setTimeout(saveExamProgress,immediate?0:1500);
+    }
+
+    async function saveExamProgress(extra={}){
+      if(!currentAttemptId||!auth.currentUser)return;
+      const payload={
+        status:isExamActive?'in_progress':(currentSession?.status||'logged_in'),lastSeen:new Date(),
+        currentQuestionIndex,selectedAnswers,questionStatus,examStartTime,examEndTime,
+        questionOrder:questionsList.map(q=>q._questionKey),reserveOrder:reserveQuestions.map(q=>q._questionKey),
+        tabSwitches,copiesAttempted,penaltiesApplied,securityViolations:securityEvents.length,
+        securityEvents:securityEvents.slice(-50),...extra
+      };
+      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
+      catch(err){console.error('Progress save failed:',err);}
+    }
+
+    function replaceViolatedQuestion(){
+      if(!questionsList.length)return false;
+      const current=questionsList[currentQuestionIndex];
+      let reserveIndex=reserveQuestions.findIndex(q=>q._subjectId===(current?._subjectId));
+      if(reserveIndex<0&&reserveQuestions.length)reserveIndex=0;
+      if(reserveIndex<0)return false;
+      const replacement=reserveQuestions.splice(reserveIndex,1)[0];
+      reserveQuestions.push(current);
+      questionsList[currentQuestionIndex]=replacement;
+      delete selectedAnswers[currentQuestionIndex];
+      questionStatus[currentQuestionIndex]='not-answered';
+      loadQuestion(currentQuestionIndex);
+      return true;
+    }
+
+    function recordSecurityViolation(reason){
+      if(!isExamActive||Date.now()<securitySuppressedUntil)return;
+      const now=Date.now();if(now-lastSecurityEventAt<1200)return;lastSecurityEventAt=now;
+      tabSwitches=Math.min(MAX_TAB_SWITCHES,tabSwitches+1);
+      const penalty=getPenaltyPerViolation();penaltiesApplied=Number((penaltiesApplied+penalty).toFixed(2));
+      const changed=replaceViolatedQuestion();
+      securityEvents.push({reason,at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty,questionChanged:changed});
+      sessionStorage.setItem('tabSwitches',String(tabSwitches));sessionStorage.setItem('penaltiesApplied',String(penaltiesApplied));
+      queueProgressSave(true);
+      if(tabSwitches>=MAX_TAB_SWITCHES){
+        showExamModal('security','Security Limit Reached',`Maximum security violation limit reached. Total penalty: -${penaltiesApplied}. Your exam will now be submitted.`,'Submit & View Result',null,'danger',()=>{clearInterval(timerInterval);isExamActive=false;calculateAndShowResults();});
+      }else{
+        showExamModal('security',`Security Alert — ${tabSwitches}/${MAX_TAB_SWITCHES}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
+      }
     }
 
     // Security track
     let tabSwitches = parseInt(sessionStorage.getItem('tabSwitches') || '0');
     let copiesAttempted = parseInt(sessionStorage.getItem('copiesAttempted') || '0');
-    let penaltiesApplied = parseInt(sessionStorage.getItem('penaltiesApplied') || '0');
+    let penaltiesApplied = Number(sessionStorage.getItem('penaltiesApplied') || '0');
 
-    // Security: count each real leave/return cycle only once; maximum 5 tab switches.
+    // One central handler prevents stacked penalties from blur + visibility + fullscreen events.
     document.addEventListener("visibilitychange", () => {
-      if (!isExamActive) return;
-
-      if (document.hidden) {
-        if (securityEventLocked) return;
-        securityEventLocked = true;
-
-        if (tabSwitches >= MAX_TAB_SWITCHES) return;
-
-        tabSwitches = Math.min(MAX_TAB_SWITCHES, tabSwitches + 1);
-        penaltiesApplied = tabSwitches;
-        sessionStorage.setItem('tabSwitches', String(tabSwitches));
-        sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
-
-        // First switch changes the current question; the 5th switch ends the exam.
-        if (tabSwitches === 1) shuffleCurrentQuestion();
-
-        if (tabSwitches >= MAX_TAB_SWITCHES) {
-          showExamModal(
-            'security',
-            'Security Limit Reached',
-            `<strong>Maximum tab/background switch limit reached.</strong><br><span class="exam-modal-badge"><i class="fa-solid fa-triangle-exclamation"></i> Tab Switch ${MAX_TAB_SWITCHES}/${MAX_TAB_SWITCHES}</span><br><br>Your examination will now be submitted automatically.`,
-            'Submit & View Result',
-            null,
-            'danger',
-            () => { clearInterval(timerInterval); isExamActive = false; calculateAndShowResults(); }
-          );
-        } else {
-          showExamModal(
-            'security',
-            `Security Alert — Tab Switch ${tabSwitches}/${MAX_TAB_SWITCHES}`,
-            `<strong>Background/Tab switch detected.</strong><br><span class="exam-modal-badge"><i class="fa-solid fa-triangle-exclamation"></i> Penalty: -1 mark</span><br><br>${tabSwitches === 1 ? 'The current question has been changed as a security measure.' : 'This tab switch has been recorded. Your examination is still active.'}`,
-            'Continue Exam',
-            null,
-            'primary'
-          );
-        }
-      } else {
-        // Prevent duplicate visibility events from one mobile/desktop switch.
-        setTimeout(() => { securityEventLocked = false; }, 700);
-      }
+      if(document.hidden)recordSecurityViolation('page-hidden');
     });
+    window.addEventListener('blur',()=>setTimeout(()=>{if(isExamActive&&!document.hasFocus())recordSecurityViolation('focus-lost');},80));
+    document.addEventListener('fullscreenchange',()=>{if(isExamActive&&!document.fullscreenElement)recordSecurityViolation('fullscreen-exit');});
+    window.addEventListener('resize',()=>{if(!isExamActive||!initialFullscreenArea)return;const area=innerWidth*innerHeight;if(area<initialFullscreenArea*.72)recordSecurityViolation('reduced-or-split-screen');});
 
     document.addEventListener("copy", (e) => {
       if (isExamActive) {
         e.preventDefault();
         copiesAttempted++;
         sessionStorage.setItem('copiesAttempted', copiesAttempted);
+        securityEvents.push({reason:'copy',at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty:0});queueProgressSave();
         showExamModal('security','Copying Disabled','Copying test questions is disabled during the examination.','Continue Exam',null,'primary');
       }
     });
@@ -670,6 +741,7 @@
         e.preventDefault();
         copiesAttempted++;
         sessionStorage.setItem('copiesAttempted', copiesAttempted);
+        securityEvents.push({reason:'paste',at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty:0});queueProgressSave();
         showExamModal('security','Pasting Disabled','Pasting content is disabled during the examination.','Continue Exam',null,'primary');
       }
     });
@@ -1054,11 +1126,20 @@
               _subjectId: String(subjectId),
               _subjectName: String(subjectName),
               _subjectQuestionNumber: localIndex + 1,
+              _questionKey: `${exam.id}|${subjectId}|${q?.id??cursor-count+localIndex}`,
               _questionSource: source,
               _questionSourceUrl: sourceUrl
             });
           });
         }
+
+        // Questions added beyond the configured student count remain in a
+        // reserve pool and replace the exact question affected by a violation.
+        pool.slice(requestedTotal).forEach((q,idx)=>reserveQuestions.push({
+          ...(q&&typeof q==='object'?q:{question:String(q)}),_examId:exam.id,_examName:exam.name,
+          _subjectId:'all_questions',_subjectName:'All Questions',_subjectQuestionNumber:requestedTotal+idx+1,
+          _questionKey:`${exam.id}|all_questions|${q?.id??requestedTotal+idx}`,_questionSource:source,_questionSourceUrl:sourceUrl
+        }));
 
         return combined;
       } catch (err) {
@@ -1129,10 +1210,16 @@
               _subjectId: String(subjectId),
               _subjectName: String(subjectName),
               _subjectQuestionNumber: localIndex + 1,
+              _questionKey: `${exam.id}|${subjectId}|${q?.id??localIndex}`,
               _questionSource: source,
               _questionSourceUrl: sourceUrl
             });
           });
+          selectedPool.slice(count).forEach((q,localIndex)=>reserveQuestions.push({
+            ...q,_examId:exam.id,_examName:exam.name,_subjectId:String(subjectId),_subjectName:String(subjectName),
+            _subjectQuestionNumber:count+localIndex+1,_questionKey:`${exam.id}|${subjectId}|${q?.id??count+localIndex}`,
+            _questionSource:source,_questionSourceUrl:sourceUrl
+          }));
         } catch (err) {
           loadErrors.push(`${subjectName}: ${err.message}`);
         }
@@ -1228,7 +1315,8 @@
 
       const activeExam = selectedExamConfig || getSelectedExamConfig();
       const configuredQuestions = activeExam ? getExamTotalQuestions(activeExam) : examConfigData?.studentLimit;
-      const configuredMinutes = Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes));
+      const configuredMinutes = isRailwayExam(activeExam) ? 90 : activeExam?.id==='ssc_gd' ? 60 :
+        (Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes)));
 
       questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
         ? Number(configuredQuestions)
@@ -1254,11 +1342,14 @@
       const emailError = document.getElementById('email-error');
       const duplicateError = document.getElementById('duplicate-error');
       const examCategoryError = document.getElementById('exam-category-error');
+      const centerCodeError = document.getElementById('center-code-error');
+      const centerCodeInput = document.getElementById('center-code').value.trim();
       const proceedBtn = document.getElementById('proceed-btn');
 
       emailError.style.display = 'none';
       duplicateError.style.display = 'none';
       if (examCategoryError) examCategoryError.style.display = 'none';
+      if (centerCodeError) centerCodeError.style.display = 'none';
 
       selectedExamConfig = getSelectedExamConfig();
       if (!selectedExamConfig) {
@@ -1280,6 +1371,23 @@
         await ensureStudentAuth();
         currentStudentName = nameInput;
         currentStudentEmail = emailInput;
+        try{
+          currentCenter=await validateCenterCode(centerCodeInput);
+          applyCenterBranding(currentCenter);
+        }catch(centerErr){
+          if(centerCodeError)centerCodeError.style.display='flex';
+          return;
+        }
+        try{
+          currentSession=await claimLoginSession();
+        }catch(sessionErr){
+          console.error('Login session claim failed:',sessionErr);
+          duplicateError.style.display='flex';
+          return;
+        }
+        if(currentSession?.status==='in_progress'){
+          document.getElementById('start-exam-btn').innerText='Resume Examination';
+        }
         window.changeSlide(2);
       } catch (err) {
         showExamModal('security','Connection Error','Please check your internet connection and try again.','Close',null,'primary');
@@ -1295,6 +1403,10 @@
       startBtn.innerText = "Loading Dataset...";
 
       try {
+        // Fullscreen must be requested directly from the student's tap/click.
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(()=>{});
+        }
         if (!selectedExamConfig) {
           selectedExamConfig = getSelectedExamConfig();
           if (!selectedExamConfig) throw new Error('Please select an exam category.');
@@ -1312,46 +1424,60 @@
          * The source saved by Admin is used exactly as configured.
          * The student page will fetch exactly that file.
          */
+        reserveQuestions = [];
         const multiQuestions = await loadConfiguredExamQuestions(selectedExamConfig);
 
         if (!Array.isArray(multiQuestions) || !multiQuestions.length) {
           throw new Error('No questions were loaded from the Admin Panel configuration for the selected exam. Please check Subject Name, Questions and Question Source.');
         }
 
-        // Claim the one-attempt lock only after every question source loads.
-        // This avoids consuming an attempt when a configured file is missing.
-        try {
-          await claimExamAttempt();
-        } catch (claimError) {
-          console.error('Attempt claim failed:', claimError);
-          const duplicateError = document.getElementById('duplicate-error');
-          if (duplicateError) duplicateError.style.display = 'flex';
-          const duplicate = new Error('This email has already used its attempt for the selected examination.');
-          duplicate.code = 'attempt-already-used';
-          throw duplicate;
+        const allLoaded = [...multiQuestions, ...reserveQuestions];
+        const byKey = new Map(allLoaded.map(q=>[q._questionKey,q]));
+        const canResume = currentSession?.status === 'in_progress' &&
+          Array.isArray(currentSession.questionOrder) && currentSession.questionOrder.length;
+        if (canResume) {
+          questionsList = currentSession.questionOrder.map(key=>byKey.get(key)).filter(Boolean);
+          const used = new Set(currentSession.questionOrder);
+          const savedReserve = Array.isArray(currentSession.reserveOrder)
+            ? currentSession.reserveOrder.map(key=>byKey.get(key)).filter(Boolean) : [];
+          reserveQuestions = [...savedReserve, ...allLoaded.filter(q=>!used.has(q._questionKey)&&!savedReserve.includes(q))];
+          selectedAnswers = currentSession.selectedAnswers || {};
+          questionStatus = currentSession.questionStatus || {};
+          currentQuestionIndex = Math.min(Number(currentSession.currentQuestionIndex)||0,questionsList.length-1);
+          examStartTime = Number(currentSession.examStartTime)||Date.now();
+          examEndTime = Number(currentSession.examEndTime)||0;
+          tabSwitches = Number(currentSession.tabSwitches)||0;
+          copiesAttempted = Number(currentSession.copiesAttempted)||0;
+          penaltiesApplied = Number(currentSession.penaltiesApplied)||0;
+          securityEvents = Array.isArray(currentSession.securityEvents)?currentSession.securityEvents:[];
+        } else {
+          questionsList = multiQuestions;
+          selectedAnswers = {}; questionStatus = {}; securityEvents = [];
+          tabSwitches = 0; copiesAttempted = 0; penaltiesApplied = 0;
+          currentQuestionIndex = 0; examStartTime = Date.now();
+          const configuredDuration = isRailwayExam(selectedExamConfig) ? 90 : selectedExamId==='ssc_gd' ? 60 :
+            (Number(selectedExamConfig?.timerMinutes)||Number(selectedExamConfig?.durationMinutes)||Number(examConfigData?.durationMinutes));
+          examEndTime = Date.now() + configuredDuration*60*1000;
+          questionsList.forEach((_, i) => questionStatus[i] = 'not-visited');
         }
-
-        questionsList = multiQuestions;
 
         if (!questionsList.length) {
           throw new Error('No questions are configured for the selected exam in the Admin Panel.');
         }
-        selectedAnswers = {};
-        questionStatus = {};
-        sessionStorage.setItem('tabSwitches', '0');
-        sessionStorage.setItem('copiesAttempted', '0');
-        sessionStorage.setItem('penaltiesApplied', '0');
+        sessionStorage.setItem('tabSwitches', String(tabSwitches));
+        sessionStorage.setItem('copiesAttempted', String(copiesAttempted));
+        sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
         draftResultId = currentAttemptId;
         resultSavedForThisAttempt = false;
         submissionInProgress = false;
         securityEventLocked = false;
-        questionsList.forEach((_, i) => questionStatus[i] = 'not-visited');
-
         isExamActive = true;
+        initialFullscreenArea = innerWidth*innerHeight;
         window.changeSlide(3);
-        const examDuration = Number(selectedExamConfig?.timerMinutes) > 0 ? Number(selectedExamConfig.timerMinutes) : (Number(selectedExamConfig?.durationMinutes) > 0 ? Number(selectedExamConfig.durationMinutes) : Number(examConfigData?.durationMinutes));
-        startExamTimer(examDuration);
-        loadQuestion(0);
+        await saveExamProgress({status:'in_progress'});
+        clearInterval(heartbeatTimer); heartbeatTimer=setInterval(()=>saveExamProgress(),60000);
+        startExamTimer();
+        loadQuestion(currentQuestionIndex);
       } catch (error) {
         if(error?.code==='attempt-already-used'){
           showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
@@ -1363,36 +1489,29 @@
       }
     };
 
-    function startExamTimer(durationMins) {
-      if (!Number.isFinite(durationMins) || durationMins <= 0) { showExamModal('security','Exam Configuration Missing','Exam duration is not configured in the Admin Panel.','Close',null,'primary'); return; }
-      let durationMs = durationMins * 60 * 1000;
-      const endTime = new Date().getTime() + durationMs;
-
-      timerInterval = setInterval(() => {
-        const current = new Date().getTime();
-        const remaining = endTime - current;
+    function startExamTimer() {
+      if (!Number.isFinite(examEndTime) || examEndTime <= 0) { showExamModal('security','Exam Configuration Missing','Exam duration is not configured in the Admin Panel.','Close',null,'primary'); return; }
+      clearInterval(timerInterval);
+      const tick=()=>{
+        timerInterval = setInterval(() => {
+          const current = new Date().getTime();
+          const remaining = examEndTime - current;
 
         if (remaining <= 0) {
-          clearInterval(timerInterval);
+          clearInterval(timerInterval); clearInterval(heartbeatTimer);
+          isExamActive=false;
           showExamModal('info','Time Up','Your examination time has ended. Your responses will now be submitted for evaluation.','View Result',null,'primary',()=>calculateAndShowResults());
         } else {
           let mins = Math.floor(remaining / (1000 * 60));
           let secs = Math.floor((remaining % (1000 * 60)) / 1000);
           document.getElementById('timer-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
-      }, 1000);
+        }, 1000);
+      };
+      tick();
     }
 
-    function shuffleCurrentQuestion() {
-      if (questionsList.length > 1) {
-        let currentQ = questionsList[currentQuestionIndex];
-        let remaining = questionsList.filter((_, idx) => idx !== currentQuestionIndex);
-        remaining = remaining.sort(() => 0.5 - Math.random());
-        questionsList[currentQuestionIndex] = remaining[0];
-      }
-      delete selectedAnswers[currentQuestionIndex];
-      loadQuestion(currentQuestionIndex);
-    }
+    function shuffleCurrentQuestion() { return replaceViolatedQuestion(); }
 
     function renderQuestionPalette() {
       const palette = document.getElementById('question-palette');
@@ -1691,8 +1810,22 @@
       renderSubjectNavigation();
 
       const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
-      const questionValue = qData.question ?? qData.q ?? qData.text ?? qData.questionText ?? '';
+      let questionValue = qData.question ?? qData.q ?? qData.text ?? qData.questionText ?? '';
+      let passageValue = qData.passage || '';
+      // The SSC source carries the full Phule passage with Q76. Since the
+      // question order is randomized, attach that source passage to Q76–80.
+      if(!passageValue && Number(qData.id)>=76 && Number(qData.id)<=80){
+        const anchor=[...questionsList,...reserveQuestions].find(q=>Number(q.id)===76);
+        const anchorText=anchor?.question??anchor?.q??'';
+        const passageStart=anchorText.indexOf('\n')+1;
+        const questionStart=anchorText.indexOf('\nमहात्मा फुले के अनुसार');
+        if(passageStart>0&&questionStart>passageStart)passageValue=anchorText.slice(passageStart,questionStart);
+        if(Number(qData.id)===76&&questionStart>0)questionValue='Comprehension: गद्यांश के आधार पर प्रश्न का उत्तर दें।'+anchorText.slice(questionStart);
+      }
       document.getElementById('q-text').innerHTML = prepareRichContent(questionValue, sourceBaseUrl);
+      if(passageValue){
+        document.getElementById('q-text').innerHTML = `<div class="passage-box">${prepareRichContent(passageValue,sourceBaseUrl)}</div>` + document.getElementById('q-text').innerHTML;
+      }
       renderQuestionImages(qData, sourceBaseUrl);
 
       const optionsBlock = document.getElementById('options-block');
@@ -1714,6 +1847,15 @@
           ? (opt.text ?? opt.label ?? opt.value ?? opt.answer ?? '')
           : opt;
         content.innerHTML = prepareRichContent(optionValue, sourceBaseUrl);
+        const optionImage = Array.isArray(qData.optionImages) ? qData.optionImages[idx] : null;
+        if(optionImage){
+          const image=document.createElement('img');
+          const candidates=getMediaUrlCandidates(optionImage,sourceBaseUrl);
+          image.src=candidates[0]||resolveMediaUrl(optionImage,sourceBaseUrl);
+          image.alt=`Option ${letters[idx]||idx+1} figure`; image.loading='eager'; image.decoding='async';
+          image.dataset.mediaCandidates=JSON.stringify(candidates); image.dataset.mediaCandidateIndex='0';
+          content.appendChild(image);
+        }
         label.appendChild(content);
 
         label.onclick = () => selectOption(index, idx);
@@ -1755,6 +1897,7 @@
     }
 
     window.toggleMobilePalette = () => {
+      securitySuppressedUntil=Date.now()+800;
       const panel = document.querySelector('.palette-panel');
       const btn = document.getElementById('palette-toggle');
       if (!panel) return;
@@ -1776,12 +1919,14 @@
       document.getElementById('question-status').innerText =
         questionStatus[qIdx] === 'review' ? 'Marked for Review' : 'Answered';
       renderQuestionPalette();
+      queueProgressSave();
     };
 
     window.clearResponse = () => {
       delete selectedAnswers[currentQuestionIndex];
       questionStatus[currentQuestionIndex] = 'not-answered';
       loadQuestion(currentQuestionIndex);
+      queueProgressSave();
     };
 
     window.toggleMarkReview = () => {
@@ -1793,6 +1938,7 @@
         questionStatus[currentQuestionIndex] = 'review';
       }
       loadQuestion(currentQuestionIndex);
+      queueProgressSave();
     };
 
     window.confirmExamSubmit = () => {
@@ -1839,6 +1985,7 @@
       } else {
         confirmFinishExam();
       }
+      queueProgressSave();
     };
 
     window.handlePrevious = () => {
@@ -1846,10 +1993,12 @@
       if (currentQuestionIndex > 0) {
         loadQuestion(currentQuestionIndex - 1);
       }
+      queueProgressSave();
     };
 
     async function calculateAndShowResults() {
       clearInterval(timerInterval);
+      clearInterval(heartbeatTimer);
       isExamActive = false;
 
       let correctCount = 0;
@@ -1881,10 +2030,14 @@
       });
 
       const rawScore = (correctCount * 1) - (wrongCount * 0.25);
-      const penaltyDeduction = parseInt(sessionStorage.getItem('penaltiesApplied') || '0');
+      const penaltyDeduction = Number(sessionStorage.getItem('penaltiesApplied') || '0');
       calculatedScore = Math.max(0, rawScore - penaltyDeduction);
       totalScore = questionsList.length;
       finalizedScoreString = `${Number.isInteger(calculatedScore) ? calculatedScore : calculatedScore.toFixed(2)}/${totalScore}`;
+      const attempted=correctCount+wrongCount;
+      const timeTakenSeconds=Math.max(0,Math.round((Date.now()-examStartTime)/1000));
+      finalMetrics={correct:correctCount,wrong:wrongCount,attempted,timeTakenSeconds,
+        timeTakenText:`${Math.floor(timeTakenSeconds/3600)?Math.floor(timeTakenSeconds/3600)+'h ':''}${Math.floor((timeTakenSeconds%3600)/60)}m ${timeTakenSeconds%60}s`};
 
       document.getElementById('res-score').innerText = finalizedScoreString;
       document.getElementById('res-correct').innerText = correctCount;
@@ -1896,7 +2049,9 @@
       document.getElementById('log-penalty').innerText = `-${penaltyDeduction} Mark(s)`;
 
       window.changeSlide(4);
+      if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
       await saveDraftResult();
+      await saveExamProgress({status:'final_submitted',submittedAt:new Date(),score:finalizedScoreString,...finalMetrics});
       typesetExamMath();
     }
 
@@ -1941,11 +2096,10 @@
         examName:selectedExamName || examConfigData?.examName || 'Current Test',
         subjects:[...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
         score:finalizedScoreString,
-        correct:parseInt(document.getElementById('res-correct').innerText||'0'),
-        wrong:parseInt(document.getElementById('res-wrong').innerText||'0'),
+        correct:finalMetrics.correct||0, wrong:finalMetrics.wrong||0,
         tabSwitches:Math.min(MAX_TAB_SWITCHES,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
         copiesAttempted:parseInt(sessionStorage.getItem('copiesAttempted')||'0'),
-        penaltiesApplied:parseInt(sessionStorage.getItem('penaltiesApplied')||'0'),
+        penaltiesApplied:Number(sessionStorage.getItem('penaltiesApplied')||'0'),
         feedback:document.getElementById('feedback-input').value.trim() || 'None',
         status:'draft', completed:false,
         submittedAt:new Date(), updatedAt:new Date()
@@ -1995,7 +2149,7 @@
         score: finalizedScoreString,
         tabSwitches: Math.min(MAX_TAB_SWITCHES, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
         copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
-        penaltiesApplied: parseInt(sessionStorage.getItem('penaltiesApplied') || '0'),
+        penaltiesApplied: Number(sessionStorage.getItem('penaltiesApplied') || '0'),
         feedback: document.getElementById('feedback-input').value.trim() || 'None',
         doubt: document.getElementById('doubt-input').value.trim() || 'None',
         rating: selectedRating,
@@ -2008,8 +2162,16 @@
       try {
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
         await setDoc(doc(db,'results',draftResultId), resultPayload, {merge:true});
+        await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+          status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,
+          correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,
+          timeTakenSeconds:finalMetrics.timeTakenSeconds||0,timeTakenText:finalMetrics.timeTakenText||'',
+          securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50),
+          tabSwitches:Math.min(MAX_TAB_SWITCHES,tabSwitches),copiesAttempted,penaltiesApplied,
+          feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating
+        },{merge:true});
         resultSavedForThisAttempt=true;
-        sessionStorage.clear();
+        ['currentAttemptId','draftResultId','tabSwitches','copiesAttempted','penaltiesApplied'].forEach(key=>sessionStorage.removeItem(key));
         document.getElementById('success-modal').classList.add('show');
       } catch (e) {
         submissionInProgress=false;
