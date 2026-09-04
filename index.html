@@ -1423,7 +1423,16 @@
           currentSession=await claimLoginSession();
         }catch(sessionErr){
           console.error('Login session claim failed:',sessionErr);
-          duplicateError.style.display='flex';
+          const reason=String(sessionErr?.message||sessionErr?.code||'');
+          if(reason.includes('email-already-active')){
+            duplicateError.innerHTML='<i class="fa-solid fa-ban"></i> Access Denied: This email is already active on another device.';
+            duplicateError.style.display='flex';
+          }else if(reason.includes('attempt-already-used')){
+            duplicateError.innerHTML='<i class="fa-solid fa-ban"></i> Access Denied: This email has already submitted this examination.';
+            duplicateError.style.display='flex';
+          }else{
+            showExamModal('security','Login Verification Failed',getConnectionFailureMessage(sessionErr),'Retry',null,'primary');
+          }
           return;
         }
         if(currentSession?.status==='in_progress'){
