@@ -79,7 +79,8 @@ service cloud.firestore {
     // One live row per student/exam. It starts as logged_in, becomes
     // in_progress, and is finalized in-place so the admin sees live status.
     match /exam_sessions/{sessionId} {
-      allow get: if signedIn();
+      allow get: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid || isAdmin());
       allow list: if isAdmin();
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid
