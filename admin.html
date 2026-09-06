@@ -673,6 +673,12 @@
           Live login status and completed personal analysis update automatically.
         </p>
 
+        <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+          <button type="button" class="btn btn-accent" onclick="downloadSecurityAnalysis()">
+            <i class="fa-solid fa-file-arrow-down"></i> Download Security Analysis
+          </button>
+        </div>
+
 
         <div class="stats-grid" id="analytics-stats">
           <div class="stat-box"><div class="stat-label">Total Attempts</div><div class="stat-value" id="stat-attempts">0</div></div>
@@ -747,6 +753,15 @@
             <label for="leaderboard-exam-filter">Filter by Exam</label>
             <select id="leaderboard-exam-filter">
               <option value="all">All Exams</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="leaderboard-sort-filter">Sort Results</label>
+            <select id="leaderboard-sort-filter">
+              <option value="highest">Highest Score</option>
+              <option value="latest">Latest Submit</option>
+              <option value="lowest">Lowest Score</option>
+              <option value="earliest">Earliest Submit</option>
             </select>
           </div>
           <button type="button" class="btn btn-refresh" onclick="resetLeaderboardFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Reset Filters</button>
@@ -1431,13 +1446,40 @@
       });
     }
 
+    window.downloadSecurityAnalysis = async () => {
+      const data=currentAnalyticsResults;
+      if(!data.length){alert('No security analysis data is available to download.');return;}
+      if(!window.ExcelJS){alert('Excel report library could not load. Check the internet connection and retry.');return;}
+      const workbook=new ExcelJS.Workbook();
+      const sheet=workbook.addWorksheet('Security Analysis');
+      sheet.columns=[
+        {header:'Student',key:'name',width:24},{header:'Email',key:'email',width:30},{header:'Status',key:'status',width:24},
+        {header:'Exam',key:'exam',width:22},{header:'Center / Batch',key:'center',width:28},{header:'Login At',key:'login',width:23},
+        {header:'Submitted At',key:'submit',width:23},{header:'Time Taken',key:'time',width:16},{header:'Score',key:'score',width:12},
+        {header:'Correct',key:'correct',width:10},{header:'Wrong',key:'wrong',width:10},{header:'Attempted',key:'attempted',width:11},
+        {header:'Violations',key:'violations',width:11},{header:'Tab / Focus',key:'tabs',width:11},{header:'Copy / Paste',key:'copies',width:12},
+        {header:'Penalty',key:'penalty',width:10},{header:'Feedback',key:'feedback',width:28},{header:'Doubt',key:'doubt',width:28}
+      ];
+      data.forEach(r=>sheet.addRow({name:r.name,email:r.email,status:r.statusLabel,exam:r.examName,center:[r.centerName,r.batch].filter(Boolean).join(' / '),login:r.loginAtStr,submit:r.submittedAtStr,time:r.timeTakenText,score:r.scoreText,correct:r.correct,wrong:r.wrong,attempted:r.attempted,violations:r.securityViolations,tabs:r.tabSwitches,copies:r.copiesAttempted,penalty:r.penaltiesApplied,feedback:r.feedback,doubt:r.doubt}));
+      sheet.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};sheet.getRow(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1E3A8A'}};sheet.views=[{state:'frozen',ySplit:1}];sheet.autoFilter={from:'A1',to:'R1'};
+      const buffer=await workbook.xlsx.writeBuffer();
+      const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Bookesh_Security_Analysis_${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    };
+
     function renderLeaderboardRows() {
       const body = document.getElementById('leaderboard-table-body');
 
       if (!body) return;
 
-      const data = getFilteredLeaderboardResults()
-        .sort((a,b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate);
+      const sortMode=document.getElementById('leaderboard-sort-filter')?.value||'highest';
+      const sorters={
+        highest:(a,b)=>b.scoreVal-a.scoreVal||b.rawDate-a.rawDate,
+        latest:(a,b)=>b.rawDate-a.rawDate||b.scoreVal-a.scoreVal,
+        lowest:(a,b)=>a.scoreVal-b.scoreVal||b.rawDate-a.rawDate,
+        earliest:(a,b)=>a.rawDate-b.rawDate||b.scoreVal-a.scoreVal
+      };
+      const data = getFilteredLeaderboardResults().sort(sorters[sortMode]||sorters.highest);
 
       body.innerHTML = '';
 
@@ -1478,6 +1520,8 @@
     window.resetLeaderboardFilters = () => {
       const e = document.getElementById('leaderboard-exam-filter');
       if (e) e.value = 'all';
+      const s = document.getElementById('leaderboard-sort-filter');
+      if (s) s.value = 'highest';
       renderLeaderboardRows();
     };
 
@@ -1528,7 +1572,10 @@
         populateLeaderboardFilters(currentAnalyticsResults);
         renderAnalyticsRows();
         renderLeaderboardRows();
-        document.getElementById('leaderboard-exam-filter')?.addEventListener('change', renderLeaderboardRows);
+        const examFilter=document.getElementById('leaderboard-exam-filter');
+        const sortFilter=document.getElementById('leaderboard-sort-filter');
+        if(examFilter)examFilter.onchange=renderLeaderboardRows;
+        if(sortFilter)sortFilter.onchange=renderLeaderboardRows;
         },err=>{
         console.error(err);
         analyticsBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
