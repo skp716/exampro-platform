@@ -477,6 +477,9 @@
       </div>
 
       <label style="margin-bottom: 0.5rem; display: block;">Evaluation Ledger</label>
+      <button type="button" class="btn btn-secondary" style="margin-bottom:1rem;" onclick="downloadPerformanceReport()">
+        <i class="fa-solid fa-file-arrow-down"></i> Download Performance Report
+      </button>
       <div class="review-section" id="review-ledger-container"></div>
 
       <form id="feedback-form" onsubmit="submitFinalFeedback(event)">
@@ -586,6 +589,29 @@
     let securitySuppressedUntil = 0;
     let finalMetrics = {};
     let maxTabSwitches = 2;
+    let screenWakeLock = null;
+
+    async function requestExamWakeLock(){
+      if(!isExamActive || !('wakeLock' in navigator) || document.visibilityState!=='visible') return false;
+      try{
+        if(screenWakeLock && !screenWakeLock.released) return true;
+        screenWakeLock=await navigator.wakeLock.request('screen');
+        screenWakeLock.addEventListener('release',()=>{screenWakeLock=null;},{once:true});
+        return true;
+      }catch(error){
+        console.warn('Screen wake lock is unavailable:',error?.message||error);
+        return false;
+      }
+    }
+
+    async function releaseExamWakeLock(){
+      const lock=screenWakeLock;screenWakeLock=null;
+      if(lock && !lock.released){try{await lock.release();}catch(_error){}}
+    }
+
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible' && isExamActive) requestExamWakeLock();
+    });
 
     async function ensureStudentAuth() {
       if (auth.currentUser) return auth.currentUser;
@@ -1552,6 +1578,7 @@
           await calculateAndShowResults();
         }else{
           isExamActive = true;
+          await requestExamWakeLock();
           initialFullscreenArea = innerWidth*innerHeight;
           window.changeSlide(3);
           await saveExamProgress({status:'in_progress'});
@@ -2094,6 +2121,7 @@
       clearInterval(timerInterval);
       clearInterval(heartbeatTimer);
       isExamActive = false;
+      await releaseExamWakeLock();
 
       let correctCount = 0;
       let wrongCount = 0;
@@ -2152,6 +2180,25 @@
       }
       typesetExamMath();
     }
+
+    window.downloadPerformanceReport = () => {
+      if(!questionsList.length || !finalizedScoreString){
+        showExamModal('info','Report Not Ready','Complete the examination before downloading the performance report.','Close',null,'primary');
+        return;
+      }
+      const ledger=document.getElementById('review-ledger-container')?.innerHTML||'';
+      const report=window.open('','_blank');
+      if(!report){
+        showExamModal('info','Download Blocked','Allow pop-ups for this page and try the download again.','Close',null,'primary');
+        return;
+      }
+      report.opener=null;
+      const title=`${selectedExamName||'Examination'} Performance Report`;
+      report.document.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${escapeHtmlSafe(location.href)}"><title>${escapeHtmlSafe(title)}</title><script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};<\/script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px;line-height:1.45}h1{color:#173b82;margin-bottom:4px}.meta{border-collapse:collapse;width:100%;margin:18px 0}.meta td{border:1px solid #d8dee9;padding:8px}.review-item{break-inside:avoid;border:1px solid #d8dee9;border-left:4px solid #64748b;padding:12px;margin:10px 0;border-radius:5px}.correct-item{border-left-color:#16a34a}.wrong-item{border-left-color:#dc2626}img{max-width:100%;height:auto}.actions{margin-bottom:18px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><div class="actions"><button onclick="window.print()">Save as PDF / Print</button></div><h1>${escapeHtmlSafe(title)}</h1><p>Candidate: <strong>${escapeHtmlSafe(currentStudentName)}</strong> &nbsp; | &nbsp; ${escapeHtmlSafe(currentStudentEmail)}</p><table class="meta"><tr><td><strong>Score</strong><br>${escapeHtmlSafe(finalizedScoreString)}</td><td><strong>Correct</strong><br>${Number(finalMetrics.correct)||0}</td><td><strong>Wrong</strong><br>${Number(finalMetrics.wrong)||0}</td><td><strong>Penalty</strong><br>-${Number(penaltiesApplied)||0}</td></tr></table><h2>Question Evaluation</h2>${ledger}</body></html>`);
+      report.document.close();
+      report.focus();
+      setTimeout(()=>report.print(),1200);
+    };
 
     function showExamModal(type, title, message, cancelText='Cancel', confirmText='OK', confirmClass='primary', onConfirm=null){
       const overlay=document.getElementById('exam-modal');
