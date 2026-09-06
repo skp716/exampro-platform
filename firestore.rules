@@ -80,7 +80,12 @@ service cloud.firestore {
     // in_progress, and is finalized in-place so the admin sees live status.
     match /exam_sessions/{sessionId} {
       allow get: if signedIn()
-        && (resource.data.ownerUid == request.auth.uid || isAdmin());
+        && (
+          isAdmin() || (
+            exists(/databases/$(database)/documents/attempt_locks/$(sessionId))
+            && get(/databases/$(database)/documents/attempt_locks/$(sessionId)).data.ownerUid == request.auth.uid
+          )
+        );
       allow list: if isAdmin();
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid
