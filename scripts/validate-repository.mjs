@@ -16,16 +16,17 @@ for(const relative of htmlFiles){
 }
 
 const banks={
-  'railway.html':100,
-  'ssc-gd/reasoning.html':20,
-  'ssc-gd/gk-gs.html':20,
-  'ssc-gd/maths.html':20,
-  'ssc-gd/english-hindi.html':20
+  'railway.html':{required:100,reserve:10},
+  'ssc-gd/reasoning.html':{required:20,reserve:3},
+  'ssc-gd/gk-gs.html':{required:20,reserve:2},
+  'ssc-gd/maths.html':{required:20,reserve:2},
+  'ssc-gd/english-hindi.html':{required:20,reserve:0}
 };
 
-for(const [relative,expectedCount] of Object.entries(banks)){
+for(const [relative,{required,reserve}] of Object.entries(banks)){
   const questions=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
-  if(questions.length!==expectedCount) throw new Error(`${relative}: expected ${expectedCount}, found ${questions.length}`);
+  const expectedCount=required+reserve;
+  if(questions.length!==expectedCount) throw new Error(`${relative}: expected ${required} exam + ${reserve} reserve questions (${expectedCount} total), found ${questions.length}`);
   const ids=new Set();
   questions.forEach((question,index)=>{
     if(ids.has(question.id)) throw new Error(`${relative}: duplicate id ${question.id}`);
