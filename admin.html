@@ -598,7 +598,6 @@
           <div class="form-group"><label for="center-name">Institute Name *</label><input type="text" id="center-name" value="ASHISH COMPETITION CENTRE (ACC)"></div>
           <div class="form-group"><label for="center-location">Institute Location *</label><input type="text" id="center-location" value="DALTONGANJ"></div>
           <div class="form-group"><label for="center-address">Full Address</label><input type="text" id="center-address" placeholder="Institute address"></div>
-          <div class="form-group"><label for="center-batch">Batch / Category</label><input type="text" id="center-batch" placeholder="e.g. R Batch"></div>
         </div>
         <button type="button" class="btn btn-success" onclick="saveCenterSettings()"><i class="fa-solid fa-key"></i> Activate Center Code</button>
         <div class="config-summary" id="center-summary">No center code loaded.</div>
@@ -1086,7 +1085,7 @@
       const instituteName=document.getElementById('center-name').value.trim();
       const location=document.getElementById('center-location').value.trim();
       const address=document.getElementById('center-address').value.trim();
-      const batch=document.getElementById('center-batch').value.trim();
+      const batch=currentCenterSettings.batch||'';
       if(!code||!instituteName||!location){alert('Center Code, Institute Name and Location are required.');return;}
       try{
         const centerId=await sha256(code);
@@ -1113,7 +1112,6 @@
       document.getElementById('center-name').value=currentCenterSettings.instituteName;
       document.getElementById('center-location').value=currentCenterSettings.location;
       document.getElementById('center-address').value=currentCenterSettings.address;
-      document.getElementById('center-batch').value=currentCenterSettings.batch;
       document.getElementById('center-code').value='';
       document.getElementById('center-summary').innerHTML=currentCenterSettings.centerId
         ? `<strong>Active:</strong> ${escapeHTML(currentCenterSettings.instituteName)} • ${escapeHTML(currentCenterSettings.location)} • Enter a new code only to replace it.`
