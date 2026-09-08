@@ -12,6 +12,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
     }
 
+    // Platform owner. Existing active admins continue to use the legacy Admin
+    // Panel; only an explicitly assigned role can enter the Super Admin layer.
+    function isSuperAdmin() {
+      return isAdmin()
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super_admin';
+    }
+
+    function isInstituteAdmin(instituteId) {
+      return isAdmin()
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.instituteId == instituteId
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role in ['institute_admin', 'admin'];
+    }
+
     function validAttemptLock() {
       return signedIn()
         && request.resource.data.keys().hasOnly([
@@ -48,8 +61,35 @@ service cloud.firestore {
     // Admin membership is provisioned from Firebase Console/Admin SDK only.
     match /admins/{adminId} {
       allow get: if signedIn() && request.auth.uid == adminId;
-      allow list: if isAdmin();
-      allow create, update, delete: if false;
+      allow list: if isSuperAdmin();
+      // Account creation itself belongs to Firebase Auth/Admin SDK. Super Admin
+      // may manage only the matching authorization profile in Firestore.
+      allow create, update: if isSuperAdmin();
+      allow delete: if false;
+    }
+
+    // Globally unique, normalized institute-code reservation. Students never
+    // list this collection; the future gateway will resolve only an exact code.
+    match /institute_codes/{codeId} {
+      allow get: if signedIn();
+      allow list, create, update, delete: if isSuperAdmin();
+    }
+
+    match /institutes/{instituteId} {
+      allow get: if isSuperAdmin() || isInstituteAdmin(instituteId);
+      allow list, create, update: if isSuperAdmin();
+      allow delete: if false;
+
+      match /configuration_versions/{versionId} {
+        allow read: if isSuperAdmin() || isInstituteAdmin(instituteId);
+        allow create: if isSuperAdmin();
+        allow update, delete: if false;
+      }
+    }
+
+    match /audit_logs/{logId} {
+      allow read, create: if isSuperAdmin();
+      allow update, delete: if false;
     }
 
     match /exam_config/{document} {
