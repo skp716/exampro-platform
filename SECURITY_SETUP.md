@@ -25,6 +25,38 @@ rules must not be used.
    firebase deploy --only firestore:rules --project test-d6ee6
    ```
 
+## Super Admin activation
+
+The new `super-admin.html` portal is separate from the existing Institute Exam
+Admin panel. This separation keeps platform operations away from student and
+result management.
+
+To authorize the platform owner, add these fields to the owner's existing
+`admins/{uid}` document in Firestore:
+
+```text
+active: true
+role: "super_admin"
+name: "Platform Owner"
+```
+
+Only an explicitly assigned `super_admin` can list, create, activate, suspend
+or archive institutes. Existing active admin accounts without this role retain
+their current Admin Panel access and cannot enter the Super Admin portal.
+
+The first multi-institute foundation uses these collections:
+
+```text
+institutes/{instituteId}
+institutes/{instituteId}/configuration_versions/{versionId}
+institute_codes/{normalizedInstituteCode}
+audit_logs/{logId}
+```
+
+Institute codes are reserved transactionally to prevent duplicates. Archiving
+or suspending an institute preserves its data. Do not delete institute records
+directly from the Firebase Console during normal operations.
+
 ## Authentication model
 
 - Admins sign in with Firebase Email/Password. The dashboard opens only when
