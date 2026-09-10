@@ -60,7 +60,10 @@ service cloud.firestore {
 
     // Admin membership is provisioned from Firebase Console/Admin SDK only.
     match /admins/{adminId} {
-      allow get: if signedIn() && request.auth.uid == adminId;
+      // Super Admin must be able to inspect a target profile before safely
+      // creating/updating Institute Admin access. Other admins can read only
+      // their own authorization profile.
+      allow get: if (signedIn() && request.auth.uid == adminId) || isSuperAdmin();
       allow list: if isSuperAdmin();
       // Account creation itself belongs to Firebase Auth/Admin SDK. Super Admin
       // may manage only the matching authorization profile in Firestore.
