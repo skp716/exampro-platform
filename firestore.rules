@@ -79,7 +79,10 @@ service cloud.firestore {
     }
 
     match /institutes/{instituteId} {
-      allow get: if isSuperAdmin() || isInstituteAdmin(instituteId);
+      // Signed-in candidates may resolve one exact active institute document.
+      // Listing remains blocked, so the gateway cannot enumerate tenants.
+      allow get: if isSuperAdmin() || isInstituteAdmin(instituteId)
+        || (signedIn() && resource.data.status == 'active');
       allow list, create, update: if isSuperAdmin();
       allow delete: if false;
 
@@ -161,7 +164,7 @@ service cloud.firestore {
         && request.resource.data.completed == false
         && request.resource.data.keys().hasOnly([
           'name', 'email', 'ownerUid', 'attemptId', 'examId', 'examName',
-          'subjects', 'score', 'correct', 'wrong', 'tabSwitches',
+          'subjects', 'instituteId', 'studentProfile', 'score', 'correct', 'wrong', 'tabSwitches',
           'copiesAttempted', 'penaltiesApplied', 'feedback', 'doubt',
           'rating', 'status', 'completed', 'submittedAt', 'updatedAt'
         ]);

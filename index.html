@@ -577,6 +577,8 @@
     let attemptClaimed = false;
     let currentAttemptId = sessionStorage.getItem('currentAttemptId') || '';
     let currentCenter = null;
+    let currentInstitute = null;
+    let currentStudentProfile = {};
     let currentSession = null;
     let examStartTime = 0;
     let examEndTime = 0;
@@ -682,6 +684,24 @@
       }
     }
 
+    function loadInstituteGatewayContext(){
+      try{
+        currentInstitute=JSON.parse(sessionStorage.getItem('bookeshInstitute')||'null');
+        currentStudentProfile=JSON.parse(sessionStorage.getItem('bookeshStudentProfile')||'{}');
+      }catch(_error){currentInstitute=null;currentStudentProfile={};}
+      if(!currentInstitute)return;
+      const brand=currentInstitute.branding||{};
+      if(brand.primaryColor)document.documentElement.style.setProperty('--primary',brand.primaryColor);
+      if(brand.secondaryColor)document.documentElement.style.setProperty('--secondary',brand.secondaryColor);
+      applyCenterBranding({instituteName:currentInstitute.instituteName,location:currentInstitute.displayAddress||currentInstitute.address?.city||'Online Examination Portal'});
+      const name=document.getElementById('student-name'),email=document.getElementById('student-email');
+      if(name&&currentStudentProfile.name)name.value=currentStudentProfile.name;
+      if(email&&currentStudentProfile.email)email.value=currentStudentProfile.email;
+      const sections=currentInstitute.instructions?.sections||[];
+      const list=document.querySelector('#slide-2 .instruction-list');
+      if(list&&sections.length)list.innerHTML=sections.flatMap(section=>String(section.content||'').split('\n').filter(Boolean).map(line=>`<li><i class="fa-solid ${section.type==='warning'?'fa-triangle-exclamation':'fa-circle-check'}" style="color:${section.type==='warning'?'#d97706':'#16a34a'}"></i><span><b>${escapeHtmlSafe(section.heading||'Instruction')}:</b> ${escapeHtmlSafe(line)}</span></li>`)).join('');
+    }
+
     async function claimLoginSession(){
       const user=await ensureStudentAuth();
       const attemptId=await sha256(`${selectedExamId}|${currentStudentEmail}`);
@@ -712,7 +732,7 @@
             sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,
             examId:selectedExamId,examName:selectedExamName,centerId:currentCenter.centerId,
             centerName:currentCenter.instituteName||'Examination Center',centerLocation:currentCenter.location||'',
-            centerAddress:currentCenter.address||'',batch:currentCenter.batch||'',status:'logged_in',
+            centerAddress:currentCenter.address||'',batch:currentCenter.batch||'',instituteId:currentInstitute?.id||'',studentProfile:currentStudentProfile,status:'logged_in',
             loginAt:now,lastSeen:now,securityViolations:0,tabSwitches:0,copiesAttempted:0,penaltiesApplied:0
           });
           return {status:'logged_in'};
@@ -1385,6 +1405,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      loadInstituteGatewayContext();
       const select = document.getElementById('exam-category');
       if (select) {
         select.addEventListener('change', () => {
@@ -2261,6 +2282,7 @@
         examId:selectedExamId || 'current_test',
         examName:selectedExamName || examConfigData?.examName || 'Current Test',
         subjects:[...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
+        instituteId:currentInstitute?.id||'', studentProfile:currentStudentProfile,
         score:finalizedScoreString,
         correct:finalMetrics.correct||0, wrong:finalMetrics.wrong||0,
         tabSwitches:Math.min(maxTabSwitches,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
@@ -2314,6 +2336,7 @@
         examId: selectedExamId || 'current_test',
         examName: selectedExamName || examConfigData?.examName || 'Current Test',
         subjects: [...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
+        instituteId: currentInstitute?.id || '', studentProfile: currentStudentProfile,
         score: finalizedScoreString,
         tabSwitches: Math.min(maxTabSwitches, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
         copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),

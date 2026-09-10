@@ -74,6 +74,24 @@ Disabling an administrator in Super Admin preserves the Authentication user
 and institute data but immediately blocks the next Institute Admin access
 check. Suspending the institute also blocks its administrator portal.
 
+## Configuration and student gateway
+
+- Use **Configure** beside an institute in `super-admin.html` to manage its
+  branding, login/instruction template IDs, dynamic student fields, custom
+  instruction sections, exam mode, security preset and feature permissions.
+- Every save creates an immutable configuration version under
+  `institutes/{instituteId}/configuration_versions` and an audit record.
+- Students start at `student-gateway.html`, enter an exact Institute Code, and
+  receive only that active institute's configuration. The gateway cannot list
+  institute codes or inactive institutes.
+- The gateway passes the validated institute and candidate profile into the
+  existing `index.html` exam flow. Existing center-code and attempt-lock checks
+  remain enabled.
+
+After this update, publish `firestore.rules` again. The new exact-document read
+allows an authenticated candidate to load only an active institute. Listing
+the `institutes` collection remains restricted to Super Admin.
+
 ## Authentication model
 
 - Admins sign in with Firebase Email/Password. The dashboard opens only when
