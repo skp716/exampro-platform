@@ -57,6 +57,23 @@ Institute codes are reserved transactionally to prevent duplicates. Archiving
 or suspending an institute preserves its data. Do not delete institute records
 directly from the Firebase Console during normal operations.
 
+## Institute Admin onboarding
+
+1. Create the administrator in **Firebase Authentication > Users** using
+   Email/Password. Copy the exact Firebase UID; never share or store the
+   password in Firestore or GitHub.
+2. Open `super-admin.html`, choose **Institute Admins**, and select
+   **Add Institute Admin**.
+3. Paste the Firebase UID, enter the same email, select exactly one institute,
+   and save access.
+4. The administrator signs in at `institute-admin.html`. The portal verifies
+   `active: true`, `role: "institute_admin"`, the assigned `instituteId`, and an
+   active institute before showing the workspace.
+
+Disabling an administrator in Super Admin preserves the Authentication user
+and institute data but immediately blocks the next Institute Admin access
+check. Suspending the institute also blocks its administrator portal.
+
 ## Authentication model
 
 - Admins sign in with Firebase Email/Password. The dashboard opens only when

@@ -3,7 +3,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 
 const root=path.resolve(import.meta.dirname,'..');
-const htmlFiles=['index.html','admin.html','super-admin.html','test.html','railway.html',
+const htmlFiles=['index.html','admin.html','super-admin.html','institute-admin.html','test.html','railway.html',
   'ssc-gd/reasoning.html','ssc-gd/gk-gs.html','ssc-gd/maths.html','ssc-gd/english-hindi.html'];
 
 for(const relative of htmlFiles){
