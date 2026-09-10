@@ -19,10 +19,11 @@ rules must not be used.
    Field: active (boolean) = true
    ```
 
-4. Deploy the repository rules:
+4. Deploy Firestore rules, Storage rules and the secure account function:
 
    ```bash
-   firebase deploy --only firestore:rules --project test-d6ee6
+   cd functions && npm install && cd ..
+   firebase deploy --only firestore:rules,storage,functions --project test-d6ee6
    ```
 
 ## Super Admin activation
@@ -59,13 +60,12 @@ directly from the Firebase Console during normal operations.
 
 ## Institute Admin onboarding
 
-1. Create the administrator in **Firebase Authentication > Users** using
-   Email/Password. Copy the exact Firebase UID; never share or store the
-   password in Firestore or GitHub.
-2. Open `super-admin.html`, choose **Institute Admins**, and select
-   **Add Institute Admin**.
-3. Paste the Firebase UID, enter the same email, select exactly one institute,
-   and save access.
+1. Open `super-admin.html` and choose **Create Admin Login**. The Cloud Function
+   creates both Authentication and Firestore records and rolls back if profile
+   saving fails.
+2. Enter the account details and select exactly one active institute.
+3. The Institute Admins screen's manual UID form remains available for an
+   Authentication user created earlier in Firebase Console.
 4. The administrator signs in at `institute-admin.html`. The portal verifies
    `active: true`, `role: "institute_admin"`, the assigned `instituteId`, and an
    active institute before showing the workspace.

@@ -535,7 +535,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocs, setDoc, runTransaction, collection, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -907,6 +907,18 @@
     }
 
     function getConfiguredExams() {
+      const tenantExams = (()=>{try{return JSON.parse(sessionStorage.getItem('bookeshTenantExams')||'[]')}catch{return[]}})();
+      if (currentInstitute?.id && Array.isArray(tenantExams) && tenantExams.length) {
+        return tenantExams.map(exam=>({
+          ...exam,
+          id:String(exam.id),
+          name:String(exam.name||exam.examName||exam.code||exam.id),
+          subjects:Array.isArray(exam.subjects)?exam.subjects.reduce((all,s)=>{
+            all[s.id||s.name]={...s,count:Number(s.count)||Number(exam.questionLimit)||0,enabled:true};return all;
+          },{}):(exam.subjects||{}),
+          tenant:true
+        }));
+      }
       const raw = examConfigData?.multiExamConfig || examConfigData?.exams || examConfigData?.examCategories;
       const exams = [];
 
@@ -1259,6 +1271,16 @@
     }
 
     async function loadConfiguredExamQuestions(exam) {
+      if (exam?.tenant && currentInstitute?.id) {
+        const snap=await getDocs(query(collection(db,'institutes',currentInstitute.id,'question_bank'),where('examId','==',exam.id)));
+        const pool=snap.docs.map(d=>({id:d.id,...d.data()}));
+        if(!pool.length)throw new Error('No questions are uploaded for this institute exam.');
+        const subjectMap=new Map(getSubjectEntries(exam).map(([id,cfg])=>[String(cfg.name||id).toLowerCase(),{id,name:cfg.name||id}]));
+        const grouped=new Map();pool.forEach(q=>{const key=String(q.subject||'General').toLowerCase();if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(q)});
+        const combined=[];
+        grouped.forEach((items,key)=>{const subject=subjectMap.get(key)||{id:key.replace(/[^a-z0-9]+/g,'_'),name:items[0]?.subject||'General'};items.sort(()=>Math.random()-.5).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subject.id,_subjectName:subject.name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subject.id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}))});
+        return combined;
+      }
       // Railway Group D is the one intentional fixed-source exception.
       // Its question bank is always railway.html. Everything else remains
       // completely Admin-Panel driven.
@@ -2295,6 +2317,7 @@
       try{
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
         await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
+        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),payload,{merge:true});
         resultSavedForThisAttempt=true;
         return true;
       }catch(err){
@@ -2353,6 +2376,7 @@
       try {
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
         await setDoc(doc(db,'results',draftResultId), resultPayload, {merge:true});
+        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),resultPayload,{merge:true});
         await setDoc(doc(db,'exam_sessions',currentAttemptId),{
           status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,
           correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,
