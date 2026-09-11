@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/verify-portals.yml",
-      "bytes": 652,
-      "sha256": "b1918b1855d0d1b1788b77b955200b6c7168edf9e5282e998a377c7a1b31e788"
+      "bytes": 684,
+      "sha256": "8f57487c4321bb834d00b941f288d32edf46d08019c1b8d747aa6439629f296d"
     },
     {
       "path": "DEPLOYMENT.md",
@@ -93,8 +93,8 @@
     },
     {
       "path": "tests/portal-smoke.cjs",
-      "bytes": 7780,
-      "sha256": "c96292014f57247e1b84df0912693a51ed68701bca526ef07fef9c4f5dbb10d9"
+      "bytes": 7804,
+      "sha256": "6cded3a46ef59f45de17da658b49e7c28c3d50e3f7affb89d0b502ba76ef47f0"
     },
     {
       "path": "tests/regression.cjs",

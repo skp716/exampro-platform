@@ -22,4 +22,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: tests
       - run: npm --prefix tests run browser
-      - run: npm --prefix tests run rules
+      - if: ${{ !cancelled() }}
+        run: npm --prefix tests run rules
