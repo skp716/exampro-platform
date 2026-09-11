@@ -535,7 +535,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, getDocs, setDoc, runTransaction, collection, query, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocs, setDoc, runTransaction, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -665,7 +665,8 @@
 
     async function validateCenterCode(code){
       const centerId=await sha256(String(code).trim().toUpperCase());
-      const snap=await withFirebaseRetry(()=>getDoc(doc(db,'centers',centerId)));
+      const centerRef=currentInstitute?.id?doc(db,'institutes',currentInstitute.id,'centers',centerId):doc(db,'centers',centerId);
+      const snap=await withFirebaseRetry(()=>getDoc(centerRef));
       if(!snap.exists()||snap.data()?.active!==true) throw new Error('invalid-center-code');
       return {centerId,...snap.data()};
     }
@@ -704,7 +705,7 @@
 
     async function claimLoginSession(){
       const user=await ensureStudentAuth();
-      const attemptId=await sha256(`${selectedExamId}|${currentStudentEmail}`);
+      const attemptId=await sha256(`${currentInstitute?.id||'global'}|${selectedExamId}|${currentStudentEmail}`);
       const lockRef=doc(db,'attempt_locks',attemptId),sessionRef=doc(db,'exam_sessions',attemptId);
       const now=new Date();
 
@@ -740,6 +741,7 @@
         transaction.set(sessionRef,{lastSeen:now,name:currentStudentName},{merge:true});
         return sessionSnap.data();
       });
+      if(currentInstitute?.id){const tenantSessionRef=doc(db,'institutes',currentInstitute.id,'exam_sessions',attemptId);await setDoc(tenantSessionRef,{...data,sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,examId:selectedExamId,examName:selectedExamName,instituteId:currentInstitute.id,lastSeen:now},{merge:true});onSnapshot(tenantSessionRef,s=>{if(s.exists()&&s.data().forceSubmit===true&&isExamActive&&!submissionInProgress)submitStudentExam()});}
       currentAttemptId=attemptId;draftResultId=attemptId;attemptClaimed=true;currentSession=data;
       sessionStorage.setItem('currentAttemptId',attemptId);sessionStorage.setItem('draftResultId',attemptId);
       return data;
@@ -764,7 +766,7 @@
         tabSwitches,copiesAttempted,penaltiesApplied,securityViolations:securityEvents.length,
         securityEvents:securityEvents.slice(-50),...extra
       };
-      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
+      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
       catch(err){console.error('Progress save failed:',err);}
     }
 
@@ -856,7 +858,7 @@
     async function checkOverallExamWindow() {
       try {
         await ensureStudentAuth();
-        const docRef = doc(db, "exam_config", "current_test");
+        const docRef = currentInstitute?.id?doc(db,'institutes',currentInstitute.id,'settings','exam_config'):doc(db,"exam_config","current_test");
         const snap = await withFirebaseRetry(()=>getDoc(docRef));
 
         if (!snap.exists()) {
@@ -2385,6 +2387,7 @@
           tabSwitches:Math.min(maxTabSwitches,tabSwitches),copiesAttempted,penaltiesApplied,
           feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating
         },{merge:true});
+        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),{status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,timeTakenSeconds:finalMetrics.timeTakenSeconds||0,timeTakenText:finalMetrics.timeTakenText||'',securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50),tabSwitches:Math.min(maxTabSwitches,tabSwitches),copiesAttempted,penaltiesApplied,feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating},{merge:true});
         resultSavedForThisAttempt=true;
         ['currentAttemptId','draftResultId','tabSwitches','copiesAttempted','penaltiesApplied'].forEach(key=>sessionStorage.removeItem(key));
         document.getElementById('success-modal').classList.add('show');
