@@ -685,6 +685,14 @@
       }
     }
 
+    function applyInstituteLogo(){
+      const logoUrl=currentInstitute?.branding?.logoUrl||currentInstitute?.logoUrl||'';
+      if(!logoUrl)return;
+      document.querySelectorAll('.brand-mark,.mini-logo').forEach(el=>{
+        el.innerHTML=`<img src="${escapeHtmlSafe(logoUrl)}" alt="Institute logo" style="width:100%;height:100%;object-fit:contain;border-radius:inherit">`;
+      });
+    }
+
     function loadInstituteGatewayContext(){
       try{
         currentInstitute=JSON.parse(sessionStorage.getItem('bookeshInstitute')||'null');
@@ -695,6 +703,7 @@
       if(brand.primaryColor)document.documentElement.style.setProperty('--primary',brand.primaryColor);
       if(brand.secondaryColor)document.documentElement.style.setProperty('--secondary',brand.secondaryColor);
       applyCenterBranding({instituteName:currentInstitute.instituteName,location:currentInstitute.displayAddress||currentInstitute.address?.city||'Online Examination Portal'});
+      applyInstituteLogo();
       const name=document.getElementById('student-name'),email=document.getElementById('student-email');
       if(name&&currentStudentProfile.name)name.value=currentStudentProfile.name;
       if(email&&currentStudentProfile.email)email.value=currentStudentProfile.email;
@@ -875,10 +884,29 @@
         maxTabSwitches=Number.isInteger(configuredTabLimit)&&configuredTabLimit>=1&&configuredTabLimit<=20?configuredTabLimit:2;
         populateExamCategories();
         updateInstructionConfig();
+
+        // The gateway already collected institute code and candidate details.
+        // Continue directly to this institute's instruction screen.
+        if(sessionStorage.getItem('bookeshGatewayReady')==='1'){
+          sessionStorage.removeItem('bookeshGatewayReady');
+          const profile=currentStudentProfile||{};
+          const examSelect=document.getElementById('exam-category');
+          if(examSelect&&profile.examId){
+            examSelect.value=profile.examId;
+            selectedExamConfig=getSelectedExamConfig();
+            selectedExamId=selectedExamConfig?.id||'';
+            selectedExamName=selectedExamConfig?.name||'';
+          }
+          const centerInput=document.getElementById('center-code');
+          if(centerInput)centerInput.value=profile.centerCode||examConfigData.activeCenterCode||'';
+          updateInstructionConfig();
+          setTimeout(()=>document.getElementById('login-form')?.requestSubmit(),0);
+        }
         
         const now = new Date().getTime();
-        const start = examConfigData.windowStart || 0;
-        const end = examConfigData.windowEnd || Infinity;
+        const asMillis=value=>value?.toMillis?value.toMillis():(value?new Date(value).getTime():0);
+        const start = asMillis(examConfigData.entryStartAt||examConfigData.windowStart) || 0;
+        const end = asMillis(examConfigData.entryCloseAt||examConfigData.windowEnd) || Infinity;
 
         if (now < start) {
           showTimeStatusOverlay("Entry is not open yet!", `This test will open at ${new Date(start).toLocaleString('en-IN')}`);

@@ -34,7 +34,7 @@ service cloud.firestore {
     function validAttemptLock() {
       return signedIn()
         && request.resource.data.keys().hasOnly([
-          'ownerUid', 'email', 'examId', 'createdAt'
+          'ownerUid', 'email', 'examId', 'instituteId', 'createdAt'
         ])
         && request.resource.data.ownerUid == request.auth.uid
         && request.resource.data.email is string
@@ -43,6 +43,7 @@ service cloud.firestore {
         && request.resource.data.examId is string
         && request.resource.data.examId.size() > 0
         && request.resource.data.examId.size() <= 80
+        && request.resource.data.instituteId is string
         && request.resource.data.createdAt is timestamp;
     }
 
