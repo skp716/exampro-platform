@@ -308,6 +308,12 @@
     .exam-modal-btn.danger{background:#dc2626;border-color:#dc2626;color:#fff;}
     .exam-modal-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 9px;border-radius:7px;background:#fff1f2;color:#be123c;font-size:.78rem;font-weight:800;}
     .passage-box{white-space:pre-wrap;background:#f8fafc;border:1px solid #cbd5e1;border-left:5px solid var(--primary);border-radius:10px;padding:16px;margin-bottom:20px;font-weight:500;max-height:none;overflow:visible;}
+    body.no-palette .palette-panel,body.no-palette .palette-toggle{display:none!important}
+    body.no-palette .exam-main{grid-template-columns:minmax(0,1fr)}
+    body.normal-exam .exam-shell{max-width:1000px;margin:auto}
+    body[data-instruction-template="instruction-classic-01"] .instruction-list{list-style:decimal;padding-left:28px;border:1px solid #cbd5e1}
+    body[data-instruction-template="instruction-classic-01"] .instruction-list li{display:list-item;padding:12px}
+    body[data-instruction-template="instruction-warning-01"] .instruction-list{background:#fff7ed;border-left:5px solid #d97706;padding:18px}
   </style>
 </head>
 <body>
@@ -538,7 +544,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, getDocs, setDoc, runTransaction, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocs, setDoc, writeBatch, runTransaction, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -689,6 +695,7 @@
     }
 
     function applyInstituteLogo(){
+      if(!featureEnabled('advancedBranding'))return;
       const logoUrl=currentInstitute?.branding?.logoUrl||currentInstitute?.logoUrl||'';
       if(!logoUrl)return;
       document.querySelectorAll('.brand-mark,.mini-logo').forEach(el=>{
@@ -696,13 +703,31 @@
       });
     }
 
+    function featureEnabled(key){return !currentInstitute||currentInstitute.features?.[key]!==false;}
+    function securityEnabled(key){return !currentInstitute||currentInstitute.security?.[key]!==false;}
+    function applyInstituteExperience(){
+      if(!currentInstitute)return;
+      const normal=currentInstitute.examMode==='NORMAL'||!featureEnabled('cbtMode');
+      document.body.classList.toggle('normal-exam',normal);
+      document.body.classList.toggle('no-palette',normal||!featureEnabled('questionPalette'));
+      document.body.dataset.instructionTemplate=currentInstitute.instructionTemplateId||'instruction-clean-01';
+      const list=document.querySelector('#slide-2 .instruction-list');
+      document.getElementById('platform-security-reminders')?.remove();
+      const reminders=[];
+      if(currentInstitute.security?.dnd)reminders.push('Enable Do Not Disturb before starting. Your browser cannot enable it for you.');
+      if(currentInstitute.security?.screenshot)reminders.push('Screenshots are not permitted. Browser screenshot detection is limited.');
+      if(currentInstitute.security?.overlay)reminders.push('Close floating apps and split-screen windows before starting.');
+      if(reminders.length&&list){const node=document.createElement('div');node.id='platform-security-reminders';node.textContent=reminders.join(' ');node.style.cssText='padding:12px;background:#fff3cd;border-radius:8px;margin:12px 0';list.after(node)}
+    }
+    window.addEventListener('beforeunload',event=>{if(isExamActive&&securityEnabled('refresh')){event.preventDefault();event.returnValue='';}});
+
     function loadInstituteGatewayContext(){
       try{
         currentInstitute=JSON.parse(sessionStorage.getItem('bookeshInstitute')||'null');
         currentStudentProfile=JSON.parse(sessionStorage.getItem('bookeshStudentProfile')||'{}');
       }catch(_error){currentInstitute=null;currentStudentProfile={};}
       if(!currentInstitute)return;
-      const brand=currentInstitute.branding||{};
+      const brand=featureEnabled('advancedBranding')?(currentInstitute.branding||{}):{};
       if(brand.primaryColor)document.documentElement.style.setProperty('--primary',brand.primaryColor);
       if(brand.secondaryColor)document.documentElement.style.setProperty('--secondary',brand.secondaryColor);
       applyCenterBranding({instituteName:currentInstitute.instituteName,location:currentInstitute.displayAddress||currentInstitute.address?.city||'Online Examination Portal'});
@@ -710,9 +735,14 @@
       const name=document.getElementById('student-name'),email=document.getElementById('student-email');
       if(name&&currentStudentProfile.name)name.value=currentStudentProfile.name;
       if(email&&currentStudentProfile.email)email.value=currentStudentProfile.email;
-      const sections=currentInstitute.instructions?.sections||[];
+      applyInstituteExperience();
+      const sections=featureEnabled('customInstructions')?(currentInstitute.instructions?.sections||[]):[];
       const list=document.querySelector('#slide-2 .instruction-list');
-      if(list&&sections.length)list.innerHTML=sections.flatMap(section=>String(section.content||'').split('\n').filter(Boolean).map(line=>`<li><i class="fa-solid ${section.type==='warning'?'fa-triangle-exclamation':'fa-circle-check'}" style="color:${section.type==='warning'?'#d97706':'#16a34a'}"></i><span><b>${escapeHtmlSafe(section.heading||'Instruction')}:</b> ${escapeHtmlSafe(line)}</span></li>`)).join('');
+      if(list&&sections.length)list.innerHTML=sections.map(section=>{
+        const lines=String(section.content||'').split('\n').filter(Boolean).map(escapeHtmlSafe);
+        const content=section.type==='paragraph'?`<p>${lines.join('<br>')}</p>`:`<${section.type==='numbered'?'ol':'ul'}>${lines.map(line=>`<li>${line}</li>`).join('')}</${section.type==='numbered'?'ol':'ul'}>`;
+        return `<li style="display:block;${section.type==='warning'?'background:#fff3cd;padding:12px;':''}"><b>${escapeHtmlSafe(section.heading||'Instruction')}</b>${content}</li>`;
+      }).join('');
     }
 
     async function claimLoginSession(){
@@ -736,7 +766,9 @@
         }
       }
 
-      const data=await runTransaction(db,async transaction=>{
+      if(currentInstitute?.id){const own=await getDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',attemptId));if(own.exists()){if(own.data().ownerUid!==user.uid)throw Error('email-already-active');if(own.data().status==='reset_pending')throw Error('Attempt reset is in progress. Please retry shortly.');if(own.data().status==='final_submitted')throw Error('attempt-already-used');}}
+
+      let data=await runTransaction(db,async transaction=>{
         const sessionSnap=await transaction.get(sessionRef);
         if(sessionSnap.exists()&&sessionSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
         if(sessionSnap.exists()&&sessionSnap.data()?.status==='final_submitted') throw new Error('attempt-already-used');
@@ -753,7 +785,7 @@
         transaction.set(sessionRef,{lastSeen:now,name:currentStudentName},{merge:true});
         return sessionSnap.data();
       });
-      if(currentInstitute?.id){const tenantSessionRef=doc(db,'institutes',currentInstitute.id,'exam_sessions',attemptId);await setDoc(tenantSessionRef,{...data,sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,examId:selectedExamId,examName:selectedExamName,instituteId:currentInstitute.id,lastSeen:now},{merge:true});onSnapshot(tenantSessionRef,s=>{if(s.exists()&&s.data().forceSubmit===true&&isExamActive&&!submissionInProgress)submitStudentExam()});}
+      if(currentInstitute?.id){const existingTenant=await getDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',attemptId));if(existingTenant.exists())data=existingTenant.data();const tenantSessionRef=doc(db,'institutes',currentInstitute.id,'exam_sessions',attemptId);await setDoc(tenantSessionRef,{...data,loginAt:data.loginAt||now,createdAt:data.loginAt||now,sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,examId:selectedExamId,examName:selectedExamName,instituteId:currentInstitute.id,lastSeen:now},{merge:true});onSnapshot(tenantSessionRef,s=>{if(s.exists()&&s.data().status==='final_submitted'&&s.data().forcedAt){isExamActive=false;submissionInProgress=true;clearInterval(timerInterval);clearInterval(heartbeatTimer);clearTimeout(progressSaveTimer);releaseExamWakeLock();if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});document.getElementById('success-modal').classList.add('show')}});}
       currentAttemptId=attemptId;draftResultId=attemptId;attemptClaimed=true;currentSession=data;
       sessionStorage.setItem('currentAttemptId',attemptId);sessionStorage.setItem('draftResultId',attemptId);
       return data;
@@ -769,17 +801,41 @@
       progressSaveTimer=setTimeout(saveExamProgress,immediate?0:1500);
     }
 
+    async function loadAttemptSnapshot(){
+      if(!currentInstitute?.id)return null;
+      const parts=await getDocs(collection(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId,'snapshot'));
+      const chunks=parts.docs.map(d=>d.data()).sort((a,b)=>a.order-b.order);
+      if(!chunks.length){if(currentSession?.snapshotParts)throw Error('Saved question snapshot is missing. Contact your administrator.');return null;}
+      if(currentSession.snapshotParts&&chunks.length!==currentSession.snapshotParts)throw Error('Saved exam snapshot is incomplete. Contact your institute administrator.');
+      return chunks.flatMap(part=>part.questions);
+    }
+    async function saveAttemptSnapshot(){
+      if(!currentInstitute?.id||currentSession?.snapshotParts)return;
+      const chunks=[];let chunk=[],bytes=0;
+      for(const question of questionsList){const clean=JSON.parse(JSON.stringify(question)),size=new TextEncoder().encode(JSON.stringify(clean)).length;
+        if(size>700000)throw Error('A question is too large to save safely for resume. Contact your administrator.');
+        if(bytes+size>700000&&chunk.length){chunks.push(chunk);chunk=[];bytes=0;}chunk.push(clean);bytes+=size;
+      }if(chunk.length)chunks.push(chunk);
+      if(chunks.length>10)throw Error('This paper exceeds the snapshot size limit. Contact your administrator.');
+      const batch=writeBatch(db);
+      for(let i=0;i<chunks.length;i++)batch.set(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId,'snapshot',String(i).padStart(4,'0')),{order:i,questions:chunks[i]});
+      batch.set(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),{snapshotParts:chunks.length},{merge:true});
+      await batch.commit();
+      currentSession.snapshotParts=chunks.length;
+    }
+
     async function saveExamProgress(extra={}){
-      if(!currentAttemptId||!auth.currentUser)return;
+      if(!currentAttemptId||!auth.currentUser||submissionInProgress)return;
       const payload={
         status:isExamActive?'in_progress':(currentSession?.status||'logged_in'),lastSeen:new Date(),
         currentQuestionIndex,selectedAnswers,questionStatus,examStartTime,examEndTime,
         questionOrder:questionsList.map(q=>q._questionKey),reserveOrder:reserveQuestions.map(q=>q._questionKey),
         tabSwitches,copiesAttempted,penaltiesApplied,securityViolations:securityEvents.length,
-        securityEvents:securityEvents.slice(-50),...extra
+        securityEvents:securityEvents.slice(-50),
+        grading:questionsList.map(q=>q.options.indexOf(q.a||q.correct||q.ans)),totalMarks:questionsList.length,...extra
       };
-      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
-      catch(err){console.error('Progress save failed:',err);}
+      try{if(currentInstitute?.id){await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),payload,{merge:true});}else{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});}currentSession={...(currentSession||{}),...payload};return true;}
+      catch(err){console.error('Progress save failed:',err);return false;}
     }
 
     function replaceViolatedQuestion(){
@@ -799,6 +855,9 @@
 
     function recordSecurityViolation(reason){
       if(!isExamActive||Date.now()<securitySuppressedUntil)return;
+      const key={'page-hidden':'tabSwitch','focus-lost':'focusLock','fullscreen-exit':'fullscreen','reduced-or-split-screen':'overlay','context-menu-or-long-press':'copyPaste','blocked-keyboard-command':'keyboard'}[reason];
+      if(key&&!securityEnabled(key))return;
+      if(['focusLock','overlay'].includes(key)&&!featureEnabled('advancedSecurity'))return;
       const now=Date.now();if(now-lastSecurityEventAt<1200)return;lastSecurityEventAt=now;
       tabSwitches=Math.min(maxTabSwitches,tabSwitches+1);
       const penalty=getPenaltyPerViolation();penaltiesApplied=Number((penaltiesApplied+penalty).toFixed(2));
@@ -833,7 +892,7 @@
     window.addEventListener('resize',()=>{if(!isExamActive||!initialFullscreenArea)return;const area=innerWidth*innerHeight;if(area<initialFullscreenArea*.72)recordSecurityViolation('reduced-or-split-screen');});
 
     document.addEventListener("copy", (e) => {
-      if (isExamActive) {
+      if (isExamActive&&securityEnabled('copyPaste')) {
         e.preventDefault();
         copiesAttempted++;
         sessionStorage.setItem('copiesAttempted', copiesAttempted);
@@ -843,7 +902,7 @@
     });
 
     document.addEventListener("paste", (e) => {
-      if (isExamActive) {
+      if (isExamActive&&securityEnabled('copyPaste')) {
         e.preventDefault();
         copiesAttempted++;
         sessionStorage.setItem('copiesAttempted', copiesAttempted);
@@ -853,12 +912,11 @@
     });
 
     document.addEventListener('contextmenu', event => {
-      event.preventDefault();
-      if(isExamActive) recordSecurityViolation('context-menu-or-long-press');
+      if(isExamActive&&securityEnabled('copyPaste')){event.preventDefault();recordSecurityViolation('context-menu-or-long-press');}
     });
 
     document.addEventListener('keydown',event=>{
-      if(!isExamActive) return;
+      if(!isExamActive||!securityEnabled('keyboard')) return;
       const blocked=(event.ctrlKey||event.metaKey) && ['c','x','v','p','s','u'].includes(String(event.key).toLowerCase());
       if(blocked || event.key==='F12'){
         event.preventDefault();
@@ -870,6 +928,7 @@
     async function checkOverallExamWindow() {
       try {
         await ensureStudentAuth();
+        if(currentInstitute?.id){const fresh=await getDoc(doc(db,'institutes',currentInstitute.id));if(!fresh.exists()||fresh.data().status!=='active')throw Error('Institute access is inactive.');currentInstitute={id:fresh.id,...fresh.data()};sessionStorage.setItem('bookeshInstitute',JSON.stringify(currentInstitute));loadInstituteGatewayContext();}
         const docRef = currentInstitute?.id?doc(db,'institutes',currentInstitute.id,'settings','exam_config'):doc(db,"exam_config","current_test");
         const snap = await withFirebaseRetry(()=>getDoc(docRef));
 
@@ -881,7 +940,7 @@
         examConfigData = snap.data();
         applyCenterBranding({
           instituteName:examConfigData.instituteName||'Examination Centre',
-          location:examConfigData.instituteLocation||'Online Examination Portal'
+          location:examConfigData.location||examConfigData.instituteLocation||'Online Examination Portal'
         });
         const configuredTabLimit=Number(examConfigData.maxTabSwitches);
         maxTabSwitches=Number.isInteger(configuredTabLimit)&&configuredTabLimit>=1&&configuredTabLimit<=20?configuredTabLimit:2;
@@ -941,8 +1000,8 @@
 
     function getConfiguredExams() {
       const tenantExams = (()=>{try{return JSON.parse(sessionStorage.getItem('bookeshTenantExams')||'[]')}catch{return[]}})();
-      if (currentInstitute?.id && Array.isArray(tenantExams) && tenantExams.length) {
-        return tenantExams.map(exam=>({
+      if (currentInstitute?.id) {
+        return (Array.isArray(examConfigData?.multiExamConfig)?examConfigData.multiExamConfig:tenantExams).filter(exam=>exam.active===true).map(exam=>({
           ...exam,
           id:String(exam.id),
           name:String(exam.name||exam.examName||exam.code||exam.id),
@@ -1303,15 +1362,15 @@
       }
     }
 
-    async function loadConfiguredExamQuestions(exam) {
+    async function loadConfiguredExamQuestions(exam, restoring=false) {
       if (exam?.tenant && currentInstitute?.id) {
         const snap=await getDocs(query(collection(db,'institutes',currentInstitute.id,'question_bank'),where('examId','==',exam.id)));
         const pool=snap.docs.map(d=>({id:d.id,...d.data()}));
         if(pool.length){
-          const subjectMap=new Map(getSubjectEntries(exam).map(([id,cfg])=>[String(cfg.name||id).toLowerCase(),{id,name:cfg.name||id}]));
+          const subjectMap=new Map(getSubjectEntries(exam).map(([id,cfg])=>[String(cfg.name||id).toLowerCase(),{id,name:cfg.name||id,count:getSubjectCount(cfg),order:getSubjectOrder(cfg)}]));
           const grouped=new Map();pool.forEach(q=>{const key=String(q.subject||'General').toLowerCase();if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(q)});
           const combined=[];
-          grouped.forEach((items,key)=>{const subject=subjectMap.get(key)||{id:key.replace(/[^a-z0-9]+/g,'_'),name:items[0]?.subject||'General'};items.sort(()=>Math.random()-.5).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subject.id,_subjectName:subject.name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subject.id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}))});
+          grouped.forEach((items,key)=>{const subject=subjectMap.get(key)||{id:key.replace(/[^a-z0-9]+/g,'_'),name:items[0]?.subject||'General'};(subject.order==='sequential'?items:[...items].sort(()=>Math.random()-.5)).slice(0,restoring?items.length:(subject.count||items.length)).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subject.id,_subjectName:subject.name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subject.id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}))});
           return combined;
         }
 
@@ -1334,7 +1393,7 @@
             if(!Array.isArray(parsed)||!parsed.length)throw new Error(`${sourceFile} has no valid questions.`);
             parsed.forEach(q=>sourcePool.push({...q,__tenantSource:sourceFile,__tenantSourceUrl:parsedUrl.href,__tenantSubjectId:sourceItem.id,__tenantSubjectName:sourceItem.name}));
           }
-          const count=Math.min(getSubjectCount(subjectCfg)||sourcePool.length,sourcePool.length);
+          const count=restoring?sourcePool.length:Math.min(getSubjectCount(subjectCfg)||sourcePool.length,sourcePool.length);
           const ordered=getSubjectOrder(subjectCfg)==='random'?[...sourcePool].sort(()=>Math.random()-.5):[...sourcePool];
           const subjectName=subjectCfg.name||subjectId;
           ordered.slice(0,count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:q.__tenantSubjectId||subjectId,_subjectName:q.__tenantSubjectName||subjectName,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${q.__tenantSubjectId||subjectId}|${q?.id??index}`,_questionSource:q.__tenantSource||source,_questionSourceUrl:q.__tenantSourceUrl||location.href}));
@@ -1509,7 +1568,7 @@
 
       const activeExam = selectedExamConfig || getSelectedExamConfig();
       const configuredQuestions = activeExam ? getExamTotalQuestions(activeExam) : examConfigData?.studentLimit;
-      const configuredMinutes = isRailwayExam(activeExam) ? 90 : activeExam?.id==='ssc_gd' ? 60 :
+      const configuredMinutes = !activeExam?.tenant&&isRailwayExam(activeExam) ? 90 : !activeExam?.tenant&&activeExam?.id==='ssc_gd' ? 60 :
         (Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes)));
 
       questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
@@ -1569,13 +1628,13 @@
           currentCenter=await validateCenterCode(centerCodeInput);
           applyCenterBranding(currentCenter);
         }catch(centerErr){
-          if(centerCodeError)centerCodeError.style.display='flex';
-          return;
+          throw centerErr;
         }
         try{
           currentSession=await claimLoginSession();
         }catch(sessionErr){
           console.error('Login session claim failed:',sessionErr);
+          if(document.documentElement.classList.contains('gateway-handoff'))throw sessionErr;
           const reason=String(sessionErr?.message||sessionErr?.code||'');
           if(reason.includes('email-already-active')){
             duplicateError.innerHTML='<i class="fa-solid fa-ban"></i> Access Denied: This email is already active on another device.';
@@ -1596,7 +1655,10 @@
         window.changeSlide(2);
         document.documentElement.classList.remove('gateway-handoff');
       } catch (err) {
-        showExamModal('security','Connection Error','Please check your internet connection and try again.','Close',null,'primary');
+        const reason=String(err.message||err.code||'');
+        const detail=reason.includes('reset is in progress')?reason:reason.includes('invalid-center-code')?'This institute has no valid active center. Ask its administrator to save an active center code.':reason.includes('email-already-active')?'This email is already assigned to an attempt on another browser. Ask your institute administrator for a retake.':reason.includes('attempt-already-used')?'This email has already completed this exam. Ask your institute administrator for a retake.':getConnectionFailureMessage(err);
+        sessionStorage.setItem('bookeshVerificationError',detail);
+        showExamModal('security','Entry Verification Failed',escapeHtmlSafe(detail),'Close',null,'primary');
       } finally {
         proceedBtn.disabled = false;
         proceedBtn.innerText = "Proceed to Instructions";
@@ -1614,7 +1676,7 @@
       try {
         // A pending result needs no fullscreen; an active exam must never start
         // after a rejected/unsupported fullscreen request.
-        if(currentSession?.status!=='result_pending_feedback' && !document.fullscreenElement){
+        if(securityEnabled('fullscreen')&&currentSession?.status!=='result_pending_feedback' && !document.fullscreenElement){
           if(!document.documentElement.requestFullscreen){
             throw new Error('Fullscreen examination mode is not supported by this browser.');
           }
@@ -1639,7 +1701,8 @@
          * The student page will fetch exactly that file.
          */
         reserveQuestions = [];
-        const multiQuestions = await loadConfiguredExamQuestions(selectedExamConfig);
+        const savedQuestions=await loadAttemptSnapshot();
+        const multiQuestions = savedQuestions||await loadConfiguredExamQuestions(selectedExamConfig,Boolean(currentSession?.questionOrder?.length));
 
         if (!Array.isArray(multiQuestions) || !multiQuestions.length) {
           throw new Error('No questions were loaded from the Admin Panel configuration for the selected exam. Please check Subject Name, Questions and Question Source.');
@@ -1650,7 +1713,8 @@
         const canResume = ['in_progress','result_pending_feedback'].includes(currentSession?.status) &&
           Array.isArray(currentSession.questionOrder) && currentSession.questionOrder.length;
         if (canResume) {
-          questionsList = currentSession.questionOrder.map(key=>byKey.get(key)).filter(Boolean);
+          questionsList = currentSession.questionOrder.map(key=>byKey.get(key));
+          if(questionsList.some(q=>!q))throw Error('The original question set for this older attempt cannot be restored safely. Ask the administrator to reset the attempt.');
           const used = new Set(currentSession.questionOrder);
           const savedReserve = Array.isArray(currentSession.reserveOrder)
             ? currentSession.reserveOrder.map(key=>byKey.get(key)).filter(Boolean) : [];
@@ -1669,8 +1733,9 @@
           selectedAnswers = {}; questionStatus = {}; securityEvents = [];
           tabSwitches = 0; copiesAttempted = 0; penaltiesApplied = 0;
           currentQuestionIndex = 0; examStartTime = Date.now();
-          const configuredDuration = isRailwayExam(selectedExamConfig) ? 90 : selectedExamId==='ssc_gd' ? 60 :
+          const configuredDuration = !selectedExamConfig?.tenant&&isRailwayExam(selectedExamConfig) ? 90 : !selectedExamConfig?.tenant&&selectedExamId==='ssc_gd' ? 60 :
             (Number(selectedExamConfig?.timerMinutes)||Number(selectedExamConfig?.durationMinutes)||Number(examConfigData?.durationMinutes));
+          if(!Number.isFinite(configuredDuration)||configuredDuration<=0)throw Error('A positive exam duration must be saved by the administrator.');
           examEndTime = Date.now() + configuredDuration*60*1000;
           questionsList.forEach((_, i) => questionStatus[i] = 'not-visited');
         }
@@ -1678,6 +1743,7 @@
         if (!questionsList.length) {
           throw new Error('No questions are configured for the selected exam in the Admin Panel.');
         }
+        await saveAttemptSnapshot();
         sessionStorage.setItem('tabSwitches', String(tabSwitches));
         sessionStorage.setItem('copiesAttempted', String(copiesAttempted));
         sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
@@ -1693,7 +1759,7 @@
           await requestExamWakeLock();
           initialFullscreenArea = innerWidth*innerHeight;
           window.changeSlide(3);
-          await saveExamProgress({status:'in_progress'});
+          if(!await saveExamProgress({status:'in_progress'})){isExamActive=false;throw Error('Your exam could not be synced. Check the connection and retry before answering.');}
           clearInterval(heartbeatTimer); heartbeatTimer=setInterval(()=>saveExamProgress(),60000);
           startExamTimer();
           loadQuestion(currentQuestionIndex);
@@ -2381,8 +2447,8 @@
       };
       try{
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
-        await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
-        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),payload,{merge:true});
+        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),{...payload,scoreValue:calculatedScore,totalMarks:totalScore,...finalMetrics},{merge:true});
+        else await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
         resultSavedForThisAttempt=true;
         return true;
       }catch(err){
@@ -2451,8 +2517,7 @@
         if(currentInstitute?.id){
           // Tenant data is authoritative for institute exams. Save it first so
           // a legacy global-rule mismatch never loses the student's result.
-          await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),resultPayload,{merge:true});
-          await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
+          await runTransaction(db,async tx=>{const ref=doc(db,'institutes',currentInstitute.id,'results',draftResultId),existing=await tx.get(ref);if(existing.exists()&&existing.data().completed===true)return;tx.set(ref,{...resultPayload,scoreValue:calculatedScore,totalMarks:totalScore,...finalMetrics},{merge:true});tx.set(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});});
           try{
             await setDoc(doc(db,'results',draftResultId),resultPayload,{merge:true});
             await setDoc(doc(db,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
