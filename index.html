@@ -2440,17 +2440,27 @@
 
       try {
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
-        await setDoc(doc(db,'results',draftResultId), resultPayload, {merge:true});
-        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),resultPayload,{merge:true});
-        await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+        const finalSessionPayload={
           status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,
           correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,
           timeTakenSeconds:finalMetrics.timeTakenSeconds||0,timeTakenText:finalMetrics.timeTakenText||'',
           securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50),
           tabSwitches:Math.min(maxTabSwitches,tabSwitches),copiesAttempted,penaltiesApplied,
           feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating
-        },{merge:true});
-        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),{status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,timeTakenSeconds:finalMetrics.timeTakenSeconds||0,timeTakenText:finalMetrics.timeTakenText||'',securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50),tabSwitches:Math.min(maxTabSwitches,tabSwitches),copiesAttempted,penaltiesApplied,feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating},{merge:true});
+        };
+        if(currentInstitute?.id){
+          // Tenant data is authoritative for institute exams. Save it first so
+          // a legacy global-rule mismatch never loses the student's result.
+          await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),resultPayload,{merge:true});
+          await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
+          try{
+            await setDoc(doc(db,'results',draftResultId),resultPayload,{merge:true});
+            await setDoc(doc(db,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
+          }catch(globalSyncError){console.warn('Legacy global result mirror skipped:',globalSyncError);}
+        }else{
+          await setDoc(doc(db,'results',draftResultId),resultPayload,{merge:true});
+          await setDoc(doc(db,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
+        }
         resultSavedForThisAttempt=true;
         ['currentAttemptId','draftResultId','tabSwitches','copiesAttempted','penaltiesApplied'].forEach(key=>sessionStorage.removeItem(key));
         document.getElementById('success-modal').classList.add('show');
