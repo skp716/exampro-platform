@@ -1,0 +1,15 @@
+{
+  "name": "exampro-verification",
+  "private": true,
+  "scripts": {
+    "test": "node ../scripts/validate-repository.mjs && node regression.cjs && node lifecycle.cjs",
+    "browser": "node portal-smoke.cjs",
+    "rules": "firebase emulators:exec --config firebase-emulator.json --project demo-exampro --only firestore \"node firestore-rules.cjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.0.0",
+    "firebase-tools": "^14.0.0",
+    "playwright": "^1.51.0"
+  }
+}

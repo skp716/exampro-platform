@@ -16,7 +16,7 @@
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   
-  <script>try{if(sessionStorage.getItem('bookeshGatewayReady')==='1')document.documentElement.classList.add('gateway-handoff')}catch(_){}</script>
+  <script>try{if(sessionStorage.getItem('currentAttemptId')&&sessionStorage.getItem('bookeshInstitute')&&sessionStorage.getItem('bookeshStudentProfile'))sessionStorage.setItem('bookeshGatewayReady','1');if(sessionStorage.getItem('bookeshGatewayReady')==='1')document.documentElement.classList.add('gateway-handoff')}catch(_){}</script>
   <style>
     :root {
       --primary: #1e3a8a;
@@ -334,7 +334,7 @@
           <input type="text" id="student-name" placeholder="Enter Your Name" required>
         </div>
         <div class="form-group">
-          <label for="student-email">Gmail Address *</label>
+          <label for="student-email">Email Address *</label>
           <input type="email" id="student-email" placeholder="Enter Your Email" autocomplete="new-password" required>
           <div class="error-msg" id="email-error"><i class="fa-solid fa-circle-exclamation"></i> Only official @gmail.com addresses are supported.</div>
           <div class="error-msg" id="duplicate-error"><i class="fa-solid fa-ban"></i> Access Denied: You have already attempted this test!</div>
@@ -797,9 +797,12 @@
     }
 
     function queueProgressSave(immediate=false){
+      if(currentAttemptId&&isExamActive){try{sessionStorage.setItem('attempt-progress:'+currentAttemptId,JSON.stringify({ownerUid:auth.currentUser?.uid,examStartTime,savedAt:Date.now(),selectedAnswers,questionStatus,currentQuestionIndex,questionOrder:questionsList.map(q=>q._questionKey),reserveOrder:reserveQuestions.map(q=>q._questionKey),tabSwitches,copiesAttempted,penaltiesApplied,securityEvents}));}catch(error){console.warn('Local answer backup unavailable',error);}}
       clearTimeout(progressSaveTimer);
       progressSaveTimer=setTimeout(saveExamProgress,immediate?0:1500);
     }
+    window.addEventListener('online',()=>{if(isExamActive)queueProgressSave(true);});
+    let progressWriteChain=Promise.resolve();
 
     async function loadAttemptSnapshot(){
       if(!currentInstitute?.id)return null;
@@ -812,7 +815,7 @@
     async function saveAttemptSnapshot(){
       if(!currentInstitute?.id||currentSession?.snapshotParts)return;
       const chunks=[];let chunk=[],bytes=0;
-      for(const question of questionsList){const clean=JSON.parse(JSON.stringify(question)),size=new TextEncoder().encode(JSON.stringify(clean)).length;
+      for(const question of [...questionsList,...reserveQuestions]){const clean=JSON.parse(JSON.stringify(question)),size=new TextEncoder().encode(JSON.stringify(clean)).length;
         if(size>700000)throw Error('A question is too large to save safely for resume. Contact your administrator.');
         if(bytes+size>700000&&chunk.length){chunks.push(chunk);chunk=[];bytes=0;}chunk.push(clean);bytes+=size;
       }if(chunk.length)chunks.push(chunk);
@@ -834,8 +837,14 @@
         securityEvents:securityEvents.slice(-50),
         grading:questionsList.map(q=>q.options.indexOf(q.a||q.correct||q.ans)),totalMarks:questionsList.length,...extra
       };
-      try{if(currentInstitute?.id){await setDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),payload,{merge:true});}else{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});}currentSession={...(currentSession||{}),...payload};return true;}
-      catch(err){console.error('Progress save failed:',err);return false;}
+      // Freeze answer maps before waiting for earlier writes.
+      payload.selectedAnswers={...selectedAnswers};payload.questionStatus={...questionStatus};
+      const ref=currentInstitute?.id?doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId):doc(db,'exam_sessions',currentAttemptId);
+      const operation=progressWriteChain.then(async()=>{try{
+        await runTransaction(db,async tx=>{const latest=await tx.get(ref);if(!latest.exists())throw Error('Attempt no longer exists.');const status=latest.data().status;if(['final_submitted','reset_pending'].includes(status)||(status==='result_pending_feedback'&&payload.status==='in_progress'))throw Error('This attempt is already closed for answers.');tx.set(ref,payload,{merge:true});});
+        currentSession={...(currentSession||{}),...payload};return true;}
+      catch(err){console.error('Progress save failed:',err);return false;}});
+      progressWriteChain=operation;return operation;
     }
 
     function replaceViolatedQuestion(){
@@ -871,7 +880,7 @@
         showExamModal('security','Security Limit Reached',`Maximum security violation limit reached. Total penalty: -${penaltiesApplied}. Your exam is being submitted automatically.`,'Please Wait',null,'danger');
         setTimeout(()=>{
           document.getElementById('exam-modal')?.classList.remove('show');
-          calculateAndShowResults();
+          calculateAndShowResults().then(()=>submitStudentExam()).catch(console.error);
         },350);
       }else{
         showExamModal('security',`Security Alert — ${tabSwitches}/${maxTabSwitches}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
@@ -947,6 +956,27 @@
         populateExamCategories();
         updateInstructionConfig();
 
+        const now = new Date().getTime();
+        const asMillis=value=>value?.toMillis?value.toMillis():(value?new Date(value).getTime():0);
+        const start = asMillis(examConfigData.entryStartAt||examConfigData.windowStart) || 0;
+        const end = asMillis(examConfigData.entryCloseAt||examConfigData.windowEnd) || Infinity;
+
+        let resuming=false;
+        const previousId=sessionStorage.getItem('currentAttemptId');
+        if(currentInstitute?.id&&/^[a-f0-9]{64}$/.test(previousId||'')){
+          const previous=await getDoc(doc(db,'institutes',currentInstitute.id,'exam_sessions',previousId));
+          resuming=previous.exists()&&previous.data().ownerUid===auth.currentUser.uid&&['in_progress','result_pending_feedback'].includes(previous.data().status);
+        }
+        if (!resuming && now < start) {
+          showTimeStatusOverlay("Entry is not open yet!", `This test will open at ${new Date(start).toLocaleString('en-IN')}`);
+          return false;
+        }
+
+        if (!resuming && now > end) {
+          showTimeStatusOverlay("Entry is closed!", "The student entry period is closed. You can no longer enter this test.");
+          return false;
+        }
+
         // The gateway already collected institute code and candidate details.
         // Continue directly to this institute's instruction screen.
         if(sessionStorage.getItem('bookeshGatewayReady')==='1'){
@@ -965,23 +995,9 @@
           setTimeout(()=>document.getElementById('login-form')?.requestSubmit(),0);
         }
         
-        const now = new Date().getTime();
-        const asMillis=value=>value?.toMillis?value.toMillis():(value?new Date(value).getTime():0);
-        const start = asMillis(examConfigData.entryStartAt||examConfigData.windowStart) || 0;
-        const end = asMillis(examConfigData.entryCloseAt||examConfigData.windowEnd) || Infinity;
-
-        if (now < start) {
-          showTimeStatusOverlay("Entry is not open yet!", `This test will open at ${new Date(start).toLocaleString('en-IN')}`);
-          return false;
-        }
-
-        if (now > end) {
-          showTimeStatusOverlay("Entry is closed!", "The student entry period is closed. You can no longer enter this test.");
-          return false;
-        }
-
         return true;
       } catch (err) {
+        document.documentElement.classList.remove('gateway-handoff');
         console.error("Window Check Error:", err);
         showExamModal('security','Connection Check Failed',getConnectionFailureMessage(err),'Retry',null,'primary',()=>checkOverallExamWindow());
         return false;
@@ -989,6 +1005,7 @@
     }
 
     function showTimeStatusOverlay(title, msg) {
+      document.documentElement.classList.remove('gateway-handoff');
       document.body.innerHTML = `
         <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:99999;text-align:center;padding:20px;">
           <i class="fa-solid fa-clock-rotate-left" style="font-size:4rem;color:#ef4444;margin-bottom:1rem;"></i>
@@ -1367,10 +1384,18 @@
         const snap=await getDocs(query(collection(db,'institutes',currentInstitute.id,'question_bank'),where('examId','==',exam.id)));
         const pool=snap.docs.map(d=>({id:d.id,...d.data()}));
         if(pool.length){
-          const subjectMap=new Map(getSubjectEntries(exam).map(([id,cfg])=>[String(cfg.name||id).toLowerCase(),{id,name:cfg.name||id,count:getSubjectCount(cfg),order:getSubjectOrder(cfg)}]));
-          const grouped=new Map();pool.forEach(q=>{const key=String(q.subject||'General').toLowerCase();if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(q)});
           const combined=[];
-          grouped.forEach((items,key)=>{const subject=subjectMap.get(key)||{id:key.replace(/[^a-z0-9]+/g,'_'),name:items[0]?.subject||'General'};(subject.order==='sequential'?items:[...items].sort(()=>Math.random()-.5)).slice(0,restoring?items.length:(subject.count||items.length)).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subject.id,_subjectName:subject.name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subject.id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}))});
+          const subjects=getSubjectEntries(exam).filter(([,cfg])=>cfg.enabled!==false);
+          if(!subjects.length)throw Error('Configure at least one subject for this exam.');
+          for(const [id,cfg] of subjects){
+            const name=String(cfg.name||id),key=name.trim().toLowerCase(),count=getSubjectCount(cfg);
+            const all=subjects.length===1&&['all questions','all','general'].includes(key);
+            const items=pool.filter(q=>all||String(q.subject||'General').trim().toLowerCase()===key);
+            if(!Number.isInteger(count)||count<1)throw Error('Configure a positive whole question count for '+name);
+            if(!restoring&&items.length<count)throw Error(name+' has '+items.length+' questions; '+count+' are required.');
+            if(getSubjectOrder(cfg)==='random'&&!restoring)for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}
+            items.slice(0,restoring?items.length:count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:id,_subjectName:name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}));
+          }
           return combined;
         }
 
@@ -1378,6 +1403,7 @@
         // question files used by the original panel (for example railway.html).
         const combined=[];
         for(const [subjectId,subjectCfg] of getSubjectEntries(exam)){
+          if(subjectCfg.enabled===false)continue;
           const source=resolveSource(subjectCfg);if(!source)continue;
           const sourceFiles=source.toLowerCase().replace(/^\.\//,'')==='ssc-gd.html'
             ? [{file:'ssc-gd/reasoning.html',id:'reasoning',name:'Reasoning'},{file:'ssc-gd/gk-gs.html',id:'gk_gs',name:'GK & GS'},{file:'ssc-gd/maths.html',id:'maths',name:'Maths'},{file:'ssc-gd/english-hindi.html',id:'english_hindi',name:'English / Hindi'}]
@@ -1391,12 +1417,15 @@
             if(!response.ok)throw new Error(`Could not load ${sourceFile} (HTTP ${response.status})`);
             const parsed=extractQuestionArrayFromSource(await response.text());
             if(!Array.isArray(parsed)||!parsed.length)throw new Error(`${sourceFile} has no valid questions.`);
-            parsed.forEach(q=>sourcePool.push({...q,__tenantSource:sourceFile,__tenantSourceUrl:parsedUrl.href,__tenantSubjectId:sourceItem.id,__tenantSubjectName:sourceItem.name}));
+            parsed.forEach((q,sourceIndex)=>sourcePool.push({...q,__sourceIndex:sourceIndex,__tenantSource:sourceFile,__tenantSourceUrl:parsedUrl.href,__tenantSubjectId:sourceItem.id,__tenantSubjectName:sourceItem.name}));
           }
-          const count=restoring?sourcePool.length:Math.min(getSubjectCount(subjectCfg)||sourcePool.length,sourcePool.length);
+          const requested=getSubjectCount(subjectCfg);
+          if(!Number.isInteger(requested)||requested<1)throw Error('Configure a positive whole question count for '+(subjectCfg.name||subjectId));
+          if(!restoring&&requested>sourcePool.length)throw Error((subjectCfg.name||subjectId)+' has '+sourcePool.length+' questions; '+requested+' are required.');
+          const count=restoring?sourcePool.length:requested;
           const ordered=getSubjectOrder(subjectCfg)==='random'?[...sourcePool].sort(()=>Math.random()-.5):[...sourcePool];
           const subjectName=subjectCfg.name||subjectId;
-          ordered.slice(0,count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:q.__tenantSubjectId||subjectId,_subjectName:q.__tenantSubjectName||subjectName,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${q.__tenantSubjectId||subjectId}|${q?.id??index}`,_questionSource:q.__tenantSource||source,_questionSourceUrl:q.__tenantSourceUrl||location.href}));
+          ordered.slice(0,count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:q.__tenantSubjectId||subjectId,_subjectName:q.__tenantSubjectName||subjectName,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${q.__tenantSubjectId||subjectId}|${q?.id??q.__sourceIndex}`,_questionSource:q.__tenantSource||source,_questionSourceUrl:q.__tenantSourceUrl||location.href}));
         }
         if(combined.length)return combined;
         throw new Error('No question bank or question source is configured for this institute exam.');
@@ -1612,7 +1641,7 @@
       selectedExamId = selectedExamConfig.id;
       selectedExamName = selectedExamConfig.name;
 
-      if (!emailInput.endsWith('@gmail.com')) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)) {
         emailError.style.display = 'flex';
         return;
       }
@@ -1709,6 +1738,9 @@
         }
 
         const allLoaded = [...multiQuestions, ...reserveQuestions];
+        if(currentSession?.status==='in_progress'){
+          try{const backup=JSON.parse(sessionStorage.getItem('attempt-progress:'+currentAttemptId)||'null');const synced=currentSession.lastSeen?.toMillis?.()||new Date(currentSession.lastSeen||0).getTime();if(backup&&backup.ownerUid===auth.currentUser?.uid&&backup.examStartTime===currentSession.examStartTime&&backup.savedAt>synced){currentSession={...currentSession,...backup};}}catch(error){console.warn('Local answer backup could not be restored',error);}
+        }
         const byKey = new Map(allLoaded.map(q=>[q._questionKey,q]));
         const canResume = ['in_progress','result_pending_feedback'].includes(currentSession?.status) &&
           Array.isArray(currentSession.questionOrder) && currentSession.questionOrder.length;
@@ -1743,6 +1775,8 @@
         if (!questionsList.length) {
           throw new Error('No questions are configured for the selected exam in the Admin Panel.');
         }
+        const keys=new Set();
+        for(const q of questionsList){if(!Array.isArray(q.options)||q.options.length<2||!q.options.includes(q.a||q.correct||q.ans))throw Error('A question has invalid options or a missing answer key. Ask the administrator to correct the paper.');if(keys.has(q._questionKey))throw Error('Question IDs must be unique within each subject.');keys.add(q._questionKey);}
         await saveAttemptSnapshot();
         sessionStorage.setItem('tabSwitches', String(tabSwitches));
         sessionStorage.setItem('copiesAttempted', String(copiesAttempted));
@@ -1755,6 +1789,7 @@
           isExamActive = false;
           await calculateAndShowResults();
         }else{
+          if(examEndTime<=Date.now()){await calculateAndShowResults();await submitStudentExam();return;}
           isExamActive = true;
           await requestExamWakeLock();
           initialFullscreenArea = innerWidth*innerHeight;
@@ -1765,6 +1800,11 @@
           loadQuestion(currentQuestionIndex);
         }
       } catch (error) {
+        isExamActive=false;
+        clearInterval(timerInterval);clearInterval(heartbeatTimer);
+        await releaseExamWakeLock();
+        if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+        window.changeSlide(2);
         if(error?.code==='attempt-already-used'){
           showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
         }else{
@@ -1786,7 +1826,7 @@
         if (remaining <= 0) {
           clearInterval(timerInterval); clearInterval(heartbeatTimer);
           isExamActive=false;
-          showExamModal('info','Time Up','Your examination time has ended. Your responses will now be submitted for evaluation.','View Result',null,'primary',()=>calculateAndShowResults());
+          calculateAndShowResults().then(()=>submitStudentExam()).catch(console.error);
         } else {
           let mins = Math.floor(remaining / (1000 * 60));
           let secs = Math.floor((remaining % (1000 * 60)) / 1000);
@@ -2207,6 +2247,7 @@
     };
 
     window.selectOption = (qIdx, optIdx) => {
+      if(!isExamActive||submissionInProgress||Date.now()>=examEndTime)return;
       selectedAnswers[qIdx] = optIdx;
       if (questionStatus[qIdx] !== 'review') questionStatus[qIdx] = 'answered';
 
@@ -2222,6 +2263,7 @@
     };
 
     window.clearResponse = () => {
+      if(!isExamActive||submissionInProgress||Date.now()>=examEndTime)return;
       delete selectedAnswers[currentQuestionIndex];
       questionStatus[currentQuestionIndex] = 'not-answered';
       loadQuestion(currentQuestionIndex);
@@ -2229,6 +2271,7 @@
     };
 
     window.toggleMarkReview = () => {
+      if(!isExamActive||submissionInProgress||Date.now()>=examEndTime)return;
       const current = questionStatus[currentQuestionIndex];
       if (current === 'review') {
         questionStatus[currentQuestionIndex] =
@@ -2298,6 +2341,7 @@
     async function calculateAndShowResults() {
       clearInterval(timerInterval);
       clearInterval(heartbeatTimer);
+      clearTimeout(progressSaveTimer);
       isExamActive = false;
       await releaseExamWakeLock();
 
@@ -2335,7 +2379,9 @@
       totalScore = questionsList.length;
       finalizedScoreString = `${Number.isInteger(calculatedScore) ? calculatedScore : calculatedScore.toFixed(2)}/${totalScore}`;
       const attempted=correctCount+wrongCount;
-      const timeTakenSeconds=Math.max(0,Math.round((Date.now()-examStartTime)/1000));
+      const finishedAt=Number(currentSession?.finishedAt)||Math.min(Date.now(),examEndTime||Date.now());
+      currentSession={...(currentSession||{}),finishedAt};
+      const timeTakenSeconds=Math.max(0,Math.round((finishedAt-examStartTime)/1000));
       finalMetrics={correct:correctCount,wrong:wrongCount,attempted,timeTakenSeconds,
         timeTakenText:`${Math.floor(timeTakenSeconds/3600)?Math.floor(timeTakenSeconds/3600)+'h ':''}${Math.floor((timeTakenSeconds%3600)/60)}m ${timeTakenSeconds%60}s`};
 
@@ -2428,6 +2474,7 @@
     async function saveDraftResult(){
       if(resultSavedForThisAttempt) return true;
       if(!currentStudentEmail || !questionsList.length) return false;
+      await progressWriteChain;
       const payload={
         name:currentStudentName, email:currentStudentEmail,
         ownerUid:auth.currentUser?.uid || '',
@@ -2447,8 +2494,12 @@
       };
       try{
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
-        if(currentInstitute?.id)await setDoc(doc(db,'institutes',currentInstitute.id,'results',draftResultId),{...payload,scoreValue:calculatedScore,totalMarks:totalScore,...finalMetrics},{merge:true});
-        else await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
+        if(currentInstitute?.id){
+          const batch=writeBatch(db);
+          batch.set(doc(db,'institutes',currentInstitute.id,'results',draftResultId),{...payload,scoreValue:calculatedScore,totalMarks:totalScore,...finalMetrics},{merge:true});
+          batch.set(doc(db,'institutes',currentInstitute.id,'exam_sessions',currentAttemptId),{status:'result_pending_feedback',selectedAnswers,questionStatus,questionOrder:questionsList.map(q=>q._questionKey),grading:questionsList.map(q=>q.options.indexOf(q.a||q.correct||q.ans)),finishedAt:currentSession.finishedAt,score:finalizedScoreString,...finalMetrics,tabSwitches,copiesAttempted,penaltiesApplied,securityEvents:securityEvents.slice(-50),lastSeen:new Date()},{merge:true});
+          await batch.commit();currentSession.status='result_pending_feedback';
+        }else await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
         resultSavedForThisAttempt=true;
         return true;
       }catch(err){
@@ -2492,6 +2543,7 @@
         subjects: [...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
         instituteId: currentInstitute?.id || '', studentProfile: currentStudentProfile,
         score: finalizedScoreString,
+        correct:finalMetrics.correct||0, wrong:finalMetrics.wrong||0,
         tabSwitches: Math.min(maxTabSwitches, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
         copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
         penaltiesApplied: Number(sessionStorage.getItem('penaltiesApplied') || '0'),
@@ -2506,6 +2558,7 @@
 
       try {
         if(!draftResultId) throw new Error('Secure attempt ID is missing.');
+        if(!await saveDraftResult())throw new Error('Your result has not synced yet. Keep this page open and retry when connected.');
         const finalSessionPayload={
           status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,
           correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,
@@ -2523,10 +2576,12 @@
             await setDoc(doc(db,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
           }catch(globalSyncError){console.warn('Legacy global result mirror skipped:',globalSyncError);}
         }else{
+          await setDoc(doc(db,'exam_sessions',currentAttemptId),{status:'result_pending_feedback'},{merge:true});
           await setDoc(doc(db,'results',draftResultId),resultPayload,{merge:true});
           await setDoc(doc(db,'exam_sessions',currentAttemptId),finalSessionPayload,{merge:true});
         }
         resultSavedForThisAttempt=true;
+        sessionStorage.removeItem('attempt-progress:'+currentAttemptId);
         ['currentAttemptId','draftResultId','tabSwitches','copiesAttempted','penaltiesApplied'].forEach(key=>sessionStorage.removeItem(key));
         document.getElementById('success-modal').classList.add('show');
       } catch (e) {
