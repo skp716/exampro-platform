@@ -713,7 +713,7 @@
       // Atomically create first. If it already exists, only its owner can read
       // it and resume; every other device receives email-already-active.
       try{
-        await setDoc(lockRef,{ownerUid:user.uid,email:currentStudentEmail,examId:selectedExamId,createdAt:now});
+        await setDoc(lockRef,{ownerUid:user.uid,email:currentStudentEmail,examId:selectedExamId,instituteId:currentInstitute?.id||'',createdAt:now});
       }catch(lockCreateError){
         try{
           const ownedLock=await getDoc(lockRef);
@@ -1276,12 +1276,33 @@
       if (exam?.tenant && currentInstitute?.id) {
         const snap=await getDocs(query(collection(db,'institutes',currentInstitute.id,'question_bank'),where('examId','==',exam.id)));
         const pool=snap.docs.map(d=>({id:d.id,...d.data()}));
-        if(!pool.length)throw new Error('No questions are uploaded for this institute exam.');
-        const subjectMap=new Map(getSubjectEntries(exam).map(([id,cfg])=>[String(cfg.name||id).toLowerCase(),{id,name:cfg.name||id}]));
-        const grouped=new Map();pool.forEach(q=>{const key=String(q.subject||'General').toLowerCase();if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(q)});
+        if(pool.length){
+          const subjectMap=new Map(getSubjectEntries(exam).map(([id,cfg])=>[String(cfg.name||id).toLowerCase(),{id,name:cfg.name||id}]));
+          const grouped=new Map();pool.forEach(q=>{const key=String(q.subject||'General').toLowerCase();if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(q)});
+          const combined=[];
+          grouped.forEach((items,key)=>{const subject=subjectMap.get(key)||{id:key.replace(/[^a-z0-9]+/g,'_'),name:items[0]?.subject||'General'};items.sort(()=>Math.random()-.5).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subject.id,_subjectName:subject.name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subject.id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}))});
+          return combined;
+        }
+
+        // Institute admins can also point subjects at the same repository
+        // question files used by the original panel (for example railway.html).
         const combined=[];
-        grouped.forEach((items,key)=>{const subject=subjectMap.get(key)||{id:key.replace(/[^a-z0-9]+/g,'_'),name:items[0]?.subject||'General'};items.sort(()=>Math.random()-.5).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subject.id,_subjectName:subject.name,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subject.id}|${q.id}`,_questionSource:'firestore',_questionSourceUrl:''}))});
-        return combined;
+        for(const [subjectId,subjectCfg] of getSubjectEntries(exam)){
+          const source=resolveSource(subjectCfg);if(!source)continue;
+          const sourceUrl=resolveQuestionSourceUrl(source);
+          const parsedUrl=new URL(sourceUrl,location.href);
+          if(parsedUrl.origin!==location.origin)throw new Error('Question source must be hosted on this website.');
+          const response=await fetch(parsedUrl.href,{cache:'no-store'});
+          if(!response.ok)throw new Error(`Could not load ${source} (HTTP ${response.status})`);
+          const sourcePool=extractQuestionArrayFromSource(await response.text());
+          if(!Array.isArray(sourcePool)||!sourcePool.length)throw new Error(`${source} has no valid questions.`);
+          const count=Math.min(getSubjectCount(subjectCfg)||sourcePool.length,sourcePool.length);
+          const ordered=getSubjectOrder(subjectCfg)==='random'?[...sourcePool].sort(()=>Math.random()-.5):[...sourcePool];
+          const subjectName=subjectCfg.name||subjectId;
+          ordered.slice(0,count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subjectId,_subjectName:subjectName,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subjectId}|${q?.id??index}`,_questionSource:source,_questionSourceUrl:parsedUrl.href}));
+        }
+        if(combined.length)return combined;
+        throw new Error('No question bank or question source is configured for this institute exam.');
       }
       // Railway Group D is the one intentional fixed-source exception.
       // Its question bank is always railway.html. Everything else remains
