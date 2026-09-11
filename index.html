@@ -1008,8 +1008,17 @@
     }
 
     function resolveQuestionSourceUrl(source) {
-      const value = String(source || '').trim();
-      if (!value) return '';
+       let value = String(source || '').trim();
+       if (!value) return '';
+
+       // Compatibility with older Admin settings.
+       const sourceAliases = {
+         'ssc-gd/reasoning.html': 'SSC/reasoning.html',
+         'ssc-gd/gk-gs.html': 'SSC/GK.HTML',
+         'ssc-gd/maths.html': 'SSC/math.html',
+         'ssc-gd/english-hindi.html': 'SSC/hindi.html'
+       };
+       value = sourceAliases[value.toLowerCase()] || value;
 
       /*
        * Relative paths such as a question HTML file, a subject folder file,
@@ -1036,6 +1045,17 @@
 
     function extractQuestionArrayFromSource(rawText) {
       const text = String(rawText || '').trim();
+
+      // Support JSON object question banks such as { "questions": [...] }.
+      try {
+        const wrapped = JSON.parse(text);
+        if (Array.isArray(wrapped)) return wrapped;
+        if (wrapped && typeof wrapped === 'object') {
+          for (const key of ['questions', 'questionBank', 'mcqs', 'data', 'items']) {
+            if (Array.isArray(wrapped[key])) return wrapped[key];
+          }
+        }
+      } catch (_) {}
 
       // 1) Direct JSON array.
       if (text.startsWith('[')) {
@@ -1913,6 +1933,71 @@
       attachRichMediaFallbacks(block, baseUrl);
     }
 
+    function getQuestionOptions(qData) {
+      const raw = qData?.options ?? qData?.choices ?? qData?.answers ?? [];
+
+      if (Array.isArray(raw)) {
+        return raw.map(value => {
+          if (value && typeof value === 'object') {
+            return value.text ?? value.label ?? value.value ?? value.answer ?? '';
+          }
+          return value;
+        });
+      }
+
+      // Supports SSC format: options: { a: "...", b: "...", c: "...", d: "..." }
+      if (raw && typeof raw === 'object') {
+        const lowerKeys = ['a', 'b', 'c', 'd'];
+        const upperKeys = ['A', 'B', 'C', 'D'];
+        const keys = lowerKeys.some(key =>
+          Object.prototype.hasOwnProperty.call(raw, key)
+        ) ? lowerKeys : upperKeys;
+
+        return keys
+          .filter(key => Object.prototype.hasOwnProperty.call(raw, key))
+          .map(key => {
+            const value = raw[key];
+            if (value && typeof value === 'object') {
+              return value.text ?? value.label ?? value.value ?? value.answer ?? '';
+            }
+            return value;
+          });
+      }
+
+      return [];
+    }
+
+    function getQuestionCorrectText(qData, options) {
+      const raw =
+        qData?.correctOption ??
+        qData?.correctAnswer ??
+        qData?.correct ??
+        qData?.answer ??
+        qData?.ans ??
+        qData?.a;
+
+      // Supports correctOption: "A", "B", "C" or "D".
+      if (typeof raw === 'string') {
+        const letter = raw.trim().toUpperCase();
+        if (
+          /^[A-D]$/.test(letter) &&
+          options[letter.charCodeAt(0) - 65] !== undefined
+        ) {
+          return options[letter.charCodeAt(0) - 65];
+        }
+      }
+
+      if (typeof raw === 'number' && options[raw] !== undefined) {
+        return options[raw];
+      }
+
+      if (raw && typeof raw === 'object') {
+        return raw.text ?? raw.label ?? raw.value ?? raw.answer ?? '';
+      }
+
+      return raw ?? '';
+    }
+
     function loadQuestion(index) {
       currentQuestionIndex = index;
       if (questionStatus[index] === 'not-visited') questionStatus[index] = 'not-answered';
@@ -1952,9 +2037,7 @@
       const optionsBlock = document.getElementById('options-block');
       optionsBlock.innerHTML = '';
       const letters = ['A', 'B', 'C', 'D'];
-      const options = Array.isArray(qData.options) ? qData.options :
-                      Array.isArray(qData.choices) ? qData.choices :
-                      Array.isArray(qData.answers) ? qData.answers : [];
+      const options = getQuestionOptions(qData);
 
       options.forEach((opt, idx) => {
         const isSelected = selectedAnswers[index] === idx;
@@ -2130,9 +2213,19 @@
 
       questionsList.forEach((q, idx) => {
         const selectedIdx = selectedAnswers[idx];
-        const studentSelectionText = selectedIdx !== undefined ? q.options[selectedIdx] : `<span style="color:var(--danger)">Not Attempted</span>`;
-        const correctSelectionText = q.a || q.correct || q.ans || 'N/A';
-        const isCorrect = selectedIdx !== undefined && studentSelectionText === correctSelectionText;
+        const questionOptions = getQuestionOptions(q);
+
+        const studentSelectionText =
+          selectedIdx !== undefined
+            ? questionOptions[selectedIdx]
+            : `<span style="color:var(--danger)">Not Attempted</span>`;
+
+        const correctSelectionText =
+          getQuestionCorrectText(q, questionOptions) || 'N/A';
+
+        const isCorrect =
+          selectedIdx !== undefined &&
+          String(studentSelectionText) === String(correctSelectionText);
 
         if (selectedIdx !== undefined) {
           if (isCorrect) correctCount++;
