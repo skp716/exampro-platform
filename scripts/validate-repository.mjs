@@ -9,7 +9,7 @@ const htmlFiles=['index.html','admin.html','super-admin.html','institute-admin.h
 for(const relative of htmlFiles){
   const text=fs.readFileSync(path.join(root,relative),'utf8');
   for(const match of text.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)){
-    const source=match[1].replace(/^\s*import\b[\s\S]*?;\s*$/gm,'');
+    const source=match[1].replace(/\bimport\s*(?:\{[^}]*\}|[\w$]+)\s*from\s*['"][^'"]+['"]\s*;/g,'');
     try{ new vm.Script(`(async()=>{${source}\n})`); }
     catch(error){ throw new Error(`${relative}: invalid inline JavaScript: ${error.message}`); }
   }
@@ -37,3 +37,4 @@ for(const [relative,{required,reserve}] of Object.entries(banks)){
 }
 
 console.log('Repository validation passed.');
+

@@ -1,0 +1,105 @@
+{
+  "baseCommit": "7304850d9b5b32803d9868ed51b8a563227079a0",
+  "files": [
+    {
+      "path": ".github/workflows/verify-portals.yml",
+      "bytes": 684,
+      "sha256": "8f57487c4321bb834d00b941f288d32edf46d08019c1b8d747aa6439629f296d"
+    },
+    {
+      "path": "DEPLOYMENT.md",
+      "bytes": 9130,
+      "sha256": "a0f7fc5b6770f2055c3af3057934c7fa9d424e84e41f8f96168c9133ba9b6da0"
+    },
+    {
+      "path": "START-HERE.md",
+      "bytes": 3037,
+      "sha256": "73a488a73f0e79de75f17c77726da8ed409e7796a30d3dfaef0da40725680b7d"
+    },
+    {
+      "path": "firebase.json",
+      "bytes": 181,
+      "sha256": "a9a4581844a41b38cfbfafac0d4983ecb2b0450f982cbab4be9bfc6ce90c0d25"
+    },
+    {
+      "path": "firestore.rules",
+      "bytes": 15337,
+      "sha256": "b58c0d5c4d8f37d9e939b7feefaee8771b75b45bfa0403be355251a966a9fc29"
+    },
+    {
+      "path": "functions/index.js",
+      "bytes": 10399,
+      "sha256": "1c201e391e04b988e5959ca1f06a2cb835fe7c0a547036dbca84c17a76a091ba"
+    },
+    {
+      "path": "functions/package.json",
+      "bytes": 161,
+      "sha256": "673e4b80fd3fbce7484fecdf9e125fd1caa994f08ff849a1271f2f252c20d8cd"
+    },
+    {
+      "path": "functions/scoring.js",
+      "bytes": 1758,
+      "sha256": "44fa0d931ae4817948a97162293e2c3b76d17195aa8a649aedba94e77d7cee78"
+    },
+    {
+      "path": "index.html",
+      "bytes": 147213,
+      "sha256": "19504c16dba23ce81a55ba52ffaddc0b6d10942a3a067077d2c15ea044069872"
+    },
+    {
+      "path": "institute-admin.html",
+      "bytes": 25610,
+      "sha256": "e782b5eef9b6ffa96e2365580a2ad66678cd2b3914000e4704461a24c28b6ae3"
+    },
+    {
+      "path": "platform-governance.html",
+      "bytes": 9075,
+      "sha256": "7adb80331da8321d5f977f7454afad96dc0c8d284cefb28461d73bf0968e4b62"
+    },
+    {
+      "path": "scripts/validate-repository.mjs",
+      "bytes": 2031,
+      "sha256": "e9cfb31613f9a171103e8d59ca84f5b9d2bbf7e07f5dcf66ad485f687d704833"
+    },
+    {
+      "path": "student-gateway.html",
+      "bytes": 11861,
+      "sha256": "88829d9c5b6cbb88fb70d41926a0bbe1910ec12652f95e4722ed1a219ac37c8b"
+    },
+    {
+      "path": "tests/firebase-mock.js",
+      "bytes": 3495,
+      "sha256": "4b181863334e34ec25239bff6cd4b1d46267bbeba9c248d5a8076401df74c85c"
+    },
+    {
+      "path": "tests/firestore-rules.cjs",
+      "bytes": 6018,
+      "sha256": "3a0be94cb3b07a3869fd0e20a58c301241616e836adf0b7c8924469a3b6a4180"
+    },
+    {
+      "path": "tests/lifecycle.cjs",
+      "bytes": 7314,
+      "sha256": "0580803db5b1b2b4e15428142a0736b23e2edd2aabcff64526153e263629f489"
+    },
+    {
+      "path": "tests/package.json",
+      "bytes": 533,
+      "sha256": "e16711f8178bac6331213c911763217ee1c4128cb4b0c94a7140a64f4d3cbdc2"
+    },
+    {
+      "path": "tests/portal-smoke.cjs",
+      "bytes": 7808,
+      "sha256": "4dba3c0ea737fb7dba240b2b8fff11ff24ce77dfded9c7bee0548b2ce8c63e90"
+    },
+    {
+      "path": "tests/regression.cjs",
+      "bytes": 10963,
+      "sha256": "60fc3ff4613ee062c831c5837cd1199336498205a66c5d6dd0c2e5a6f998835c"
+    },
+    {
+      "path": "firebase-emulator.json",
+      "bytes": 124,
+      "sha256": "98ef8dbd8d41c93a7be8511b86d1a0511861fca3250c240e0f8f5800358d6be9"
+    }
+  ]
+}
