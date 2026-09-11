@@ -16,6 +16,7 @@
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   
+  <script>try{if(sessionStorage.getItem('bookeshGatewayReady')==='1')document.documentElement.classList.add('gateway-handoff')}catch(_){}</script>
   <style>
     :root {
       --primary: #1e3a8a;
@@ -47,6 +48,8 @@
     .test-container {
       width:100%; min-height:100vh; position:relative;
     }
+    .gateway-handoff #slide-1{visibility:hidden}
+    .gateway-handoff body::after{content:'Verifying candidate access…';position:fixed;inset:0;z-index:999999;display:grid;place-items:center;background:#082247;color:#fff;font-size:1.1rem;font-weight:800}
     #slide-1,#slide-2,#slide-4 {
       width:min(760px,calc(100% - 28px)); margin:28px auto; background:#fff;
       border:1px solid #dce5ee; border-radius:14px; overflow:hidden;
@@ -1317,17 +1320,24 @@
         const combined=[];
         for(const [subjectId,subjectCfg] of getSubjectEntries(exam)){
           const source=resolveSource(subjectCfg);if(!source)continue;
-          const sourceUrl=resolveQuestionSourceUrl(source);
-          const parsedUrl=new URL(sourceUrl,location.href);
-          if(parsedUrl.origin!==location.origin)throw new Error('Question source must be hosted on this website.');
-          const response=await fetch(parsedUrl.href,{cache:'no-store'});
-          if(!response.ok)throw new Error(`Could not load ${source} (HTTP ${response.status})`);
-          const sourcePool=extractQuestionArrayFromSource(await response.text());
-          if(!Array.isArray(sourcePool)||!sourcePool.length)throw new Error(`${source} has no valid questions.`);
+          const sourceFiles=source.toLowerCase().replace(/^\.\//,'')==='ssc-gd.html'
+            ? [{file:'ssc-gd/reasoning.html',id:'reasoning',name:'Reasoning'},{file:'ssc-gd/gk-gs.html',id:'gk_gs',name:'GK & GS'},{file:'ssc-gd/maths.html',id:'maths',name:'Maths'},{file:'ssc-gd/english-hindi.html',id:'english_hindi',name:'English / Hindi'}]
+            : [{file:source,id:subjectId,name:subjectCfg.name||subjectId}];
+          const sourcePool=[];
+          for(const sourceItem of sourceFiles){
+            const sourceFile=sourceItem.file;
+            const parsedUrl=new URL(resolveQuestionSourceUrl(sourceFile),location.href);
+            if(parsedUrl.origin!==location.origin)throw new Error('Question source must be hosted on this website.');
+            const response=await fetch(parsedUrl.href,{cache:'no-store'});
+            if(!response.ok)throw new Error(`Could not load ${sourceFile} (HTTP ${response.status})`);
+            const parsed=extractQuestionArrayFromSource(await response.text());
+            if(!Array.isArray(parsed)||!parsed.length)throw new Error(`${sourceFile} has no valid questions.`);
+            parsed.forEach(q=>sourcePool.push({...q,__tenantSource:sourceFile,__tenantSourceUrl:parsedUrl.href,__tenantSubjectId:sourceItem.id,__tenantSubjectName:sourceItem.name}));
+          }
           const count=Math.min(getSubjectCount(subjectCfg)||sourcePool.length,sourcePool.length);
           const ordered=getSubjectOrder(subjectCfg)==='random'?[...sourcePool].sort(()=>Math.random()-.5):[...sourcePool];
           const subjectName=subjectCfg.name||subjectId;
-          ordered.slice(0,count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:subjectId,_subjectName:subjectName,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${subjectId}|${q?.id??index}`,_questionSource:source,_questionSourceUrl:parsedUrl.href}));
+          ordered.slice(0,count).forEach((q,index)=>combined.push({...q,_examId:exam.id,_examName:exam.name,_subjectId:q.__tenantSubjectId||subjectId,_subjectName:q.__tenantSubjectName||subjectName,_subjectQuestionNumber:index+1,_questionKey:`${exam.id}|${q.__tenantSubjectId||subjectId}|${q?.id??index}`,_questionSource:q.__tenantSource||source,_questionSourceUrl:q.__tenantSourceUrl||location.href}));
         }
         if(combined.length)return combined;
         throw new Error('No question bank or question source is configured for this institute exam.');
@@ -1584,11 +1594,15 @@
           document.getElementById('start-exam-btn').innerText='Resume Result Submission';
         }
         window.changeSlide(2);
+        document.documentElement.classList.remove('gateway-handoff');
       } catch (err) {
         showExamModal('security','Connection Error','Please check your internet connection and try again.','Close',null,'primary');
       } finally {
         proceedBtn.disabled = false;
         proceedBtn.innerText = "Proceed to Instructions";
+        if(document.documentElement.classList.contains('gateway-handoff')){
+          location.replace('student-gateway.html?error=verification');
+        }
       }
     };
 
@@ -1688,7 +1702,7 @@
         if(error?.code==='attempt-already-used'){
           showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
         }else{
-          showExamModal('security','Question Load Error','The test questions could not be loaded. The student portal is using the exact exam, subject, question count, order and Question Source saved in the Admin Panel. Please check the selected exam configuration and make sure each configured source file exists in the GitHub project.','Close',null,'primary');
+          showExamModal('security','Question Load Error',`The selected question source could not be loaded. ${escapeHtmlSafe(error?.message||'Check the exam configuration in Institute Admin.')}`,'Close',null,'primary');
         }
         startBtn.disabled = false;
         startBtn.innerText = "Start Examination";
