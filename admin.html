@@ -1060,10 +1060,10 @@
         {name:'Mathematics',count:10,order:'random',source:'jtet/mathematics.html'},
         {name:'Environmental Studies',count:10,order:'random',source:'jtet/evs.html'}]},
       ssc_gd:{examName:'SSC GD',timerMinutes:60,securityPenalty:1,active:true,subjects:[
-        {name:'General Intelligence & Reasoning',count:20,order:'random',source:'ssc-gd/reasoning.html'},
-        {name:'General Knowledge & General Awareness',count:20,order:'random',source:'ssc-gd/gk-gs.html'},
-        {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
-        {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
+        {name:'General Intelligence & Reasoning',count:20,order:'random',source:'SSC/reasoning.html'},
+        {name:'General Knowledge & General Awareness',count:20,order:'random',source:'SSC/GK.HTML'},
+        {name:'Elementary Mathematics',count:20,order:'random',source:'SSC/math.html'},
+        {name:'English / Hindi',count:20,order:'random',source:'SSC/hindi.html'}]}
     };
     // v4 repairs previously persisted swapped RRB/SSC timer values.
     const EXAM_CONFIG_SCHEMA_VERSION = 4;
@@ -1236,7 +1236,19 @@
 
     function initializeMultiExamControls(savedConfig,savedActiveExam,savedActiveExamIds){
       if(savedConfig&&typeof savedConfig==='object')multiExamConfig=JSON.parse(JSON.stringify(savedConfig));
-      getExamIds().forEach(id=>{if(!multiExamConfig[id])multiExamConfig[id]={...JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]))};if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=0;});
+       const sourceAliases = {
+         'ssc-gd/reasoning.html':'SSC/reasoning.html',
+         'ssc-gd/gk-gs.html':'SSC/GK.HTML',
+         'ssc-gd/maths.html':'SSC/math.html',
+         'ssc-gd/english-hindi.html':'SSC/hindi.html'
+       };
+       Object.values(multiExamConfig).forEach(exam=>{
+         (exam?.subjects||[]).forEach(subject=>{
+           const key=String(subject.source||'').trim().toLowerCase();
+           if(sourceAliases[key]) subject.source=sourceAliases[key];
+         });
+       });
+       getExamIds().forEach(id=>{if(!multiExamConfig[id])multiExamConfig[id]={...JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]))};if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=0;});
       if(Array.isArray(savedActiveExamIds)) getExamIds().forEach(id=>multiExamConfig[id].active=savedActiveExamIds.includes(id));
       const selector=document.getElementById('exam-selector');
       if(selector){
