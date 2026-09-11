@@ -2443,7 +2443,13 @@
       } catch (e) {
         submissionInProgress=false;
         if(submitBtn){ submitBtn.disabled=false; submitBtn.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i> Submit & Complete'; }
-        showExamModal('security','Submission Error','Your result could not be synced right now. Please check your internet connection and try again.','Close',null,'primary');
+        const code=String(e?.code||e?.message||'');
+        const message=code.includes('permission-denied')
+          ? 'Firebase denied permission to save the result. Publish the latest Firestore rules and press Submit & Complete again.'
+          : code.includes('network')||code.includes('unavailable')
+            ? 'The connection to Firebase was interrupted. Check the internet and press Submit & Complete again.'
+            : `The result could not be saved: ${escapeHtmlSafe(e?.message||'Unknown database error')}`;
+        showExamModal('security','Submission Error',message,'Close',null,'primary');
         console.error(e);
       }
     }
