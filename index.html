@@ -1,0 +1,2334 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Elite | Online Test Series</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    // Question banks use $ as a literal coding/reasoning symbol. Treating a
+    // single $ as a TeX delimiter corrupts everything between two symbols
+    // (and can produce MathJax errors such as "Misplaced &"). Mathematical
+    // expressions remain supported through \(...\), \[...\] and $$...$$.
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]'], ['$$','$$']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --accent: #f59e0b;
+      --bg-dark: #0f172a;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans', Arial, sans-serif; }
+    
+    body {
+      background:#eef3f8;
+      color:var(--text-main);
+      min-height:100vh;
+      overflow-x:hidden;
+      position:relative;
+      -webkit-user-select:none;
+      -ms-user-select:none;
+      user-select:none;
+    }
+
+    body::before { content:none; }
+
+    .test-container {
+      width:100%; min-height:100vh; position:relative;
+    }
+    #slide-1,#slide-2,#slide-4 {
+      width:min(760px,calc(100% - 28px)); margin:28px auto; background:#fff;
+      border:1px solid #dce5ee; border-radius:14px; overflow:hidden;
+      box-shadow:0 12px 35px rgba(15,23,42,.10); padding:0;
+    }
+
+    .slide { display: none; }
+    .slide.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 { font-size: 1.8rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.5rem; position: relative; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-main); margin-bottom: 0.5rem; }
+    input[type="text"], input[type="email"], textarea { width: 100%; padding: 0.85rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.2s; }
+    input:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+
+    .btn { background: var(--primary); color: white; border: none; padding: 0.85rem 1.8rem; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+    .btn-secondary { background: #e2e8f0; color: var(--text-main); }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-group { display: flex; justify-content: space-between; margin-top: 2rem; }
+
+    .error-msg { color: var(--danger); font-size: 0.85rem; margin-top: 0.4rem; display: none; align-items: center; gap: 5px; }
+
+    .instruction-list { list-style: none; margin-bottom: 2rem; color: var(--text-main); }
+    .instruction-list li { padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; gap: 10px; font-size: 0.95rem; }
+
+    .exam-config-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 1.5rem;
+    }
+    .config-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: linear-gradient(135deg, #f8fbff, #ffffff);
+      border: 1px solid #dbe5f1;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+    .config-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #eaf2ff;
+      color: var(--primary);
+      font-size: 1rem;
+      flex: 0 0 42px;
+    }
+    .config-card span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .config-card strong {
+      display: block;
+      color: var(--primary);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .negative-marking-box { background: rgba(239, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-weight: 500; color: #b91c1c; }
+
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 2px solid #f1f5f9; margin-bottom: 1.5rem; }
+    .timer-box { background: #fef3c7; border: 1px solid var(--accent); color: #b45309; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+    .question-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 1.5rem; line-height: 1.5; }
+    .option-container { display: flex; flex-direction: column; gap: 10px; }
+    .option-label { display: flex; align-items: center; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+    .option-label:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .option-label input { margin-right: 12px; width: 18px; height: 18px; accent-color: var(--primary); }
+    .option-label.selected { border-color: var(--primary-light); background: rgba(59, 130, 246, 0.05); }
+
+    .score-board { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
+    .score-card { padding: 1rem; background: white; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #edf2f7; }
+    .score-card h4 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .score-card p { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+
+    .security-logs-board { background: #fff5f5; border: 1px solid #feb2b2; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; }
+    .security-logs-board h4 { color: #c53030; font-size: 0.95rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+    .security-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+    .security-item { background: white; padding: 0.5rem; border-radius: 6px; border: 1px solid #fed7d7; }
+    .security-item span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+    .security-item b { font-size: 1.1rem; color: #9b2c2c; }
+
+    .review-section { margin-bottom: 2rem; max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; background: #f8fafc; }
+    .review-item { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #cbd5e1; }
+    .review-item.correct-item { border-left-color: var(--success); }
+    .review-item.wrong-item { border-left-color: var(--danger); }
+
+    .rating-stars { display: flex; gap: 12px; margin: 1rem 0 1.5rem 0; }
+    .rating-stars i { font-size: 2rem; color: #cbd5e1; cursor: pointer; }
+    .rating-stars i.active { color: var(--accent); }
+
+    .success-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 9999; display: none; justify-content: center; align-items: center; }
+    .success-overlay.show { display: flex; }
+    .success-popup { background: white; padding: 3rem 2rem; border-radius: 16px; text-align: center; max-width: 450px; width: 90%; }
+    .success-popup i { font-size: 4rem; color: var(--success); margin-bottom: 1.5rem; }
+
+    /* ===== ACC PROFESSIONAL EXAM UI — MATCHED TO REFERENCE IMAGE ===== */
+    .brand-header {
+      background:linear-gradient(135deg,#062d75 0%,#0b3f95 55%,#0a327e 100%);
+      color:#fff; text-align:center; padding:26px 20px 22px; margin:0;
+    }
+    .brand-mark {
+      width:64px;height:64px;margin:0 auto 10px;border-radius:50%;
+      display:grid;place-items:center;background:#fff;color:#0a347e;font-size:1.55rem;
+      border:4px solid #f6c64a; box-shadow:0 4px 15px rgba(0,0,0,.18);
+    }
+    .brand-name {font-size:1.35rem;line-height:1.25;font-weight:800;letter-spacing:.2px;}
+    .brand-sub {margin-top:6px;color:#f8d36b;font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;}
+    #slide-1 h2,#slide-2 h2 {padding:22px 26px 0;font-size:1.35rem;margin-bottom:4px;}
+    #slide-1 > p.subtitle,#slide-2 > p.subtitle {padding:0 26px;margin-bottom:20px;}
+    #login-form {padding:0 26px 26px;}
+    #login-form .form-group {margin-bottom:16px;}
+    #login-form input {background:#fff;border:1px solid #cfd8e3;border-radius:8px;padding:12px 13px;}
+    #login-form .btn {width:100%;justify-content:center;background:#083783;border-radius:7px;}
+    #login-form select {width:100%;padding:12px 13px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#1e293b;font-size:1rem;outline:none;}
+    #login-form select:focus {border-color:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.1);}
+
+    #slide-2 .negative-marking-box {margin:0 26px 16px;background:#fff0f0;border:1px solid #ffd1d1;border-left:4px solid #dc2626;color:#c62828;border-radius:7px;}
+    #slide-2 .exam-config-cards {padding:0 26px;margin-bottom:12px;}
+    #slide-2 .instruction-list {padding:0 26px;margin-bottom:8px;}
+    #slide-2 .btn-group {padding:0 26px 26px;}
+    .exam-config-cards {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .config-card {display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border:1px solid #d9e2ec;border-radius:9px;box-shadow:none;}
+    .config-icon {width:42px;height:42px;border-radius:9px;display:grid;place-items:center;background:#edf4ff;color:#0b3f95;font-size:1rem;flex:0 0 42px;}
+    .config-card span {display:block;color:#64748b;font-size:.69rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+    .config-card strong {display:block;color:#092f73;font-size:1.15rem;font-weight:800;}
+    .negative-marking-box {font-weight:600;}
+
+    .exam-shell {width:100vw;height:100vh;background:#eef2f7;display:flex;flex-direction:column;position:fixed;inset:0;overflow:hidden;}
+    .exam-topbar {height:72px;background:linear-gradient(135deg,#062d75,#0b3f95);color:#fff;border-bottom:1px solid #08295f;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;box-shadow:0 2px 8px rgba(15,23,42,.14);}
+    .exam-institute {display:flex;align-items:center;gap:11px;min-width:0;}
+    .mini-logo {width:46px;height:46px;border-radius:50%;background:#fff;color:#0a347e;border:3px solid #f6c64a;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.72rem;flex:0 0 46px;}
+    .exam-institute strong {display:block;font-size:1rem;color:#fff;font-weight:800;}
+    .exam-institute span {display:block;font-size:.7rem;color:#f8d36b;margin-top:2px;font-weight:700;letter-spacing:1px;}
+    .topbar-right {display:flex;align-items:center;gap:24px;}
+    .palette-toggle{display:none;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:6px;width:38px;height:38px;cursor:pointer;font-size:1rem;}
+    .topbar-stat {padding-left:20px;border-left:1px solid rgba(255,255,255,.22);text-align:left;}
+    .topbar-stat span {display:block;font-size:.65rem;color:#cbd5e1;text-transform:uppercase;font-weight:700;}
+    .topbar-stat b {font-size:1rem;color:#fff;}
+    .exam-timer {display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:7px;border:1px solid #f3c84b;background:rgba(255,255,255,.08);color:#ffd84f;font-weight:900;min-width:108px;justify-content:center;}
+    .exam-main {position:relative;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 325px;gap:0;padding:0;overflow:hidden;}
+    .question-panel,.palette-panel {background:#fff;border:0;border-radius:0;box-shadow:none;min-height:0;}
+    .question-panel {display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #dbe3ec;}
+    .question-head {padding:16px 28px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;}
+    .subject-nav{display:flex;align-items:stretch;gap:8px;padding:10px 18px;background:#f8fafc;border-bottom:1px solid #dbe3ec;overflow-x:auto;scrollbar-width:thin;}
+    .subject-nav-title{font-size:.68rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;padding:0 4px;white-space:nowrap;}
+    .subject-tab{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:7px;padding:8px 13px;cursor:pointer;font-weight:800;font-size:.78rem;white-space:nowrap;transition:.15s ease;display:inline-flex;align-items:center;gap:7px;}
+    .subject-tab:hover{border-color:#2563eb;color:#1d4ed8;background:#eff6ff;}
+    .subject-tab.active{background:#0b3f95;color:#fff;border-color:#0b3f95;box-shadow:0 2px 5px rgba(15,23,42,.12);}
+    .subject-tab-count{font-size:.68rem;padding:2px 6px;border-radius:10px;background:#e2e8f0;color:#475569;}
+    .subject-tab.active .subject-tab-count{background:rgba(255,255,255,.18);color:#fff;}
+    @media (max-width:600px){.subject-nav{padding:8px 10px;gap:6px}.subject-nav-title{display:none}.subject-tab{padding:8px 10px;font-size:.72rem}}
+
+    .q-number {font-weight:800;color:#111827;font-size:1rem;}
+    .q-status {font-size:.78rem;color:#64748b;}
+    .question-scroll {padding:28px 32px;overflow:auto;flex:1;}
+    .exam-q-text {font-size:1.08rem;line-height:1.78;color:#111827;font-weight:600;margin-bottom:24px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;hyphens:none;font-family:'Noto Sans Devanagari','Noto Sans','Inter',Arial,sans-serif;} .exam-q-text p,.option-content p{margin:0 0 12px;} .exam-q-text ul,.exam-q-text ol,.option-content ul,.option-content ol{margin:8px 0 12px 28px;} .exam-q-text li,.option-content li{margin:4px 0;} .exam-q-text pre,.option-content pre{white-space:pre-wrap;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f8fafc;padding:10px;border-radius:8px;} .exam-q-text code,.option-content code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;} .exam-q-text img,.option-content img{max-width:100%;height:auto;display:block;margin:14px auto;border-radius:8px;object-fit:contain;} .exam-q-text svg,.option-content svg{max-width:100%;height:auto;display:block;margin:14px auto;} .exam-q-text video,.option-content video,.exam-q-text iframe,.option-content iframe{max-width:100%;display:block;margin:14px auto;} .exam-q-text sub,.option-content sub,.exam-q-text sup,.option-content sup{font-size:.78em;line-height:0;} .question-image-block{display:flex;flex-direction:column;gap:14px;margin:6px 0 22px;} .question-image-block:empty{display:none;} .question-image-block img{display:block;max-width:min(100%,820px);max-height:650px;width:auto;height:auto;object-fit:contain;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;background:#fff;padding:5px;} .question-image-error{display:block;text-align:center;color:#64748b;font-size:.82rem;padding:8px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;} .exam-q-text table,.option-content table{width:auto;max-width:100%;border-collapse:collapse;margin:12px auto;overflow:auto;} .exam-q-text td,.exam-q-text th,.option-content td,.option-content th{border:1px solid #cbd5e1;padding:7px 10px;vertical-align:middle;} .exam-q-text .rich-center,.option-content .rich-center{text-align:center;}
+    .exam-option {display:flex;align-items:flex-start;gap:12px;padding:13px 15px;margin-bottom:11px;border:1px solid #d8e0ea;border-radius:7px;background:#fff;cursor:pointer;transition:.15s ease;}
+    .exam-option:hover {background:#f8fafc;border-color:#94a3b8;}
+    .exam-option.selected {border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 1px #2563eb;}
+    .option-letter {flex:0 0 30px;width:30px;height:30px;border-radius:50%;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;color:#475569;background:#fff;}
+    .exam-option.selected .option-letter {background:#2563eb;color:#fff;border-color:#2563eb;}
+    .option-content {font-size:.96rem;line-height:1.5;color:#1f2937;padding-top:3px;}
+    .exam-actions {padding:12px 18px;border-top:1px solid #e5e7eb;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .action-left,.action-right {display:flex;gap:8px;align-items:center;}
+    .exam-btn {border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:6px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:.84rem;}
+    .exam-btn:hover {background:#f1f5f9;}
+    .exam-btn.primary {background:#083783;color:#fff;border-color:#083783;}
+    .exam-btn.primary:hover {background:#062d75;}
+    .exam-btn.review {color:#92400e;background:#fffaf0;border-color:#f5b83d;}
+    .palette-panel {padding:0;display:flex;flex-direction:column;overflow:hidden;}
+    .palette-title {padding:18px 18px 13px;border-bottom:1px solid #e5e7eb;font-weight:800;color:#0f172a;font-size:1rem;}
+    .candidate-card {padding:13px 18px;background:#fff;border-bottom:1px solid #e5e7eb;}
+    .candidate-card b {display:block;font-size:.9rem;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .candidate-card span {display:block;font-size:.72rem;color:#64748b;margin-top:3px;}
+    .palette-scroll {padding:16px 18px;overflow:auto;flex:1;}
+    .palette-label {font-size:.72rem;font-weight:800;color:#64748b;text-transform:uppercase;margin-bottom:11px;}
+    .palette-grid {display:grid;grid-template-columns:repeat(5,1fr);gap:9px;}
+    .palette-btn {height:39px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:#334155;font-weight:800;cursor:pointer;font-size:.82rem;position:relative;}
+    .palette-btn:hover {border-color:#2563eb;}
+    .palette-btn.answered {background:#16a34a;color:#fff;border-color:#16a34a;}
+    .palette-btn.not-answered {background:#ef4444;color:#fff;border-color:#ef4444;}
+    .palette-btn.review {background:#f59e0b;color:#fff;border-color:#f59e0b;}
+    .palette-btn.current {box-shadow:0 0 0 3px rgba(37,99,235,.18);border-color:#2563eb;}
+    .palette-legend {padding:16px 18px;border-top:1px solid #e5e7eb;background:#fff;}
+    .legend-row {display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:.69rem;color:#475569;}
+    .legend-item {display:flex;align-items:center;gap:6px;}
+    .legend-dot {width:15px;height:15px;border-radius:3px;border:1px solid #cbd5e1;background:#fff;}
+    .legend-dot.green{background:#16a34a;border-color:#16a34a}.legend-dot.red{background:#ef4444;border-color:#ef4444}.legend-dot.orange{background:#f59e0b;border-color:#f59e0b}
+    .submit-exam-btn {margin-top:15px;width:100%;padding:12px;border:0;border-radius:6px;background:#083783;color:#fff;font-weight:800;cursor:pointer;}
+    .submit-exam-btn:hover {background:#062d75;}
+    @media (max-width:900px){
+      .exam-main{grid-template-columns:1fr;overflow:hidden;}
+      .question-panel{min-height:calc(100vh - 72px);border-right:0;}
+      .palette-panel{position:absolute;top:0;right:0;bottom:0;width:min(330px,92vw);min-height:0;border-top:0;border-left:1px solid #dbe3ec;z-index:30;box-shadow:-8px 0 25px rgba(15,23,42,.16);transform:translateX(100%);transition:transform .22s ease;}
+      .palette-panel.mobile-open{transform:translateX(0);}
+      .palette-toggle{display:inline-flex;align-items:center;justify-content:center;}
+      .topbar-stat{display:none;}
+    }
+    @media (max-width:600px){
+      #slide-1,#slide-2,#slide-4{width:100%;margin:0;border-radius:0;border:0;min-height:100vh;}
+      .brand-header{padding:24px 15px 20px;}
+      .brand-name{font-size:1.18rem;}
+      #slide-1 h2,#slide-2 h2{padding:20px 18px 0;font-size:1.15rem;}
+      #slide-1 > p.subtitle,#slide-2 > p.subtitle{padding:0 18px;margin-bottom:17px;font-size:.83rem;}
+      #login-form{padding:0 18px 22px;}
+      #slide-2 .negative-marking-box{margin:0 18px 14px;}
+      #slide-2 .exam-config-cards,#slide-2 .instruction-list{padding-left:18px;padding-right:18px;}
+      #slide-2 .btn-group{padding:0 18px 22px;}
+      .exam-topbar{height:60px;padding:0 10px;}
+      .mini-logo{width:38px;height:38px;flex-basis:38px;font-size:.62rem;}
+      .exam-institute strong{font-size:.76rem;}
+      .exam-institute span{font-size:.58rem;}
+      .exam-timer{min-width:86px;padding:7px 9px;font-size:.8rem;}
+      .question-head{padding:13px 16px;}
+      .question-scroll{padding:18px 15px;}
+      .exam-q-text{font-size:1rem;line-height:1.6;}
+      .exam-actions{padding:10px;flex-wrap:wrap;}
+      .action-left{width:100%;justify-content:space-between;}
+      .action-right{width:100%;}
+      #btn-next{width:100%;justify-content:center;}
+      .palette-panel{min-height:300px;}
+    }
+
+    /* Professional in-page exam modals: avoids browser "site says" alerts/confirms */
+    .exam-modal-overlay{position:fixed;inset:0;background:rgba(2,12,32,.66);backdrop-filter:blur(4px);z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;}
+    .exam-modal-overlay.show{display:flex;animation:fadeIn .18s ease;}
+    .exam-modal{width:min(430px,100%);background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.30);border:1px solid #dbe4ef;}
+    .exam-modal-head{padding:18px 20px;color:#fff;background:linear-gradient(135deg,#062d75,#0b3f95);display:flex;align-items:center;gap:12px;}
+    .exam-modal-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);font-size:1rem;}
+    .exam-modal-head h3{font-size:1rem;margin:0;font-weight:800;}
+    .exam-modal-body{padding:20px;color:#334155;font-size:.92rem;line-height:1.6;}
+    .exam-modal-body strong{color:#0f172a;}
+    .exam-modal-actions{padding:0 20px 20px;display:flex;justify-content:flex-end;gap:10px;}
+    .exam-modal-btn{min-width:92px;padding:10px 16px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:800;cursor:pointer;}
+    .exam-modal-btn.primary{background:#083783;border-color:#083783;color:#fff;}
+    .exam-modal-btn.danger{background:#dc2626;border-color:#dc2626;color:#fff;}
+    .exam-modal-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 9px;border-radius:7px;background:#fff1f2;color:#be123c;font-size:.78rem;font-weight:800;}
+    .passage-box{white-space:pre-wrap;background:#f8fafc;border:1px solid #cbd5e1;border-left:5px solid var(--primary);border-radius:10px;padding:16px;margin-bottom:20px;font-weight:500;max-height:none;overflow:visible;}
+  </style>
+</head>
+<body>
+
+  <div class="test-container">
+    <!-- SLIDE 1: LOGIN -->
+    <div class="slide active" id="slide-1">
+      <div class="brand-header">
+        <div class="brand-mark"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="brand-name">ASHISH COMPETITION CENTRE (ACC)</div>
+        <div class="brand-sub">DALTONGANJ</div>
+      </div>
+      <h2><i class="fa-solid fa-user-lock"></i> Candidate Login</h2>
+      <p class="subtitle">Enter your details to access the online examination portal.</p>
+      <form id="login-form" autocomplete="off" onsubmit="validateAndNext(event)">
+        <div class="form-group">
+          <label for="student-name">Full Name *</label>
+          <input type="text" id="student-name" placeholder="Enter Your Name" required>
+        </div>
+        <div class="form-group">
+          <label for="student-email">Gmail Address *</label>
+          <input type="email" id="student-email" placeholder="Enter Your Email" autocomplete="new-password" required>
+          <div class="error-msg" id="email-error"><i class="fa-solid fa-circle-exclamation"></i> Only official @gmail.com addresses are supported.</div>
+          <div class="error-msg" id="duplicate-error"><i class="fa-solid fa-ban"></i> Access Denied: You have already attempted this test!</div>
+        </div>
+        <div class="form-group">
+          <label for="exam-category">Exam Category *</label>
+          <select id="exam-category" required>
+            <option value="">Select Exam Category</option>
+          </select>
+          <div class="error-msg" id="exam-category-error"><i class="fa-solid fa-circle-exclamation"></i> Please select an exam category.</div>
+        </div>
+        <div class="form-group">
+          <label for="center-code">Center Code *</label>
+          <input type="text" id="center-code" placeholder="Enter code provided at the exam center" autocomplete="off" required>
+          <div class="error-msg" id="center-code-error"><i class="fa-solid fa-circle-exclamation"></i> Invalid or inactive center code.</div>
+        </div>
+        <button type="submit" id="proceed-btn" class="btn"><i class="fa-solid fa-arrow-right"></i> Start Test</button>
+      </form>
+    </div>
+
+    <!-- SLIDE 2: INSTRUCTIONS -->
+    <div class="slide" id="slide-2">
+      <div class="brand-header">
+        <div class="brand-mark"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="brand-name">ASHISH COMPETITION CENTRE (ACC)</div>
+        <div class="brand-sub">DALTONGANJ</div>
+      </div>
+      <h2><i class="fa-solid fa-clipboard-list"></i> Instructions</h2>
+      <p class="subtitle">Please read all instructions carefully before starting.</p>
+
+      <div class="negative-marking-box">
+        <i class="fa-solid fa-circle-exclamation"></i> <b>Negative Marking: -0.25</b> marks for each wrong answer.
+      </div>
+
+      <div class="exam-config-cards">
+        <div class="config-card">
+          <div class="config-icon"><i class="fa-solid fa-list-ol"></i></div>
+          <div><span>Total Questions</span><strong id="instruction-question-count">—</strong></div>
+        </div>
+        <div class="config-card">
+          <div class="config-icon"><i class="fa-regular fa-clock"></i></div>
+          <div><span>Total Time</span><strong id="instruction-duration">—</strong></div>
+        </div>
+      </div>
+
+      <ul class="instruction-list">
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>The test consists of multiple choice questions.</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>Each question has 4 options (A, B, C &amp; D).</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>Only one option is correct.</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>You can save your answer and move to the next question.</span></li>
+        <li><i class="fa-solid fa-circle-check" style="color:#16a34a;"></i><span>You can revisit and change your answer before submitting.</span></li>
+      </ul>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="changeSlide(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn" id="start-exam-btn" onclick="startTestExam()">I Understand, Start Test <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: REAL EXAM STYLE TEST -->
+    <div class="slide" id="slide-3">
+      <div class="exam-shell">
+        <div class="exam-topbar">
+          <div class="exam-institute">
+            <div class="mini-logo"><i class="fa-solid fa-building-columns"></i></div>
+            <div><strong>ASHISH COMPETITION CENTRE (ACC)</strong><span>DALTONGANJ</span></div>
+          </div>
+          <div class="topbar-right">
+            <div class="topbar-stat"><span>Questions</span><b id="top-question-count">0 / 0</b></div>
+            <div class="exam-timer"><i class="fa-regular fa-clock"></i><span id="timer-display">00:00</span></div>
+            <button class="palette-toggle" id="palette-toggle" onclick="toggleMobilePalette()" aria-label="Open question palette"><i class="fa-solid fa-bars"></i></button>
+          </div>
+        </div>
+
+        <div class="exam-main">
+          <section class="question-panel">
+            <div class="subject-nav" id="subject-navigation" aria-label="Subject navigation"></div>
+            <div class="question-head">
+              <div class="q-number" id="question-counter">Question 1 of 0</div>
+              <div class="q-status" id="question-status">Not Answered</div>
+            </div>
+            <div class="question-scroll">
+              <div class="exam-q-text" id="q-text">Loading question...</div>
+              <div class="question-image-block" id="question-image-block" aria-live="polite"></div>
+              <div id="options-block"></div>
+            </div>
+            <div class="exam-actions">
+              <div class="action-left">
+                <button class="exam-btn" id="btn-prev" onclick="handlePrevious()"><i class="fa-solid fa-angle-left"></i> Previous</button>
+                <button class="exam-btn review" id="btn-review" onclick="toggleMarkReview()"><i class="fa-regular fa-bookmark"></i> Mark for Review</button>
+                <button class="exam-btn" onclick="clearResponse()"><i class="fa-solid fa-rotate-left"></i> Clear Response</button>
+              </div>
+              <div class="action-right"><button class="exam-btn primary" id="btn-next" onclick="handleNext()">Save &amp; Next <i class="fa-solid fa-angle-right"></i></button></div>
+            </div>
+          </section>
+
+          <aside class="palette-panel">
+            <div class="palette-title"><i class="fa-solid fa-table-cells-large"></i> Question Palette</div>
+            <div class="candidate-card"><b id="palette-student-name">Candidate</b><span id="palette-student-email"></span></div>
+            <div class="palette-scroll">
+              <div class="palette-label">Question Status</div>
+              <div class="palette-grid" id="question-palette"></div>
+            </div>
+            <div class="palette-legend">
+              <div class="legend-row">
+                <div class="legend-item"><span class="legend-dot"></span> Not Visited</div>
+                <div class="legend-item"><span class="legend-dot green"></span> Answered</div>
+                <div class="legend-item"><span class="legend-dot red"></span> Not Answered</div>
+                <div class="legend-item"><span class="legend-dot orange"></span> Marked for Review</div>
+              </div>
+              <button class="submit-exam-btn" onclick="confirmExamSubmit()"><i class="fa-solid fa-paper-plane"></i> Submit Examination</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: RESULTS -->
+    <div class="slide" id="slide-4">
+      <h2><i class="fa-solid fa-square-poll-horizontal"></i> Performance Dashboard</h2>
+      <p class="subtitle">Your metrics and evaluation sheet.</p>
+      
+      <div class="score-board">
+        <div class="score-card">
+          <h4>Final Score</h4>
+          <p id="res-score" style="color: var(--primary-light);">0 / 0</p>
+        </div>
+        <div class="score-card">
+          <h4>Accuracy</h4>
+          <p id="res-accuracy" style="color: var(--success);">0%</p>
+        </div>
+        <div class="score-card">
+          <h4>Correct Answers</h4>
+          <p id="res-correct" style="color: var(--success);">0</p>
+        </div>
+        <div class="score-card">
+          <h4>Wrong Answers</h4>
+          <p id="res-wrong" style="color: var(--danger);">0</p>
+        </div>
+      </div>
+
+      <div class="security-logs-board">
+        <h4><i class="fa-solid fa-shield-halved"></i> Security Audit Logs</h4>
+        <div class="security-grid">
+          <div class="security-item"><span>Tab Switches</span><b id="log-tab-switches">0</b></div>
+          <div class="security-item"><span>Copy/Paste</span><b id="log-copy-paste">0</b></div>
+          <div class="security-item"><span>Penalties</span><b id="log-penalty">-0 Marks</b></div>
+        </div>
+      </div>
+
+      <label style="margin-bottom: 0.5rem; display: block;">Evaluation Ledger</label>
+      <button type="button" class="btn btn-secondary" style="margin-bottom:1rem;" onclick="downloadPerformanceReport()">
+        <i class="fa-solid fa-file-arrow-down"></i> Download Performance Report
+      </button>
+      <div class="review-section" id="review-ledger-container"></div>
+
+      <form id="feedback-form" onsubmit="submitFinalFeedback(event)">
+        <div class="form-group">
+          <label>Overall Experience Rating *</label>
+          <div class="rating-stars" id="stars-container">
+            <i class="fa-solid fa-star" data-value="1"></i>
+            <i class="fa-solid fa-star" data-value="2"></i>
+            <i class="fa-solid fa-star" data-value="3"></i>
+            <i class="fa-solid fa-star" data-value="4"></i>
+            <i class="fa-solid fa-star" data-value="5"></i>
+          </div>
+          <div class="error-msg" id="rating-error"><i class="fa-solid fa-circle-exclamation"></i> Rating required.</div>
+        </div>
+        <div class="form-group">
+          <label for="doubt-input">Doubts / Queries? (Optional)</label>
+          <textarea id="doubt-input" rows="2" placeholder="Describe doubt..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="feedback-input">Feedback (Optional)</label>
+          <textarea id="feedback-input" rows="2" placeholder="Your feedback..."></textarea>
+        </div>
+        <button type="submit" id="submit-all-btn" class="btn" style="width: 100%; justify-content: center;">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Submit & Complete
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="exam-modal-overlay" id="exam-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="exam-modal">
+      <div class="exam-modal-head">
+        <div class="exam-modal-icon" id="exam-modal-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3 id="exam-modal-title">Exam Notification</h3>
+      </div>
+      <div class="exam-modal-body" id="exam-modal-message"></div>
+      <div class="exam-modal-actions" id="exam-modal-actions">
+        <button class="exam-modal-btn" id="exam-modal-cancel">Cancel</button>
+        <button class="exam-modal-btn primary" id="exam-modal-confirm">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-overlay" id="success-modal">
+    <div class="success-popup">
+      <i class="fa-solid fa-circle-check"></i>
+      <h3>Test Submitted Successfully!</h3>
+      <p>Your performance metrics and security log have been securely synced to the Admin Panel.</p>
+      <button class="btn" style="margin-top:18px;justify-content:center;" onclick="location.reload()">Done</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
+      authDomain: "test-d6ee6.firebaseapp.com",
+      projectId: "test-d6ee6",
+      storageBucket: "test-d6ee6.firebasestorage.app",
+      messagingSenderId: "533839027531",
+      appId: "1:533839027531:web:98417498dc648e54695cce",
+      measurementId: "G-KCDLMWNS8S"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let questionsList = [];
+    let currentQuestionIndex = 0;
+    let selectedAnswers = {};
+    let questionStatus = {};
+    let timerInterval = null;
+    let selectedRating = 0;
+    let currentStudentName = "";
+    let currentStudentEmail = "";
+    let selectedExamId = "";
+    let selectedExamName = "";
+    let selectedExamConfig = null;
+    let currentSubjectId = "";
+    let finalizedScoreString = "0/0";
+    let calculatedScore = 0;
+    let totalScore = 0;
+    let isExamActive = false;
+    let examConfigData = null;
+    let draftResultId = sessionStorage.getItem('draftResultId') || '';
+    let submissionInProgress = false;
+    let resultSavedForThisAttempt = false;
+    let securityEventLocked = false;
+    let studentAuthPromise = null;
+    let attemptClaimed = false;
+    let currentAttemptId = sessionStorage.getItem('currentAttemptId') || '';
+    let currentCenter = null;
+    let currentSession = null;
+    let examStartTime = 0;
+    let examEndTime = 0;
+    let progressSaveTimer = null;
+    let heartbeatTimer = null;
+    let reserveQuestions = [];
+    let securityEvents = [];
+    let lastSecurityEventAt = 0;
+    let initialFullscreenArea = 0;
+    let securitySuppressedUntil = 0;
+    let finalMetrics = {};
+    let maxTabSwitches = 2;
+    let screenWakeLock = null;
+
+    async function requestExamWakeLock(){
+      if(!isExamActive || !('wakeLock' in navigator) || document.visibilityState!=='visible') return false;
+      try{
+        if(screenWakeLock && !screenWakeLock.released) return true;
+        screenWakeLock=await navigator.wakeLock.request('screen');
+        screenWakeLock.addEventListener('release',()=>{screenWakeLock=null;},{once:true});
+        return true;
+      }catch(error){
+        console.warn('Screen wake lock is unavailable:',error?.message||error);
+        return false;
+      }
+    }
+
+    async function releaseExamWakeLock(){
+      const lock=screenWakeLock;screenWakeLock=null;
+      if(lock && !lock.released){try{await lock.release();}catch(_error){}}
+    }
+
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible' && isExamActive) requestExamWakeLock();
+    });
+
+    async function ensureStudentAuth() {
+      if (auth.currentUser) return auth.currentUser;
+      if (!studentAuthPromise) {
+        studentAuthPromise = new Promise((resolve,reject)=>{
+          let settled=false;
+          const timeout=setTimeout(()=>{if(!settled){settled=true;studentAuthPromise=null;reject(new Error('Authentication timed out.'));}},12000);
+          const unsubscribe=onAuthStateChanged(auth,async user=>{
+            if(settled)return;
+            if(user){settled=true;clearTimeout(timeout);unsubscribe();resolve(user);return;}
+            try{
+              const credential=await signInAnonymously(auth);
+              if(!settled){settled=true;clearTimeout(timeout);unsubscribe();resolve(credential.user);}
+            }catch(err){if(!settled){settled=true;clearTimeout(timeout);unsubscribe();studentAuthPromise=null;reject(err);}}
+          },err=>{if(!settled){settled=true;clearTimeout(timeout);studentAuthPromise=null;reject(err);}});
+        });
+      }
+      return studentAuthPromise;
+    }
+
+    async function sha256(value) {
+      const bytes = new TextEncoder().encode(String(value));
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function withFirebaseRetry(operation, attempts=3){
+      let lastError;
+      for(let attempt=1;attempt<=attempts;attempt++){
+        try{return await operation();}
+        catch(error){
+          lastError=error;
+          const code=String(error?.code||'');
+          const retryable=['unavailable','deadline-exceeded','resource-exhausted','network-request-failed','internal'].some(x=>code.includes(x));
+          if(!retryable||attempt===attempts)break;
+          await new Promise(resolve=>setTimeout(resolve,350*attempt+Math.floor(Math.random()*650)));
+        }
+      }
+      throw lastError;
+    }
+
+    function getConnectionFailureMessage(error){
+      const code=String(error?.code||'');
+      if(code.includes('operation-not-allowed')) return 'Student authentication is not enabled. Enable Anonymous sign-in in Firebase Authentication.';
+      if(code.includes('permission-denied')) return 'Database access was denied. Confirm that the latest Firestore rules are published.';
+      if(code.includes('unavailable')||code.includes('deadline-exceeded')||code.includes('network')) return 'Firebase is responding slowly or the internet connection is unstable. Please retry; your attempt has not been used.';
+      return 'The examination configuration could not be loaded. Please retry or contact the examination administrator.';
+    }
+
+    async function validateCenterCode(code){
+      const centerId=await sha256(String(code).trim().toUpperCase());
+      const snap=await withFirebaseRetry(()=>getDoc(doc(db,'centers',centerId)));
+      if(!snap.exists()||snap.data()?.active!==true) throw new Error('invalid-center-code');
+      return {centerId,...snap.data()};
+    }
+
+    function applyCenterBranding(center){
+      const institute=center?.instituteName||'Examination Center';
+      const location=center?.location||'';
+      document.querySelectorAll('.brand-name').forEach(el=>el.textContent=institute);
+      document.querySelectorAll('.brand-sub').forEach(el=>el.textContent=location);
+      const examInstitute=document.querySelector('.exam-institute');
+      if(examInstitute){
+        const title=examInstitute.querySelector('strong');
+        const sub=examInstitute.querySelector('span');
+        if(title)title.textContent=institute;
+        if(sub)sub.textContent=location;
+      }
+    }
+
+    async function claimLoginSession(){
+      const user=await ensureStudentAuth();
+      const attemptId=await sha256(`${selectedExamId}|${currentStudentEmail}`);
+      const lockRef=doc(db,'attempt_locks',attemptId),sessionRef=doc(db,'exam_sessions',attemptId);
+      const now=new Date();
+
+      // Do not read a missing lock: secure rules intentionally deny that read.
+      // Atomically create first. If it already exists, only its owner can read
+      // it and resume; every other device receives email-already-active.
+      try{
+        await setDoc(lockRef,{ownerUid:user.uid,email:currentStudentEmail,examId:selectedExamId,createdAt:now});
+      }catch(lockCreateError){
+        try{
+          const ownedLock=await getDoc(lockRef);
+          if(!ownedLock.exists()||ownedLock.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
+        }catch(lockReadError){
+          if(String(lockReadError?.message||'').includes('email-already-active')) throw lockReadError;
+          throw new Error('email-already-active');
+        }
+      }
+
+      const data=await runTransaction(db,async transaction=>{
+        const sessionSnap=await transaction.get(sessionRef);
+        if(sessionSnap.exists()&&sessionSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
+        if(sessionSnap.exists()&&sessionSnap.data()?.status==='final_submitted') throw new Error('attempt-already-used');
+        if(!sessionSnap.exists()){
+          transaction.set(sessionRef,{
+            sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,
+            examId:selectedExamId,examName:selectedExamName,centerId:currentCenter.centerId,
+            centerName:currentCenter.instituteName||'Examination Center',centerLocation:currentCenter.location||'',
+            centerAddress:currentCenter.address||'',batch:currentCenter.batch||'',status:'logged_in',
+            loginAt:now,lastSeen:now,securityViolations:0,tabSwitches:0,copiesAttempted:0,penaltiesApplied:0
+          });
+          return {status:'logged_in'};
+        }
+        transaction.set(sessionRef,{lastSeen:now,name:currentStudentName},{merge:true});
+        return sessionSnap.data();
+      });
+      currentAttemptId=attemptId;draftResultId=attemptId;attemptClaimed=true;currentSession=data;
+      sessionStorage.setItem('currentAttemptId',attemptId);sessionStorage.setItem('draftResultId',attemptId);
+      return data;
+    }
+
+    function getPenaltyPerViolation(){
+      const value=Number(selectedExamConfig?.securityPenalty??examConfigData?.securityPenalty??1);
+      return Number.isFinite(value)&&value>=0?value:1;
+    }
+
+    function queueProgressSave(immediate=false){
+      clearTimeout(progressSaveTimer);
+      progressSaveTimer=setTimeout(saveExamProgress,immediate?0:1500);
+    }
+
+    async function saveExamProgress(extra={}){
+      if(!currentAttemptId||!auth.currentUser)return;
+      const payload={
+        status:isExamActive?'in_progress':(currentSession?.status||'logged_in'),lastSeen:new Date(),
+        currentQuestionIndex,selectedAnswers,questionStatus,examStartTime,examEndTime,
+        questionOrder:questionsList.map(q=>q._questionKey),reserveOrder:reserveQuestions.map(q=>q._questionKey),
+        tabSwitches,copiesAttempted,penaltiesApplied,securityViolations:securityEvents.length,
+        securityEvents:securityEvents.slice(-50),...extra
+      };
+      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
+      catch(err){console.error('Progress save failed:',err);}
+    }
+
+    function replaceViolatedQuestion(){
+      if(!questionsList.length)return false;
+      const current=questionsList[currentQuestionIndex];
+      let reserveIndex=reserveQuestions.findIndex(q=>q._subjectId===(current?._subjectId));
+      if(reserveIndex<0&&reserveQuestions.length)reserveIndex=0;
+      if(reserveIndex<0)return false;
+      const replacement=reserveQuestions.splice(reserveIndex,1)[0];
+      reserveQuestions.push(current);
+      questionsList[currentQuestionIndex]=replacement;
+      delete selectedAnswers[currentQuestionIndex];
+      questionStatus[currentQuestionIndex]='not-answered';
+      loadQuestion(currentQuestionIndex);
+      return true;
+    }
+
+    function recordSecurityViolation(reason){
+      if(!isExamActive||Date.now()<securitySuppressedUntil)return;
+      const now=Date.now();if(now-lastSecurityEventAt<1200)return;lastSecurityEventAt=now;
+      tabSwitches=Math.min(maxTabSwitches,tabSwitches+1);
+      const penalty=getPenaltyPerViolation();penaltiesApplied=Number((penaltiesApplied+penalty).toFixed(2));
+      const changed=replaceViolatedQuestion();
+      securityEvents.push({reason,at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty,questionChanged:changed});
+      sessionStorage.setItem('tabSwitches',String(tabSwitches));sessionStorage.setItem('penaltiesApplied',String(penaltiesApplied));
+      queueProgressSave(true);
+      if(tabSwitches>=maxTabSwitches){
+        clearInterval(timerInterval);
+        isExamActive=false;
+        showExamModal('security','Security Limit Reached',`Maximum security violation limit reached. Total penalty: -${penaltiesApplied}. Your exam is being submitted automatically.`,'Please Wait',null,'danger');
+        setTimeout(()=>{
+          document.getElementById('exam-modal')?.classList.remove('show');
+          calculateAndShowResults();
+        },350);
+      }else{
+        showExamModal('security',`Security Alert — ${tabSwitches}/${maxTabSwitches}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
+      }
+    }
+
+    // Security track
+    let tabSwitches = parseInt(sessionStorage.getItem('tabSwitches') || '0');
+    let copiesAttempted = parseInt(sessionStorage.getItem('copiesAttempted') || '0');
+    let penaltiesApplied = Number(sessionStorage.getItem('penaltiesApplied') || '0');
+
+    // One central handler prevents stacked penalties from blur + visibility + fullscreen events.
+    document.addEventListener("visibilitychange", () => {
+      if(document.hidden)recordSecurityViolation('page-hidden');
+    });
+    window.addEventListener('blur',()=>setTimeout(()=>{if(isExamActive&&!document.hasFocus())recordSecurityViolation('focus-lost');},80));
+    document.addEventListener('fullscreenchange',()=>{if(isExamActive&&!document.fullscreenElement)recordSecurityViolation('fullscreen-exit');});
+    window.addEventListener('resize',()=>{if(!isExamActive||!initialFullscreenArea)return;const area=innerWidth*innerHeight;if(area<initialFullscreenArea*.72)recordSecurityViolation('reduced-or-split-screen');});
+
+    document.addEventListener("copy", (e) => {
+      if (isExamActive) {
+        e.preventDefault();
+        copiesAttempted++;
+        sessionStorage.setItem('copiesAttempted', copiesAttempted);
+        securityEvents.push({reason:'copy',at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty:0});queueProgressSave();
+        showExamModal('security','Copying Disabled','Copying test questions is disabled during the examination.','Continue Exam',null,'primary');
+      }
+    });
+
+    document.addEventListener("paste", (e) => {
+      if (isExamActive) {
+        e.preventDefault();
+        copiesAttempted++;
+        sessionStorage.setItem('copiesAttempted', copiesAttempted);
+        securityEvents.push({reason:'paste',at:new Date().toISOString(),questionNumber:currentQuestionIndex+1,penalty:0});queueProgressSave();
+        showExamModal('security','Pasting Disabled','Pasting content is disabled during the examination.','Continue Exam',null,'primary');
+      }
+    });
+
+    document.addEventListener('contextmenu', event => {
+      event.preventDefault();
+      if(isExamActive) recordSecurityViolation('context-menu-or-long-press');
+    });
+
+    document.addEventListener('keydown',event=>{
+      if(!isExamActive) return;
+      const blocked=(event.ctrlKey||event.metaKey) && ['c','x','v','p','s','u'].includes(String(event.key).toLowerCase());
+      if(blocked || event.key==='F12'){
+        event.preventDefault();
+        recordSecurityViolation('blocked-keyboard-command');
+      }
+    });
+
+    // Entry Window & Config Loader
+    async function checkOverallExamWindow() {
+      try {
+        await ensureStudentAuth();
+        const docRef = doc(db, "exam_config", "current_test");
+        const snap = await withFirebaseRetry(()=>getDoc(docRef));
+
+        if (!snap.exists()) {
+          examConfigData = null;
+          updateInstructionConfig();
+          return true;
+        }
+        examConfigData = snap.data();
+        const configuredTabLimit=Number(examConfigData.maxTabSwitches);
+        maxTabSwitches=Number.isInteger(configuredTabLimit)&&configuredTabLimit>=1&&configuredTabLimit<=20?configuredTabLimit:2;
+        populateExamCategories();
+        updateInstructionConfig();
+        
+        const now = new Date().getTime();
+        const start = examConfigData.windowStart || 0;
+        const end = examConfigData.windowEnd || Infinity;
+
+        if (now < start) {
+          showTimeStatusOverlay("Entry is not open yet!", `This test will open at ${new Date(start).toLocaleString('en-IN')}`);
+          return false;
+        }
+
+        if (now > end) {
+          showTimeStatusOverlay("Entry is closed!", "The student entry period is closed. You can no longer enter this test.");
+          return false;
+        }
+
+        return true;
+      } catch (err) {
+        console.error("Window Check Error:", err);
+        showExamModal('security','Connection Check Failed',getConnectionFailureMessage(err),'Retry',null,'primary',()=>checkOverallExamWindow());
+        return false;
+      }
+    }
+
+    function showTimeStatusOverlay(title, msg) {
+      document.body.innerHTML = `
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:99999;text-align:center;padding:20px;">
+          <i class="fa-solid fa-clock-rotate-left" style="font-size:4rem;color:#ef4444;margin-bottom:1rem;"></i>
+          <h1 style="font-size:2rem;margin-bottom:0.5rem;">${title}</h1>
+          <p style="color:#94a3b8;font-size:1.2rem;">${msg}</p>
+        </div>
+      `;
+    }
+
+    function getConfiguredExams() {
+      const raw = examConfigData?.multiExamConfig || examConfigData?.exams || examConfigData?.examCategories;
+      const exams = [];
+
+      const addExam = (id, cfg) => {
+        if (!cfg || typeof cfg !== 'object') return;
+        const name = cfg.name || cfg.examName || id;
+        const subjects = cfg.subjects || {};
+        exams.push({ id: String(id), name: String(name), ...cfg, subjects });
+      };
+
+      if (Array.isArray(raw)) {
+        raw.forEach((cfg, i) => addExam(cfg.id || cfg.examId || cfg.code || `exam_${i+1}`, cfg));
+      } else if (raw && typeof raw === 'object') {
+        Object.entries(raw).forEach(([id, cfg]) => addExam(id, cfg));
+      }
+
+      // Backward-compatible fallback: use current_test as one exam if no multi-exam config exists.
+      if (!exams.length && examConfigData) {
+        addExam(
+          examConfigData.examId || examConfigData.examCode || 'current_test',
+          {
+            ...examConfigData,
+            name: examConfigData.examName || examConfigData.title || 'Current Test',
+            subjects: examConfigData.subjects || {}
+          }
+        );
+      }
+
+      // NEW: only exams activated by Admin are shown to students.
+      // Backward compatible: if no active-exam setting exists yet, use explicit active flags.
+      const activeExamIds = Array.isArray(examConfigData?.activeExamIds)
+        ? examConfigData.activeExamIds.map(String).filter(Boolean)
+        : null;
+      const hasActiveFlags = exams.some(e => typeof e.active === 'boolean');
+
+      // IMPORTANT:
+      // Older/partially saved Firestore configs can contain activeExamIds: []
+      // even though individual exams still have active:true. In that case the
+      // previous logic filtered every exam out and the student dropdown became
+      // empty. Prefer a non-empty activeExamIds list; otherwise fall back to
+      // the per-exam active flags.
+      if (activeExamIds && activeExamIds.length > 0) {
+        const filtered = exams.filter(e => activeExamIds.includes(String(e.id)));
+        if (filtered.length > 0) return filtered;
+      }
+
+      if (hasActiveFlags) {
+        const activeByFlag = exams.filter(e => e.active === true);
+        if (activeByFlag.length > 0) return activeByFlag;
+      }
+
+      // A configured exam must be explicitly active. Never expose every exam
+      // because an old/empty activeExamIds array was saved.
+      return [];
+    }
+
+    function getSubjectEntriesForDiagnostic(subjects) {
+      if (!subjects) return [];
+      const entries = Array.isArray(subjects)
+        ? subjects.map((item, i) => [item?.id || item?.code || item?.key || `subject_${i + 1}`, item])
+        : Object.entries(subjects);
+      return entries.map(([id, cfg]) => ({
+        id,
+        name: cfg?.name || cfg?.subjectName || id,
+        count: getSubjectCount(cfg),
+        order: getSubjectOrder(cfg),
+        source: resolveSource(cfg)
+      }));
+    }
+
+    function populateExamCategories() {
+      const select = document.getElementById('exam-category');
+      if (!select) return;
+
+      const exams = getConfiguredExams();
+      console.log('[Exam Config] Loaded from Admin Panel:', exams.map(e => ({
+        id: e.id,
+        name: e.name,
+        active: e.active,
+        timerMinutes: e.timerMinutes,
+        subjects: getSubjectEntriesForDiagnostic(e.subjects)
+      })));
+      const current = select.value;
+      select.innerHTML = '<option value="">Select Exam Category</option>';
+
+      exams.forEach(exam => {
+        const option = document.createElement('option');
+        option.value = exam.id;
+        option.textContent = exam.name;
+        select.appendChild(option);
+      });
+
+      if (current && exams.some(e => e.id === current)) select.value = current;
+    }
+
+    function getSelectedExamConfig() {
+      const select = document.getElementById('exam-category');
+      const id = select?.value || '';
+      return getConfiguredExams().find(e => e.id === id) || null;
+    }
+
+    function getSubjectEntries(exam) {
+      if (!exam?.subjects) return [];
+      if (Array.isArray(exam.subjects)) {
+        return exam.subjects.map((s, i) => [s.id || s.code || s.key || `subject_${i+1}`, s]);
+      }
+      return Object.entries(exam.subjects);
+    }
+
+    function resolveSource(cfg) {
+      /* Admin may save the source under any of these supported field names. */
+      return String(
+        cfg?.source ||
+        cfg?.file ||
+        cfg?.questionSource ||
+        cfg?.questionFile ||
+        cfg?.path ||
+        cfg?.fileUrl ||
+        cfg?.sourceUrl ||
+        cfg?.url ||
+        ''
+      ).trim();
+    }
+
+    function resolveQuestionSourceUrl(source) {
+      const value = String(source || '').trim();
+      if (!value) return '';
+
+      /*
+       * Relative paths such as a question HTML file, a subject folder file,
+       * or an uploaded/custom source path are resolved from this page URL.
+       * are resolved from the actual index.html URL on GitHub Pages.
+       * Absolute http/https URLs are also supported when Admin stores one.
+       */
+      try {
+        return new URL(value, window.location.href).href;
+      } catch (_) {
+        return value;
+      }
+    }
+
+    function getSubjectCount(cfg) {
+      const n = Number(cfg?.count ?? cfg?.questionCount ?? cfg?.studentLimit ?? cfg?.limit ?? 0);
+      return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+    }
+
+    function getSubjectOrder(cfg) {
+      const v = String(cfg?.order || cfg?.questionOrder || 'random').toLowerCase();
+      return ['sequential','sequence','normal'].includes(v) ? 'sequential' : 'random';
+    }
+
+    function extractQuestionArrayFromSource(rawText) {
+      const text = String(rawText || '').trim();
+
+      // 1) Direct JSON array.
+      if (text.startsWith('[')) {
+        try {
+          const direct = JSON.parse(text);
+          if (Array.isArray(direct)) return direct;
+        } catch (_) {}
+      }
+
+      // 2) Find the most likely question-bank array. This supports files such as
+      // const questions = [...], let questionBank = [...], or HTML wrappers.
+      const candidates = [];
+      const preferred = /(questions?|questionBank|mcqs?|data)\s*=\s*\[/gi;
+      let match;
+      while ((match = preferred.exec(text)) !== null) candidates.push(match.index + match[0].lastIndexOf('['));
+      if (!candidates.length) {
+        let pos = text.indexOf('[');
+        while (pos !== -1) { candidates.push(pos); pos = text.indexOf('[', pos + 1); }
+      }
+
+      function balancedArray(start) {
+        let depth = 0, quote = null, escaped = false;
+        for (let i = start; i < text.length; i++) {
+          const ch = text[i];
+          if (quote) {
+            if (escaped) { escaped = false; continue; }
+            if (ch === '\\') { escaped = true; continue; }
+            if (ch === quote) quote = null;
+            continue;
+          }
+          if (ch === '"' || ch === "'") { quote = ch; continue; }
+          if (ch === '[') depth++;
+          else if (ch === ']') {
+            depth--;
+            if (depth === 0) return text.slice(start, i + 1);
+          }
+        }
+        return null;
+      }
+
+      for (const start of candidates) {
+        const candidate = balancedArray(start);
+        if (!candidate) continue;
+        try {
+          const parsed = JSON.parse(candidate);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        } catch (_) {
+          // Some question files use JavaScript object syntax instead of strict JSON.
+          try {
+            const parsed = Function('"use strict"; return (' + candidate + ');')();
+            if (Array.isArray(parsed) && parsed.length) return parsed;
+          } catch (_) {}
+        }
+      }
+
+      throw new Error('No valid question array found in the selected question source.');
+    }
+
+    function isRailwayExam(exam) {
+      const id = String(exam?.id || '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const name = String(exam?.name || '').toLowerCase();
+      return id.includes('railway') || name.includes('railway') || name.includes('group d');
+    }
+
+    function normalizeSubjectText(value) {
+      return String(value ?? '')
+        .toLowerCase()
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function getQuestionSubjectValue(question) {
+      if (!question || typeof question !== 'object') return '';
+      return String(
+        question.subject ??
+        question.subjectName ??
+        question.section ??
+        question.sectionName ??
+        question.category ??
+        question.categoryName ??
+        question.topic ??
+        question.examSubject ??
+        ''
+      ).trim();
+    }
+
+    async function loadRailwayQuestionsFromFixedFile(exam) {
+      /*
+       * RAILWAY SPECIAL RULE:
+       * Railway Group D always uses the single repository file railway.html.
+       * Do NOT use the Question Source values saved for Railway subjects.
+       * Admin Panel still controls subject names, question counts and
+       * Random/Sequential order.
+       */
+      const source = 'railway.html';
+      const sourceUrl = resolveQuestionSourceUrl(source);
+      const subjects = getSubjectEntries(exam).filter(([, cfg]) => cfg?.enabled !== false);
+
+      if (!subjects.length) {
+        throw new Error('No Railway subjects are configured in the Admin Panel.');
+      }
+
+      try {
+        const response = await fetch(sourceUrl, { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Could not load railway.html (HTTP ${response.status}). Make sure railway.html is in the same GitHub folder as index.html.`);
+        }
+
+        const rawText = await response.text();
+        const pool = extractQuestionArrayFromSource(rawText);
+        if (!Array.isArray(pool) || !pool.length) {
+          throw new Error('railway.html does not contain a valid question array.');
+        }
+
+        const requestedTotal = subjects.reduce((sum, [, cfg]) => {
+          return sum + getSubjectCount(cfg);
+        }, 0);
+
+        if (requestedTotal <= 0) {
+          throw new Error('Railway question counts are not configured correctly in the Admin Panel.');
+        }
+
+        if (pool.length < requestedTotal) {
+          throw new Error(`railway.html contains ${pool.length} questions, but Admin requires ${requestedTotal} questions in total.`);
+        }
+
+        /*
+         * Railway.html is treated as ONE master question bank.
+         * We allocate unique questions to subjects in the exact order in which
+         * subjects are saved in Admin. This is intentionally independent of
+         * the per-subject source fields in Admin because Railway has only one
+         * physical file: railway.html.
+         *
+         * Example:
+         * Maths 25 + Reasoning 25 + GK/GS 25
+         * => first 25 belong to Maths, next 25 to Reasoning, next 25 to GK/GS.
+         * Random subjects are shuffled only inside their own allocated block.
+         */
+        const combined = [];
+        let cursor = 0;
+
+        for (const [subjectId, subjectCfg] of subjects) {
+          const subjectName = subjectCfg?.name || subjectCfg?.subjectName || subjectId;
+          const count = getSubjectCount(subjectCfg);
+          const order = getSubjectOrder(subjectCfg);
+
+          if (count <= 0) {
+            throw new Error(`${subjectName}: question count must be greater than 0.`);
+          }
+
+          const subjectPool = pool.slice(cursor, cursor + count);
+          cursor += count;
+
+          if (subjectPool.length < count) {
+            throw new Error(`${subjectName}: railway.html does not contain enough questions for the Admin-configured count of ${count}.`);
+          }
+
+          const selectedPool = [...subjectPool];
+
+          if (order === 'random') {
+            for (let i = selectedPool.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [selectedPool[i], selectedPool[j]] = [selectedPool[j], selectedPool[i]];
+            }
+          }
+
+          selectedPool.forEach((q, localIndex) => {
+            combined.push({
+              ...(q && typeof q === 'object' ? q : { question: String(q) }),
+              _examId: exam.id,
+              _examName: exam.name,
+              _subjectId: String(subjectId),
+              _subjectName: String(subjectName),
+              _subjectQuestionNumber: localIndex + 1,
+              _questionKey: `${exam.id}|${subjectId}|${q?.id??cursor-count+localIndex}`,
+              _questionSource: source,
+              _questionSourceUrl: sourceUrl
+            });
+          });
+        }
+
+        // Questions added beyond the configured student count remain in a
+        // reserve pool and replace the exact question affected by a violation.
+        pool.slice(requestedTotal).forEach((q,idx)=>reserveQuestions.push({
+          ...(q&&typeof q==='object'?q:{question:String(q)}),_examId:exam.id,_examName:exam.name,
+          _subjectId:'all_questions',_subjectName:'All Questions',_subjectQuestionNumber:requestedTotal+idx+1,
+          _questionKey:`${exam.id}|all_questions|${q?.id??requestedTotal+idx}`,_questionSource:source,_questionSourceUrl:sourceUrl
+        }));
+
+        return combined;
+      } catch (err) {
+        console.error('[Railway Question Loader]', err);
+        throw new Error(`Railway question file error: ${err.message}`);
+      }
+    }
+
+    async function loadConfiguredExamQuestions(exam) {
+      // Railway Group D is the one intentional fixed-source exception.
+      // Its question bank is always railway.html. Everything else remains
+      // completely Admin-Panel driven.
+      if (isRailwayExam(exam)) {
+        return await loadRailwayQuestionsFromFixedFile(exam);
+      }
+
+      const subjects = getSubjectEntries(exam);
+      if (!subjects.length) return null;
+
+      const combined = [];
+      const loadErrors = [];
+
+      for (const [subjectId, subjectCfg] of subjects) {
+        if (subjectCfg?.enabled === false) continue;
+
+        const source = resolveSource(subjectCfg);
+        const sourceUrl = resolveQuestionSourceUrl(source);
+        const count = getSubjectCount(subjectCfg);
+        const subjectName = subjectCfg.name || subjectCfg.subjectName || subjectId;
+
+        if (!source) {
+          loadErrors.push(`${subjectName}: Question Source is empty in Admin Panel.`);
+          continue;
+        }
+        if (count <= 0) {
+          loadErrors.push(`${subjectName}: Question count is not configured correctly in Admin Panel.`);
+          continue;
+        }
+
+        try {
+          const response = await fetch(sourceUrl, { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Could not load ${source} (HTTP ${response.status})`);
+
+          const rawText = await response.text();
+          const pool = extractQuestionArrayFromSource(rawText);
+          if (!Array.isArray(pool)) throw new Error('Question dataset is not an array.');
+          if (pool.length === 0) throw new Error('Question dataset is empty.');
+
+          const order = getSubjectOrder(subjectCfg);
+          let selectedPool = [...pool];
+
+          if (order === 'random') {
+            for (let i = selectedPool.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [selectedPool[i], selectedPool[j]] = [selectedPool[j], selectedPool[i]];
+            }
+          }
+
+          if (pool.length < count) {
+            throw new Error(`${subjectName} has only ${pool.length} questions in ${source}, but Admin requires ${count}.`);
+          }
+
+          selectedPool.slice(0, count).forEach((q, localIndex) => {
+            combined.push({
+              ...q,
+              _examId: exam.id,
+              _examName: exam.name,
+              _subjectId: String(subjectId),
+              _subjectName: String(subjectName),
+              _subjectQuestionNumber: localIndex + 1,
+              _questionKey: `${exam.id}|${subjectId}|${q?.id??localIndex}`,
+              _questionSource: source,
+              _questionSourceUrl: sourceUrl
+            });
+          });
+          selectedPool.slice(count).forEach((q,localIndex)=>reserveQuestions.push({
+            ...q,_examId:exam.id,_examName:exam.name,_subjectId:String(subjectId),_subjectName:String(subjectName),
+            _subjectQuestionNumber:count+localIndex+1,_questionKey:`${exam.id}|${subjectId}|${q?.id??count+localIndex}`,
+            _questionSource:source,_questionSourceUrl:sourceUrl
+          }));
+        } catch (err) {
+          loadErrors.push(`${subjectName}: ${err.message}`);
+        }
+      }
+
+      if (loadErrors.length) {
+        throw new Error(loadErrors.join('<br>'));
+      }
+
+      return combined;
+    }
+
+    function getSubjectGroups() {
+      const groups = [];
+      const map = new Map();
+      questionsList.forEach((q, index) => {
+        const id = String(q._subjectId || q._subjectName || 'general');
+        if (!map.has(id)) {
+          const group = { id, name: q._subjectName || 'Questions', indices: [] };
+          map.set(id, group);
+          groups.push(group);
+        }
+        map.get(id).indices.push(index);
+      });
+      return groups;
+    }
+
+    function renderSubjectNavigation() {
+      const nav = document.getElementById('subject-navigation');
+      if (!nav) return;
+      const groups = getSubjectGroups();
+      nav.innerHTML = '';
+
+      if (!groups.length) return;
+
+      const title = document.createElement('span');
+      title.className = 'subject-nav-title';
+      title.innerHTML = '<i class="fa-solid fa-layer-group"></i>&nbsp; Subjects';
+      nav.appendChild(title);
+
+      groups.forEach(group => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `subject-tab ${group.id === currentSubjectId ? 'active' : ''}`;
+        const answered = group.indices.filter(i => selectedAnswers[i] !== undefined).length;
+        btn.innerHTML = `${escapeHtmlSafe(group.name)} <span class="subject-tab-count">${answered}/${group.indices.length}</span>`;
+        btn.onclick = () => switchExamSubject(group.id);
+        nav.appendChild(btn);
+      });
+    }
+
+    function escapeHtmlSafe(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+
+    function switchExamSubject(subjectId) {
+      const group = getSubjectGroups().find(g => g.id === String(subjectId));
+      if (!group || !group.indices.length) return;
+      currentSubjectId = group.id;
+
+      // Keep the student's existing answers/statuses intact and jump to the
+      // first question of the selected subject.
+      const targetIndex = group.indices[0];
+      loadQuestion(targetIndex);
+      renderSubjectNavigation();
+    }
+
+    function getExamTotalQuestions(exam) {
+      const entries = getSubjectEntries(exam);
+      const total = entries.reduce((sum, [, cfg]) => sum + (cfg?.enabled === false ? 0 : getSubjectCount(cfg)), 0);
+      if (total > 0) return total;
+      return Number(exam?.studentLimit || 0);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('exam-category');
+      if (select) {
+        select.addEventListener('change', () => {
+          const selected = getSelectedExamConfig();
+          selectedExamConfig = selected;
+          selectedExamId = selected?.id || '';
+          selectedExamName = selected?.name || '';
+          const error = document.getElementById('exam-category-error');
+          if (error) error.style.display = selected ? 'none' : 'flex';
+          updateInstructionConfig();
+        });
+      }
+    });
+
+    function updateInstructionConfig() {
+      const questionEl = document.getElementById('instruction-question-count');
+      const durationEl = document.getElementById('instruction-duration');
+
+      const activeExam = selectedExamConfig || getSelectedExamConfig();
+      const configuredQuestions = activeExam ? getExamTotalQuestions(activeExam) : examConfigData?.studentLimit;
+      const configuredMinutes = isRailwayExam(activeExam) ? 90 : activeExam?.id==='ssc_gd' ? 60 :
+        (Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes)));
+
+      questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
+        ? Number(configuredQuestions)
+        : '—';
+
+      durationEl.innerText = (Number.isFinite(Number(configuredMinutes)) && Number(configuredMinutes) > 0)
+        ? `${Number(configuredMinutes)} min`
+        : '—';
+    }
+
+    window.changeSlide = (slideNumber) => {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      document.getElementById(`slide-${slideNumber}`).classList.add('active');
+    };
+
+    window.validateAndNext = async (e) => {
+      e.preventDefault();
+      const isWindowOpen = await checkOverallExamWindow();
+      if (!isWindowOpen) return;
+
+      const nameInput = document.getElementById('student-name').value.trim();
+      const emailInput = document.getElementById('student-email').value.trim().toLowerCase();
+      const emailError = document.getElementById('email-error');
+      const duplicateError = document.getElementById('duplicate-error');
+      const examCategoryError = document.getElementById('exam-category-error');
+      const centerCodeError = document.getElementById('center-code-error');
+      const centerCodeInput = document.getElementById('center-code').value.trim();
+      const proceedBtn = document.getElementById('proceed-btn');
+
+      emailError.style.display = 'none';
+      duplicateError.style.display = 'none';
+      if (examCategoryError) examCategoryError.style.display = 'none';
+      if (centerCodeError) centerCodeError.style.display = 'none';
+
+      selectedExamConfig = getSelectedExamConfig();
+      if (!selectedExamConfig) {
+        if (examCategoryError) examCategoryError.style.display = 'flex';
+        return;
+      }
+      selectedExamId = selectedExamConfig.id;
+      selectedExamName = selectedExamConfig.name;
+
+      if (!emailInput.endsWith('@gmail.com')) {
+        emailError.style.display = 'flex';
+        return;
+      }
+
+      proceedBtn.disabled = true;
+      proceedBtn.innerText = "Verifying Entry...";
+
+      try {
+        await ensureStudentAuth();
+        currentStudentName = nameInput;
+        currentStudentEmail = emailInput;
+        try{
+          currentCenter=await validateCenterCode(centerCodeInput);
+          applyCenterBranding(currentCenter);
+        }catch(centerErr){
+          if(centerCodeError)centerCodeError.style.display='flex';
+          return;
+        }
+        try{
+          currentSession=await claimLoginSession();
+        }catch(sessionErr){
+          console.error('Login session claim failed:',sessionErr);
+          const reason=String(sessionErr?.message||sessionErr?.code||'');
+          if(reason.includes('email-already-active')){
+            duplicateError.innerHTML='<i class="fa-solid fa-ban"></i> Access Denied: This email is already active on another device.';
+            duplicateError.style.display='flex';
+          }else if(reason.includes('attempt-already-used')){
+            duplicateError.innerHTML='<i class="fa-solid fa-ban"></i> Access Denied: This email has already submitted this examination.';
+            duplicateError.style.display='flex';
+          }else{
+            showExamModal('security','Login Verification Failed',getConnectionFailureMessage(sessionErr),'Retry',null,'primary');
+          }
+          return;
+        }
+        if(currentSession?.status==='in_progress'){
+          document.getElementById('start-exam-btn').innerText='Resume Examination';
+        }else if(currentSession?.status==='result_pending_feedback'){
+          document.getElementById('start-exam-btn').innerText='Resume Result Submission';
+        }
+        window.changeSlide(2);
+      } catch (err) {
+        showExamModal('security','Connection Error','Please check your internet connection and try again.','Close',null,'primary');
+      } finally {
+        proceedBtn.disabled = false;
+        proceedBtn.innerText = "Proceed to Instructions";
+      }
+    };
+
+    window.startTestExam = async () => {
+      const startBtn = document.getElementById('start-exam-btn');
+      startBtn.disabled = true;
+      startBtn.innerText = "Loading Dataset...";
+
+      try {
+        // A pending result needs no fullscreen; an active exam must never start
+        // after a rejected/unsupported fullscreen request.
+        if(currentSession?.status!=='result_pending_feedback' && !document.fullscreenElement){
+          if(!document.documentElement.requestFullscreen){
+            throw new Error('Fullscreen examination mode is not supported by this browser.');
+          }
+          await document.documentElement.requestFullscreen({navigationUI:'hide'});
+          if(!document.fullscreenElement) throw new Error('Fullscreen examination mode could not be enabled.');
+        }
+        if (!selectedExamConfig) {
+          selectedExamConfig = getSelectedExamConfig();
+          if (!selectedExamConfig) throw new Error('Please select an exam category.');
+          selectedExamId = selectedExamConfig.id;
+          selectedExamName = selectedExamConfig.name;
+        }
+
+        /*
+         * ADMIN-DRIVEN QUESTION LOADING
+         * --------------------------------
+         * There is NO hardcoded exam or question file here.
+         * The selected exam, its subjects, question counts, order and source
+         * are read from exam_config/current_test -> multiExamConfig.
+         *
+         * The source saved by Admin is used exactly as configured.
+         * The student page will fetch exactly that file.
+         */
+        reserveQuestions = [];
+        const multiQuestions = await loadConfiguredExamQuestions(selectedExamConfig);
+
+        if (!Array.isArray(multiQuestions) || !multiQuestions.length) {
+          throw new Error('No questions were loaded from the Admin Panel configuration for the selected exam. Please check Subject Name, Questions and Question Source.');
+        }
+
+        const allLoaded = [...multiQuestions, ...reserveQuestions];
+        const byKey = new Map(allLoaded.map(q=>[q._questionKey,q]));
+        const canResume = ['in_progress','result_pending_feedback'].includes(currentSession?.status) &&
+          Array.isArray(currentSession.questionOrder) && currentSession.questionOrder.length;
+        if (canResume) {
+          questionsList = currentSession.questionOrder.map(key=>byKey.get(key)).filter(Boolean);
+          const used = new Set(currentSession.questionOrder);
+          const savedReserve = Array.isArray(currentSession.reserveOrder)
+            ? currentSession.reserveOrder.map(key=>byKey.get(key)).filter(Boolean) : [];
+          reserveQuestions = [...savedReserve, ...allLoaded.filter(q=>!used.has(q._questionKey)&&!savedReserve.includes(q))];
+          selectedAnswers = currentSession.selectedAnswers || {};
+          questionStatus = currentSession.questionStatus || {};
+          currentQuestionIndex = Math.min(Number(currentSession.currentQuestionIndex)||0,questionsList.length-1);
+          examStartTime = Number(currentSession.examStartTime)||Date.now();
+          examEndTime = Number(currentSession.examEndTime)||0;
+          tabSwitches = Number(currentSession.tabSwitches)||0;
+          copiesAttempted = Number(currentSession.copiesAttempted)||0;
+          penaltiesApplied = Number(currentSession.penaltiesApplied)||0;
+          securityEvents = Array.isArray(currentSession.securityEvents)?currentSession.securityEvents:[];
+        } else {
+          questionsList = multiQuestions;
+          selectedAnswers = {}; questionStatus = {}; securityEvents = [];
+          tabSwitches = 0; copiesAttempted = 0; penaltiesApplied = 0;
+          currentQuestionIndex = 0; examStartTime = Date.now();
+          const configuredDuration = isRailwayExam(selectedExamConfig) ? 90 : selectedExamId==='ssc_gd' ? 60 :
+            (Number(selectedExamConfig?.timerMinutes)||Number(selectedExamConfig?.durationMinutes)||Number(examConfigData?.durationMinutes));
+          examEndTime = Date.now() + configuredDuration*60*1000;
+          questionsList.forEach((_, i) => questionStatus[i] = 'not-visited');
+        }
+
+        if (!questionsList.length) {
+          throw new Error('No questions are configured for the selected exam in the Admin Panel.');
+        }
+        sessionStorage.setItem('tabSwitches', String(tabSwitches));
+        sessionStorage.setItem('copiesAttempted', String(copiesAttempted));
+        sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
+        draftResultId = currentAttemptId;
+        resultSavedForThisAttempt = false;
+        submissionInProgress = false;
+        securityEventLocked = false;
+        if(currentSession?.status==='result_pending_feedback'){
+          isExamActive = false;
+          await calculateAndShowResults();
+        }else{
+          isExamActive = true;
+          await requestExamWakeLock();
+          initialFullscreenArea = innerWidth*innerHeight;
+          window.changeSlide(3);
+          await saveExamProgress({status:'in_progress'});
+          clearInterval(heartbeatTimer); heartbeatTimer=setInterval(()=>saveExamProgress(),60000);
+          startExamTimer();
+          loadQuestion(currentQuestionIndex);
+        }
+      } catch (error) {
+        if(error?.code==='attempt-already-used'){
+          showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
+        }else{
+          showExamModal('security','Question Load Error','The test questions could not be loaded. The student portal is using the exact exam, subject, question count, order and Question Source saved in the Admin Panel. Please check the selected exam configuration and make sure each configured source file exists in the GitHub project.','Close',null,'primary');
+        }
+        startBtn.disabled = false;
+        startBtn.innerText = "Start Examination";
+      }
+    };
+
+    function startExamTimer() {
+      if (!Number.isFinite(examEndTime) || examEndTime <= 0) { showExamModal('security','Exam Configuration Missing','Exam duration is not configured in the Admin Panel.','Close',null,'primary'); return; }
+      clearInterval(timerInterval);
+      const tick=()=>{
+        timerInterval = setInterval(() => {
+          const current = new Date().getTime();
+          const remaining = examEndTime - current;
+
+        if (remaining <= 0) {
+          clearInterval(timerInterval); clearInterval(heartbeatTimer);
+          isExamActive=false;
+          showExamModal('info','Time Up','Your examination time has ended. Your responses will now be submitted for evaluation.','View Result',null,'primary',()=>calculateAndShowResults());
+        } else {
+          let mins = Math.floor(remaining / (1000 * 60));
+          let secs = Math.floor((remaining % (1000 * 60)) / 1000);
+          document.getElementById('timer-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        }, 1000);
+      };
+      tick();
+    }
+
+    function shuffleCurrentQuestion() { return replaceViolatedQuestion(); }
+
+    function renderQuestionPalette() {
+      const palette = document.getElementById('question-palette');
+      if (!palette) return;
+      palette.innerHTML = '';
+
+      questionsList.forEach((_, idx) => {
+        const btn = document.createElement('button');
+        let cls = 'palette-btn';
+        const status = questionStatus[idx] || 'not-visited';
+        if (status === 'answered') cls += ' answered';
+        else if (status === 'not-answered') cls += ' not-answered';
+        else if (status === 'review') cls += ' review';
+        if (idx === currentQuestionIndex) cls += ' current';
+
+        btn.className = cls;
+        btn.innerText = idx + 1;
+        btn.title = `Question ${idx + 1}`;
+        btn.onclick = () => { loadQuestion(idx); if (window.innerWidth <= 900) toggleMobilePalette(); };
+        palette.appendChild(btn);
+      });
+    }
+
+    function updateQuestionStatusFromAnswer() {
+      if (questionStatus[currentQuestionIndex] === 'review') return;
+      questionStatus[currentQuestionIndex] =
+        selectedAnswers[currentQuestionIndex] !== undefined ? 'answered' : 'not-answered';
+    }
+
+    function decodeHtmlEntities(value) {
+      let text = String(value ?? '');
+      if (!text) return text;
+      // Decode entities more than once because some question banks store
+      // HTML as escaped JSON strings (for example &lt;img ...&gt;).
+      for (let i = 0; i < 3 && /&(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-f]+);/i.test(text); i++) {
+        const ta = document.createElement('textarea');
+        ta.innerHTML = text;
+        const decoded = ta.value;
+        if (decoded === text) break;
+        text = decoded;
+      }
+      return text;
+    }
+
+    function normalizeRichText(value) {
+      let text = decodeHtmlEntities(value);
+      // Some files contain the two characters \\n and \\r\\n instead of
+      // actual line breaks. Convert those only when they are not inside HTML.
+      text = text.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+      return text;
+    }
+
+    function resolveMediaUrl(value, baseUrl) {
+      let src = decodeHtmlEntities(String(value ?? '').trim());
+      if (!src) return '';
+      src = src.replace(/^['"]|['"]$/g, '').trim();
+      if (/^(data:|blob:|https?:|\/\/|#)/i.test(src)) {
+        return src.startsWith('//') ? `${window.location.protocol}${src}` : src;
+      }
+      try {
+        return new URL(src, baseUrl || window.location.href).href;
+      } catch (_) {
+        try { return new URL(src, window.location.href).href; } catch (_) { return src; }
+      }
+    }
+
+    function getMediaUrlCandidates(value, baseUrl) {
+      const src = decodeHtmlEntities(String(value ?? '').trim()).replace(/^['"]|['"]$/g, '').trim();
+      if (!src) return [];
+      const candidates = [];
+      const add = (v) => { if (v && !candidates.includes(v)) candidates.push(v); };
+      add(resolveMediaUrl(src, baseUrl));
+
+      // If the source file is inside a subject folder, also try the same
+      // path relative to index.html. This covers common repo layouts such as
+      // /ssc-gd/reasoning.html + /images/q1.png.
+      if (!/^(data:|blob:|https?:|\/\/|#)/i.test(src)) {
+        add(resolveMediaUrl(src.replace(/^\.\//, ''), window.location.href));
+        const clean = src.replace(/^\.\//, '').replace(/^\//, '');
+        if (baseUrl) {
+          try {
+            const u = new URL(baseUrl, window.location.href);
+            const parts = u.pathname.split('/');
+            parts.pop();
+            const sourceDir = parts.join('/');
+            const sourceDirName = sourceDir.split('/').filter(Boolean).pop() || '';
+            if (sourceDirName && clean.startsWith(sourceDirName + '/')) {
+              add(new URL(clean.slice(sourceDirName.length + 1), window.location.origin + '/').href);
+            }
+          } catch (_) {}
+        }
+      }
+      return candidates;
+    }
+
+    function isLikelyImageUrl(value) {
+      const src = decodeHtmlEntities(String(value ?? '').trim());
+      return /^(data:image\/|blob:|https?:\/\/|\/\/)/i.test(src) ||
+             /\.(?:png|jpe?g|gif|webp|svg|bmp|avif|ico)(?:[?#].*)?$/i.test(src) ||
+             /(?:\/|\\)(?:image|img|images|figure|figures|diagram|diagrams)(?:\/|\\)/i.test(src);
+    }
+
+    function collectImageCandidates(value, out = []) {
+      if (value == null) return out;
+      if (Array.isArray(value)) {
+        value.forEach(v => collectImageCandidates(v, out));
+        return out;
+      }
+      if (typeof value === 'object') {
+        const keys = [
+          'src','url','href','path','file','filename','fileName','image','imageUrl','imageURL','image_url',
+          'imageSrc','image_src','imagePath','image_path','img','imgSrc','img_src','diagram','figure',
+          'figureImage','figureUrl','media','mediaUrl','mediaURL','source'
+        ];
+        for (const key of keys) {
+          if (value[key] != null) collectImageCandidates(value[key], out);
+        }
+        return out;
+      }
+      const text = decodeHtmlEntities(String(value)).trim();
+      if (text && (isLikelyImageUrl(text) || /^https?:\/\//i.test(text))) out.push(text);
+      return out;
+    }
+
+    function getQuestionImageValues(qData) {
+      const candidates = [];
+      const keys = [
+        'images','image','questionImage','questionImages','questionImageUrl','questionImageURL','question_image',
+        'imageUrl','imageURL','image_url','imageSrc','image_src','imagePath','image_path','img','imgSrc','img_src',
+        'imgUrl','imgURL','diagram','diagramImage','diagramUrl','figure','figureImage','figureUrl','media','mediaUrl'
+      ];
+      keys.forEach(key => {
+        if (qData && qData[key] != null) collectImageCandidates(qData[key], candidates);
+      });
+      return [...new Set(candidates.map(v => String(v).trim()).filter(Boolean))];
+    }
+
+    function escapeRichText(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function containsRichHtml(text) {
+      return /<\/?(?:img|picture|source|svg|table|thead|tbody|tfoot|tr|td|th|br|p|div|span|strong|b|em|i|u|sub|sup|small|mark|ol|ul|li|pre|code|blockquote|math|mrow|mi|mn|mo|msup|msub|video|audio|iframe)\b[^>]*>/i.test(text);
+    }
+
+    function convertPlainImageMarkers(text, baseUrl) {
+      let html = text;
+
+      // Markdown image: ![alt](path)
+      html = html.replace(/!\[([^\]]*)\]\(\s*<?([^)>]+)>?\s*\)/g, (_, alt, src) => {
+        const safeAlt = escapeRichText(alt || 'Question image');
+        const safeSrc = escapeRichText(resolveMediaUrl(src, baseUrl));
+        return `<img src="${safeSrc}" alt="${safeAlt}" loading="eager" data-rich-image="1">`;
+      });
+
+      // Common image markers found in exported question banks.
+      html = html.replace(/\[\s*(?:image|img|figure|diagram)\s*[:=]\s*([^\]]+)\]/gi, (_, src) => {
+        const safeSrc = escapeRichText(resolveMediaUrl(src.trim(), baseUrl));
+        return `<img src="${safeSrc}" alt="Question image" loading="eager" data-rich-image="1">`;
+      });
+
+      // Bare image paths/URLs in otherwise plain text.
+      html = html.replace(/(^|[\s(])((?:https?:\/\/|\.\.\/|\.\/|\/)?[^\s<>"']+\.(?:png|jpe?g|gif|webp|svg|bmp|avif|ico)(?:[?#][^\s<>"']*)?)(?=$|[\s).,;])/gi,
+        (_, prefix, src) => `${prefix}<img src="${escapeRichText(resolveMediaUrl(src, baseUrl))}" alt="Question image" loading="eager" data-rich-image="1">`);
+
+      return html;
+    }
+
+    function prepareRichContent(value, baseUrl) {
+      let text = normalizeRichText(value);
+      if (!text) return '';
+
+      /*
+       * IMPORTANT:
+       * Plain question text must NOT be pushed directly into innerHTML because
+       * symbols such as <, >, &, quotes, etc. can otherwise be interpreted as
+       * HTML and disappear/change. Only known rich HTML is allowed through.
+       */
+      const hasRichHtml = containsRichHtml(text);
+      let html = hasRichHtml ? text : escapeRichText(text);
+
+      // Restore image syntax/markers after escaping plain text.
+      html = convertPlainImageMarkers(html, baseUrl);
+
+      // Lightweight Markdown bold. This is safe because the source has already
+      // been escaped when it is plain text.
+      html = html.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
+
+      // Preserve paragraph/line spacing for exported plain-text question banks.
+      if (!hasRichHtml) {
+        html = html.replace(/\r\n|\r|\n/g, '<br>');
+      }
+
+      const template = document.createElement('template');
+      template.innerHTML = html;
+
+      // Question sources are data, never executable page content.
+      template.content.querySelectorAll('script,style,object,embed,link,meta,base,form,input,button').forEach(node=>node.remove());
+      template.content.querySelectorAll('*').forEach(node=>{
+        [...node.attributes].forEach(attr=>{
+          const name=attr.name.toLowerCase();
+          const value=String(attr.value||'').trim().toLowerCase();
+          if(name.startsWith('on') || name==='srcdoc' || name==='formaction' ||
+             ((name==='href'||name==='src'||name==='xlink:href') && value.startsWith('javascript:'))){
+            node.removeAttribute(attr.name);
+          }
+        });
+      });
+
+      // Resolve every media element, including images embedded in raw HTML/SVG.
+      template.content.querySelectorAll('img[src], source[src], video[src], audio[src], iframe[src]').forEach(node => {
+        const attr = node.getAttribute('src');
+        if (attr) {
+          const candidates = getMediaUrlCandidates(attr, baseUrl);
+          node.setAttribute('src', candidates[0] || resolveMediaUrl(attr, baseUrl));
+          node.dataset.mediaCandidates = JSON.stringify(candidates);
+          node.dataset.mediaCandidateIndex = '0';
+        }
+        if (node.tagName === 'IMG') {
+          node.setAttribute('loading', 'eager');
+          node.setAttribute('decoding', 'async');
+          node.setAttribute('referrerpolicy', 'no-referrer');
+          node.classList.add('rich-media-image');
+        }
+      });
+
+      template.content.querySelectorAll('svg').forEach(svg => {
+        svg.style.maxWidth = '100%';
+        svg.style.height = 'auto';
+      });
+
+      return template.innerHTML;
+    }
+
+    function attachRichMediaFallbacks(container, baseUrl) {
+      if (!container) return;
+      container.querySelectorAll('img,source,video,audio,iframe').forEach(node => {
+        if (node.dataset.richFallbackAttached === '1') return;
+        node.dataset.richFallbackAttached = '1';
+
+        const original = node.getAttribute('src') || '';
+        const candidates = (() => {
+          try { return JSON.parse(node.dataset.mediaCandidates || '[]'); } catch (_) { return []; }
+        })();
+        if (!candidates.length) candidates.push(...getMediaUrlCandidates(original, baseUrl));
+        let idx = Number(node.dataset.mediaCandidateIndex || 0);
+
+        const onError = () => {
+          idx += 1;
+          if (idx < candidates.length) {
+            node.dataset.mediaCandidateIndex = String(idx);
+            node.setAttribute('src', candidates[idx]);
+            return;
+          }
+          // Keep the question usable even if a referenced asset is missing.
+          if (node.tagName === 'IMG') {
+            const fallback = document.createElement('div');
+            fallback.className = 'question-image-error';
+            fallback.textContent = 'Question image could not be loaded from the saved source path.';
+            node.replaceWith(fallback);
+          }
+        };
+        node.addEventListener('error', onError);
+      });
+    }
+
+    function renderQuestionImages(qData, baseUrl) {
+      const block = document.getElementById('question-image-block');
+      if (!block) return;
+      block.innerHTML = '';
+
+      const values = getQuestionImageValues(qData);
+      values.forEach((src, imageIndex) => {
+        const img = document.createElement('img');
+        const candidates = getMediaUrlCandidates(src, baseUrl);
+        img.src = candidates[0] || resolveMediaUrl(src, baseUrl);
+        img.alt = `Question figure ${imageIndex + 1}`;
+        img.loading = 'eager';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        img.dataset.mediaCandidates = JSON.stringify(candidates);
+        img.dataset.mediaCandidateIndex = '0';
+        block.appendChild(img);
+      });
+      attachRichMediaFallbacks(block, baseUrl);
+    }
+
+    function loadQuestion(index) {
+      currentQuestionIndex = index;
+      if (questionStatus[index] === 'not-visited') questionStatus[index] = 'not-answered';
+
+      document.getElementById('question-counter').innerText = `Question ${index + 1} of ${questionsList.length}`;
+      const topCount = document.getElementById('top-question-count');
+      if (topCount) topCount.innerText = `${index + 1} / ${questionsList.length}`;
+
+      const statusText = questionStatus[index] === 'answered' ? 'Answered' :
+                         questionStatus[index] === 'review' ? 'Marked for Review' :
+                         'Not Answered';
+      document.getElementById('question-status').innerText = statusText;
+
+      const qData = questionsList[index] || {};
+      currentSubjectId = String(qData._subjectId || qData._subjectName || 'general');
+      renderSubjectNavigation();
+
+      const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
+      let questionValue = qData.question ?? qData.q ?? qData.text ?? qData.questionText ?? '';
+      let passageValue = qData.passage || '';
+      // The SSC source carries the full Phule passage with Q76. Since the
+      // question order is randomized, attach that source passage to Q76–80.
+      if(!passageValue && Number(qData.id)>=76 && Number(qData.id)<=80){
+        const anchor=[...questionsList,...reserveQuestions].find(q=>Number(q.id)===76);
+        const anchorText=anchor?.question??anchor?.q??'';
+        const passageStart=anchorText.indexOf('\n')+1;
+        const questionStart=anchorText.indexOf('\nमहात्मा फुले के अनुसार');
+        if(passageStart>0&&questionStart>passageStart)passageValue=anchorText.slice(passageStart,questionStart);
+        if(Number(qData.id)===76&&questionStart>0)questionValue='Comprehension: गद्यांश के आधार पर प्रश्न का उत्तर दें।'+anchorText.slice(questionStart);
+      }
+      document.getElementById('q-text').innerHTML = prepareRichContent(questionValue, sourceBaseUrl);
+      if(passageValue){
+        document.getElementById('q-text').innerHTML = `<div class="passage-box">${prepareRichContent(passageValue,sourceBaseUrl)}</div>` + document.getElementById('q-text').innerHTML;
+      }
+      renderQuestionImages(qData, sourceBaseUrl);
+
+      const optionsBlock = document.getElementById('options-block');
+      optionsBlock.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      const options = Array.isArray(qData.options) ? qData.options :
+                      Array.isArray(qData.choices) ? qData.choices :
+                      Array.isArray(qData.answers) ? qData.answers : [];
+
+      options.forEach((opt, idx) => {
+        const isSelected = selectedAnswers[index] === idx;
+        const label = document.createElement('label');
+        label.className = `exam-option ${isSelected ? 'selected' : ''}`;
+        label.innerHTML = `<span class="option-letter">${letters[idx] || idx + 1}</span>`;
+
+        const content = document.createElement('span');
+        content.className = 'option-content';
+        const optionValue = typeof opt === 'object'
+          ? (opt.text ?? opt.label ?? opt.value ?? opt.answer ?? '')
+          : opt;
+        content.innerHTML = prepareRichContent(optionValue, sourceBaseUrl);
+        const optionImage = Array.isArray(qData.optionImages) ? qData.optionImages[idx] : null;
+        if(optionImage){
+          const image=document.createElement('img');
+          const candidates=getMediaUrlCandidates(optionImage,sourceBaseUrl);
+          image.src=candidates[0]||resolveMediaUrl(optionImage,sourceBaseUrl);
+          image.alt=`Option ${letters[idx]||idx+1} figure`; image.loading='eager'; image.decoding='async';
+          image.dataset.mediaCandidates=JSON.stringify(candidates); image.dataset.mediaCandidateIndex='0';
+          content.appendChild(image);
+        }
+        label.appendChild(content);
+
+        label.onclick = () => selectOption(index, idx);
+        optionsBlock.appendChild(label);
+      });
+
+      if (!options.length) {
+        optionsBlock.innerHTML = '<p style="color:#ef4444;">Question options are missing.</p>';
+      }
+
+      document.getElementById('btn-prev').style.visibility =
+        index === 0 ? 'hidden' : 'visible';
+
+      document.getElementById('btn-next').innerHTML =
+        index === (questionsList.length - 1)
+          ? 'Finish Exam <i class="fa-solid fa-flag-checkered"></i>'
+          : 'Save & Next <i class="fa-solid fa-angle-right"></i>';
+
+      const reviewBtn = document.getElementById('btn-review');
+      if (questionStatus[index] === 'review') {
+        reviewBtn.innerHTML = '<i class="fa-solid fa-bookmark"></i> Remove Review';
+      } else {
+        reviewBtn.innerHTML = '<i class="fa-regular fa-bookmark"></i> Mark for Review';
+      }
+
+      document.getElementById('palette-student-name').innerText = currentStudentName || 'Candidate';
+      document.getElementById('palette-student-email').innerText = currentStudentEmail || '';
+
+      attachRichMediaFallbacks(document.getElementById('q-text'), sourceBaseUrl);
+      attachRichMediaFallbacks(document.getElementById('options-block'), sourceBaseUrl);
+      renderQuestionPalette();
+      typesetExamMath();
+    }
+
+    function typesetExamMath(){
+      if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+        MathJax.typesetPromise([document.getElementById('q-text'), document.getElementById('options-block'), document.getElementById('review-ledger-container')]).catch(()=>{});
+      }
+    }
+
+    window.toggleMobilePalette = () => {
+      securitySuppressedUntil=Date.now()+800;
+      const panel = document.querySelector('.palette-panel');
+      const btn = document.getElementById('palette-toggle');
+      if (!panel) return;
+      panel.classList.toggle('mobile-open');
+      if (btn) btn.innerHTML = panel.classList.contains('mobile-open')
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+    };
+
+    window.selectOption = (qIdx, optIdx) => {
+      selectedAnswers[qIdx] = optIdx;
+      if (questionStatus[qIdx] !== 'review') questionStatus[qIdx] = 'answered';
+
+      document.querySelectorAll('.exam-option').forEach((el, idx) => {
+        if (idx === optIdx) el.classList.add('selected');
+        else el.classList.remove('selected');
+      });
+
+      document.getElementById('question-status').innerText =
+        questionStatus[qIdx] === 'review' ? 'Marked for Review' : 'Answered';
+      renderQuestionPalette();
+      queueProgressSave();
+    };
+
+    window.clearResponse = () => {
+      delete selectedAnswers[currentQuestionIndex];
+      questionStatus[currentQuestionIndex] = 'not-answered';
+      loadQuestion(currentQuestionIndex);
+      queueProgressSave();
+    };
+
+    window.toggleMarkReview = () => {
+      const current = questionStatus[currentQuestionIndex];
+      if (current === 'review') {
+        questionStatus[currentQuestionIndex] =
+          selectedAnswers[currentQuestionIndex] !== undefined ? 'answered' : 'not-answered';
+      } else {
+        questionStatus[currentQuestionIndex] = 'review';
+      }
+      loadQuestion(currentQuestionIndex);
+      queueProgressSave();
+    };
+
+    window.confirmExamSubmit = () => {
+      if (!isExamActive || submissionInProgress) return;
+      const unanswered = questionsList.filter((_, idx) => selectedAnswers[idx] === undefined).length;
+      const reviewed = questionsList.filter((_, idx) => questionStatus[idx] === 'review').length;
+      showExamModal(
+        'submit',
+        'Submit Examination',
+        `<strong>Submit examination now?</strong><br><br><b>Unanswered:</b> ${unanswered}<br><b>Marked for Review:</b> ${reviewed}<br><br><span style="color:#b91c1c;font-weight:700;">This action cannot be undone.</span>`,
+        'Cancel',
+        'Submit Now',
+        'danger',
+        () => {
+          clearInterval(timerInterval);
+          isExamActive = false;
+          calculateAndShowResults();
+        }
+      );
+    };
+
+    function confirmFinishExam(){
+      if (!isExamActive || submissionInProgress) return;
+      const unanswered = questionsList.filter((_, idx) => selectedAnswers[idx] === undefined).length;
+      showExamModal(
+        'finish',
+        'Finish Examination',
+        `<strong>You have reached the last question.</strong><br><br>Unanswered questions: <b>${unanswered}</b><br><br>Are you sure you want to finish the test and view your performance?`,
+        'Continue Test',
+        'Finish Test',
+        'primary',
+        () => {
+          clearInterval(timerInterval);
+          isExamActive = false;
+          calculateAndShowResults();
+        }
+      );
+    }
+
+    window.handleNext = () => {
+      updateQuestionStatusFromAnswer();
+      if (currentQuestionIndex < questionsList.length - 1) {
+        loadQuestion(currentQuestionIndex + 1);
+      } else {
+        confirmFinishExam();
+      }
+      queueProgressSave();
+    };
+
+    window.handlePrevious = () => {
+      updateQuestionStatusFromAnswer();
+      if (currentQuestionIndex > 0) {
+        loadQuestion(currentQuestionIndex - 1);
+      }
+      queueProgressSave();
+    };
+
+    async function calculateAndShowResults() {
+      clearInterval(timerInterval);
+      clearInterval(heartbeatTimer);
+      isExamActive = false;
+      await releaseExamWakeLock();
+
+      let correctCount = 0;
+      let wrongCount = 0;
+      const reviewContainer = document.getElementById('review-ledger-container');
+      reviewContainer.innerHTML = '';
+
+      questionsList.forEach((q, idx) => {
+        const selectedIdx = selectedAnswers[idx];
+        const studentSelectionText = selectedIdx !== undefined ? q.options[selectedIdx] : `<span style="color:var(--danger)">Not Attempted</span>`;
+        const correctSelectionText = q.a || q.correct || q.ans || 'N/A';
+        const isCorrect = selectedIdx !== undefined && studentSelectionText === correctSelectionText;
+
+        if (selectedIdx !== undefined) {
+          if (isCorrect) correctCount++;
+          else wrongCount++;
+        }
+
+        const reviewItem = document.createElement('div');
+        reviewItem.className = `review-item ${selectedIdx === undefined ? '' : (isCorrect ? 'correct-item' : 'wrong-item')}`;
+        reviewItem.innerHTML = `
+          <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}${prepareRichContent(q.question || q.q,q._questionSourceUrl||window.location.href)}</h5>
+          <div style="font-size:0.85rem; line-height:1.5;">
+            <strong>Your Choice:</strong> ${selectedIdx===undefined?studentSelectionText:prepareRichContent(studentSelectionText,q._questionSourceUrl||window.location.href)} <br>
+            <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${prepareRichContent(correctSelectionText,q._questionSourceUrl||window.location.href)}</span>
+          </div>
+        `;
+        reviewContainer.appendChild(reviewItem);
+      });
+
+      const rawScore = (correctCount * 1) - (wrongCount * 0.25);
+      const penaltyDeduction = Number(sessionStorage.getItem('penaltiesApplied') || '0');
+      calculatedScore = Math.max(0, rawScore - penaltyDeduction);
+      totalScore = questionsList.length;
+      finalizedScoreString = `${Number.isInteger(calculatedScore) ? calculatedScore : calculatedScore.toFixed(2)}/${totalScore}`;
+      const attempted=correctCount+wrongCount;
+      const timeTakenSeconds=Math.max(0,Math.round((Date.now()-examStartTime)/1000));
+      finalMetrics={correct:correctCount,wrong:wrongCount,attempted,timeTakenSeconds,
+        timeTakenText:`${Math.floor(timeTakenSeconds/3600)?Math.floor(timeTakenSeconds/3600)+'h ':''}${Math.floor((timeTakenSeconds%3600)/60)}m ${timeTakenSeconds%60}s`};
+
+      document.getElementById('res-score').innerText = finalizedScoreString;
+      document.getElementById('res-correct').innerText = correctCount;
+      document.getElementById('res-wrong').innerText = wrongCount;
+      document.getElementById('res-accuracy').innerText = `${Math.round((correctCount / (correctCount + wrongCount || 1)) * 100)}%`;
+
+      document.getElementById('log-tab-switches').innerText = sessionStorage.getItem('tabSwitches') || 0;
+      document.getElementById('log-copy-paste').innerText = sessionStorage.getItem('copiesAttempted') || 0;
+      document.getElementById('log-penalty').innerText = `-${penaltyDeduction} Mark(s)`;
+
+      window.changeSlide(4);
+      if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+      const draftSaved = await saveDraftResult();
+      if(draftSaved){
+        await saveExamProgress({status:'result_pending_feedback',resultCalculatedAt:new Date(),submittedAt:new Date(),score:finalizedScoreString,...finalMetrics});
+      }else{
+        showExamModal('security','Result Sync Pending','Your answers remain available for retry, but the draft result could not be synced. Keep this page open and use Submit & Complete again.','Close',null,'primary');
+      }
+      typesetExamMath();
+    }
+
+    window.downloadPerformanceReport = () => {
+      if(!questionsList.length || !finalizedScoreString){
+        showExamModal('info','Report Not Ready','Complete the examination before downloading the performance report.','Close',null,'primary');
+        return;
+      }
+      const ledger=document.getElementById('review-ledger-container')?.innerHTML||'';
+      const report=window.open('','_blank');
+      if(!report){
+        showExamModal('info','Download Blocked','Allow pop-ups for this page and try the download again.','Close',null,'primary');
+        return;
+      }
+      report.opener=null;
+      const title=`${selectedExamName||'Examination'} Performance Report`;
+      report.document.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${escapeHtmlSafe(location.href)}"><title>${escapeHtmlSafe(title)}</title><script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};<\/script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px;line-height:1.45}h1{color:#173b82;margin-bottom:4px}.meta{border-collapse:collapse;width:100%;margin:18px 0}.meta td{border:1px solid #d8dee9;padding:8px}.review-item{break-inside:avoid;border:1px solid #d8dee9;border-left:4px solid #64748b;padding:12px;margin:10px 0;border-radius:5px}.correct-item{border-left-color:#16a34a}.wrong-item{border-left-color:#dc2626}img{max-width:100%;height:auto}.actions{margin-bottom:18px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><div class="actions"><button onclick="window.print()">Save as PDF / Print</button></div><h1>${escapeHtmlSafe(title)}</h1><p>Candidate: <strong>${escapeHtmlSafe(currentStudentName)}</strong> &nbsp; | &nbsp; ${escapeHtmlSafe(currentStudentEmail)}</p><table class="meta"><tr><td><strong>Score</strong><br>${escapeHtmlSafe(finalizedScoreString)}</td><td><strong>Correct</strong><br>${Number(finalMetrics.correct)||0}</td><td><strong>Wrong</strong><br>${Number(finalMetrics.wrong)||0}</td><td><strong>Penalty</strong><br>-${Number(penaltiesApplied)||0}</td></tr></table><h2>Question Evaluation</h2>${ledger}</body></html>`);
+      report.document.close();
+      report.focus();
+      setTimeout(()=>report.print(),1200);
+    };
+
+    function showExamModal(type, title, message, cancelText='Cancel', confirmText='OK', confirmClass='primary', onConfirm=null){
+      const overlay=document.getElementById('exam-modal');
+      const titleEl=document.getElementById('exam-modal-title');
+      const msgEl=document.getElementById('exam-modal-message');
+      const cancelBtn=document.getElementById('exam-modal-cancel');
+      const confirmBtn=document.getElementById('exam-modal-confirm');
+      const icon=document.getElementById('exam-modal-icon');
+      if(!overlay) return;
+      titleEl.textContent=title;
+      msgEl.innerHTML=message;
+      confirmBtn.className='exam-modal-btn '+(confirmClass||'primary');
+      confirmBtn.textContent=confirmText||'OK';
+      cancelBtn.textContent=cancelText||'Cancel';
+      const iconMap={security:'fa-shield-halved',submit:'fa-paper-plane',finish:'fa-flag-checkered',info:'fa-circle-info'};
+      icon.innerHTML=`<i class="fa-solid ${iconMap[type]||'fa-bell'}"></i>`;
+      const singleButton = confirmText === null;
+      cancelBtn.style.display = singleButton ? '' : '';
+      confirmBtn.style.display = singleButton ? 'none' : '';
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+      const close=()=>{ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); };
+      if(singleButton){
+        cancelBtn.textContent = cancelText || 'OK';
+        cancelBtn.onclick=()=>{ close(); if(typeof onConfirm==='function') onConfirm(); };
+      }else{
+        cancelBtn.onclick=close;
+        confirmBtn.onclick=()=>{ close(); if(typeof onConfirm==='function') onConfirm(); };
+      }
+    }
+
+    async function saveDraftResult(){
+      if(resultSavedForThisAttempt) return true;
+      if(!currentStudentEmail || !questionsList.length) return false;
+      const payload={
+        name:currentStudentName, email:currentStudentEmail,
+        ownerUid:auth.currentUser?.uid || '',
+        attemptId:currentAttemptId,
+        examId:selectedExamId || 'current_test',
+        examName:selectedExamName || examConfigData?.examName || 'Current Test',
+        subjects:[...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
+        score:finalizedScoreString,
+        correct:finalMetrics.correct||0, wrong:finalMetrics.wrong||0,
+        tabSwitches:Math.min(maxTabSwitches,parseInt(sessionStorage.getItem('tabSwitches')||'0')),
+        copiesAttempted:parseInt(sessionStorage.getItem('copiesAttempted')||'0'),
+        penaltiesApplied:Number(sessionStorage.getItem('penaltiesApplied')||'0'),
+        feedback:document.getElementById('feedback-input').value.trim() || 'None',
+        status:'draft', completed:false,
+        submittedAt:new Date(), updatedAt:new Date()
+      };
+      try{
+        if(!draftResultId) throw new Error('Secure attempt ID is missing.');
+        await setDoc(doc(db,'results',draftResultId),payload,{merge:true});
+        resultSavedForThisAttempt=true;
+        return true;
+      }catch(err){
+        console.error('Draft save error:',err);
+        return false;
+      }
+    }
+
+    document.querySelectorAll('#stars-container i').forEach(star => {
+      star.addEventListener('click', (e) => {
+        selectedRating = parseInt(e.target.getAttribute('data-value'));
+        document.querySelectorAll('#stars-container i').forEach((s, idx) => {
+          if (idx < selectedRating) s.classList.add('active');
+          else s.classList.remove('active');
+        });
+      });
+    });
+
+    window.submitFinalFeedback = async (e) => {
+      e.preventDefault();
+      if (!selectedRating) {
+        document.getElementById('rating-error').style.display = 'flex';
+        return;
+      }
+      await submitStudentExam();
+    };
+
+    async function submitStudentExam() {
+      if(submissionInProgress) return;
+      submissionInProgress=true;
+      const submitBtn=document.getElementById('submit-all-btn');
+      if(submitBtn){ submitBtn.disabled=true; submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Result...'; }
+
+      const resultPayload = {
+        name: currentStudentName,
+        email: currentStudentEmail,
+        ownerUid: auth.currentUser?.uid || '',
+        attemptId: currentAttemptId,
+        examId: selectedExamId || 'current_test',
+        examName: selectedExamName || examConfigData?.examName || 'Current Test',
+        subjects: [...new Set(questionsList.map(q => q._subjectName).filter(Boolean))],
+        score: finalizedScoreString,
+        tabSwitches: Math.min(maxTabSwitches, parseInt(sessionStorage.getItem('tabSwitches') || '0')),
+        copiesAttempted: parseInt(sessionStorage.getItem('copiesAttempted') || '0'),
+        penaltiesApplied: Number(sessionStorage.getItem('penaltiesApplied') || '0'),
+        feedback: document.getElementById('feedback-input').value.trim() || 'None',
+        doubt: document.getElementById('doubt-input').value.trim() || 'None',
+        rating: selectedRating,
+        status: 'completed',
+        completed: true,
+        submittedAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      try {
+        if(!draftResultId) throw new Error('Secure attempt ID is missing.');
+        await setDoc(doc(db,'results',draftResultId), resultPayload, {merge:true});
+        await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+          status:'final_submitted',submittedAt:new Date(),lastSeen:new Date(),score:finalizedScoreString,
+          correct:finalMetrics.correct||0,wrong:finalMetrics.wrong||0,attempted:finalMetrics.attempted||0,
+          timeTakenSeconds:finalMetrics.timeTakenSeconds||0,timeTakenText:finalMetrics.timeTakenText||'',
+          securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50),
+          tabSwitches:Math.min(maxTabSwitches,tabSwitches),copiesAttempted,penaltiesApplied,
+          feedback:resultPayload.feedback,doubt:resultPayload.doubt,rating:selectedRating
+        },{merge:true});
+        resultSavedForThisAttempt=true;
+        ['currentAttemptId','draftResultId','tabSwitches','copiesAttempted','penaltiesApplied'].forEach(key=>sessionStorage.removeItem(key));
+        document.getElementById('success-modal').classList.add('show');
+      } catch (e) {
+        submissionInProgress=false;
+        if(submitBtn){ submitBtn.disabled=false; submitBtn.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i> Submit & Complete'; }
+        showExamModal('security','Submission Error','Your result could not be synced right now. Please check your internet connection and try again.','Close',null,'primary');
+        console.error(e);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', checkOverallExamWindow);
+  </script>
+</body>
+</html>

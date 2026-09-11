@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Elite | Admin Dashboard Panel</title>
+
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --accent: #f59e0b;
+      --bg-dark: #0f172a;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    #login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: #ffffff;
+      padding: 2.5rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .login-card h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    header h1 {
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .slide-navigation {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 2rem;
+      background: #e2e8f0;
+      padding: 6px;
+      border-radius: 12px;
+    }
+
+    .slide-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .slide-tab-btn.active {
+      background: var(--bg-card);
+      color: var(--primary);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .admin-slide-content {
+      display: none;
+    }
+
+    .admin-slide-content.active {
+      display: block;
+    }
+
+    .admin-card {
+      background: var(--bg-card);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    input[type="datetime-local"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-accent:hover {
+      background: #d97706;
+    }
+
+    .btn-refresh {
+      background: #475569;
+      color: white;
+    }
+
+    .btn-refresh:hover {
+      background: #334155;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    .badge-rank {
+      background: #f59e0b;
+      color: white;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+
+    .alert-indicator {
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .alert-safe {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .alert-warn {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .time-stamp {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ============================================================
+       MULTI-EXAM / SUBJECT CONFIGURATION
+       ============================================================ */
+    .multi-exam-card { background:linear-gradient(135deg,#f8fbff,#fff); border:2px solid #dbeafe; padding:1.5rem; border-radius:14px; margin-bottom:1.5rem; }
+    .multi-exam-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:15px; flex-wrap:wrap; }
+    .multi-exam-head h4 { color:var(--primary); font-size:1.05rem; margin:0 0 4px; }
+    .multi-exam-head p { color:var(--text-muted); font-size:.83rem; margin:0; line-height:1.5; }
+    .exam-control-grid { display:grid; grid-template-columns:minmax(190px,1fr) minmax(150px,.7fr) minmax(150px,.7fr); gap:10px; min-width:min(100%,650px); flex:1; max-width:720px; }
+    .exam-select-wrap,.per-exam-timer-wrap,.per-exam-penalty-wrap { min-width:0; }
+    .exam-select-wrap label,.per-exam-timer-wrap label,.per-exam-penalty-wrap label { display:block; font-size:.72rem; font-weight:700; color:var(--primary); margin-bottom:5px; }
+    .exam-select-wrap select,.per-exam-timer-wrap input,.per-exam-penalty-wrap input { width:100%; box-sizing:border-box; padding:.72rem .75rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#1e293b; font-size:.9rem; outline:none; }
+    .exam-select-wrap select:focus,.per-exam-timer-wrap input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.1); }
+    .active-exams-panel { background:#eff6ff; border:1px solid #bfdbfe; border-radius:11px; padding:13px; margin:12px 0 15px; }
+    .active-exams-title { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+    .active-exams-title span { color:var(--primary); font-weight:800; font-size:.9rem; }
+    .active-exams-title small { color:var(--text-muted); font-size:.75rem; line-height:1.4; }
+    .active-exams-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .active-exam-option { position:relative; }
+    .active-exam-option input { position:absolute; opacity:0; pointer-events:none; }
+    .active-exam-label { display:flex; align-items:center; gap:10px; padding:11px 12px; background:#fff; border:1px solid #dbeafe; border-radius:9px; cursor:pointer; font-size:.82rem; font-weight:700; color:#334155; transition:.2s; }
+    .active-exam-label i { color:#94a3b8; }
+    .active-exam-option input:checked + .active-exam-label { border-color:#2563eb; background:#dbeafe; color:#1e3a8a; box-shadow:0 0 0 2px rgba(37,99,235,.08); }
+    .active-exam-option input:checked + .active-exam-label i { color:#2563eb; }
+    .subject-config-list { display:grid; gap:12px; margin-top:14px; }
+    .subject-row { background:#fff; border:1px solid #dbeafe; border-radius:12px; padding:14px; display:grid; grid-template-columns:minmax(150px,1.2fr) minmax(110px,.7fr) minmax(180px,1fr) minmax(170px,1fr) auto; gap:10px; align-items:end; }
+    .subject-row .form-group { margin:0; }
+    .subject-row label { font-size:.72rem; margin-bottom:5px; }
+    .subject-row input,.subject-row select { padding:.68rem .75rem; font-size:.9rem; }
+    .subject-remove { width:40px; height:40px; border:0; border-radius:8px; background:#fee2e2; color:#b91c1c; cursor:pointer; font-size:1rem; }
+    .subject-remove:hover { background:#fecaca; }
+    .multi-exam-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .config-summary { margin-top:12px; padding:11px 13px; border-radius:9px; background:#eff6ff; border:1px solid #bfdbfe; color:#475569; font-size:.82rem; }
+    .config-summary strong { color:var(--primary); }
+    @media (max-width:850px) { .subject-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .subject-row .subject-name { grid-column:1/-1; } .subject-remove { width:100%; } .exam-control-grid { grid-template-columns:1fr; width:100%; max-width:none; } .active-exams-list { grid-template-columns:1fr; } }
+
+    .analytics-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin:0 0 1rem; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; }
+    .analytics-toolbar .form-group { margin:0; min-width:190px; flex:1; }
+    .analytics-toolbar .form-group label { font-size:.72rem; }
+    .stats-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:0 0 1.25rem; }
+    .stat-box { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; }
+    .stat-box .stat-label { color:#64748b; font-size:.75rem; font-weight:600; text-transform:uppercase; }
+    .stat-box .stat-value { color:var(--primary); font-size:1.35rem; font-weight:700; margin-top:4px; }
+    .exam-badge { display:inline-block; padding:4px 8px; border-radius:999px; background:#dbeafe; color:#1e3a8a; font-size:.75rem; font-weight:700; }
+    .subject-badge { display:inline-block; padding:3px 7px; border-radius:6px; background:#f1f5f9; color:#475569; font-size:.72rem; margin:2px 2px 0 0; }
+    .score-main { font-size:1rem; font-weight:700; color:var(--primary-light); }
+    .score-percent { display:block; font-size:.72rem; color:#64748b; margin-top:2px; }
+    .status-badge { display:inline-block;padding:4px 8px;border-radius:999px;font-size:.72rem;font-weight:800;white-space:nowrap; }
+    .status-logged_in { background:#dbeafe;color:#1d4ed8; }
+    .status-in_progress { background:#fef3c7;color:#92400e; }
+    .status-final_submitted { background:#d1fae5;color:#065f46; }
+    @media (max-width: 850px) { .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 1rem 0.7rem;
+      }
+
+      .admin-card {
+        padding: 1.25rem;
+      }
+
+      header h1 {
+        font-size: 1.4rem;
+      }
+
+      .slide-navigation {
+        flex-direction: column;
+      }
+
+      .order-options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN OVERLAY -->
+  <div id="login-overlay">
+    <div class="login-card">
+      <i class="fa-solid fa-user-lock"
+         style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+
+      <h2>Admin Login</h2>
+      <p>Enter credentials to access admin dashboard</p>
+
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input
+            type="email"
+            id="admin-user"
+            placeholder="Enter Firebase admin email"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            id="admin-pass"
+            placeholder="Enter password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <p
+          id="login-error"
+          style="color: var(--danger); font-size: 0.85rem; display: none; margin-bottom: 1rem;"
+        >
+          Invalid credentials or this account is not an authorised admin.
+        </p>
+
+        <button
+          type="submit"
+          class="btn"
+          style="width: 100%; justify-content: center;"
+        >
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Login to Panel
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MAIN ADMIN CONTAINER -->
+  <div class="admin-container" id="admin-main">
+
+    <header>
+      <h1>
+        <i class="fa-solid fa-gauge-high"></i>
+        Admin Control Room
+      </h1>
+
+      <div class="header-actions">
+        <button
+          onclick="fetchLiveDatabaseRecords()"
+          class="btn btn-refresh"
+          title="Refresh Live Data"
+        >
+          <i class="fa-solid fa-rotate"></i>
+          Sync Data
+        </button>
+
+        <button
+          onclick="logoutAdmin()"
+          class="btn btn-danger"
+          style="padding: 0.5rem 1rem;"
+        >
+          <i class="fa-solid fa-power-off"></i>
+          Logout
+        </button>
+      </div>
+    </header>
+
+
+    <div class="slide-navigation">
+
+      <button
+        class="slide-tab-btn active"
+        onclick="switchSlide(1, this)"
+      >
+        <i class="fa-solid fa-plus-minus"></i>
+        Setup & Timer Config
+      </button>
+
+      <button
+        class="slide-tab-btn"
+        onclick="switchSlide(2, this)"
+      >
+        <i class="fa-solid fa-shield-halved"></i>
+        Security Analytics
+      </button>
+
+      <button
+        class="slide-tab-btn"
+        onclick="switchSlide(3, this)"
+      >
+        <i class="fa-solid fa-trophy"></i>
+        Leaderboard & Timing
+      </button>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- SLIDE 1: EXAM / SUBJECT CONFIGURATION -->
+    <!-- ========================================================= -->
+
+    <div
+      id="slide-1-content"
+      class="admin-slide-content active"
+    >
+
+      <!-- MULTI-EXAM + SUBJECT-WISE QUESTION CONTROL -->
+      <div class="multi-exam-card">
+        <div class="multi-exam-head">
+          <div>
+            <h4><i class="fa-solid fa-layer-group"></i> Multi-Exam & Subject-wise Question Control</h4>
+            <p>All exam-specific question count, question source, question order and timer controls are managed here.</p>
+          </div>
+
+          <div class="exam-control-grid">
+            <div class="exam-select-wrap">
+              <label for="exam-selector">Exam Configuration</label>
+              <select id="exam-selector">
+                <option value="railway_group_d">RRB Group D</option>
+                <option value="jharkhand_tet">Jharkhand TET</option>
+                <option value="ssc_gd">SSC GD</option>
+              </select>
+            </div>
+
+            <div class="per-exam-timer-wrap">
+              <label for="per-exam-timer">Per Exam Timer (Minutes) *</label>
+              <input type="number" id="per-exam-timer" min="1" placeholder="e.g. 30">
+            </div>
+            <div class="per-exam-penalty-wrap">
+              <label for="per-exam-penalty">Penalty / Violation *</label>
+              <input type="number" id="per-exam-penalty" min="0" step="0.25" placeholder="e.g. 1">
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVE EXAMS -->
+        <div class="active-exams-panel">
+          <div class="active-exams-title">
+            <span><i class="fa-solid fa-toggle-on"></i> Active Exam(s)</span>
+            <small>Select one or more exams. Only selected exams will appear on the student login page.</small>
+          </div>
+          <div class="active-exams-list" id="active-exams-list"></div>
+        </div>
+
+        <div class="subject-config-list" id="subject-config-list"></div>
+
+        <div class="multi-exam-actions">
+          <button type="button" class="btn" id="add-subject-btn"><i class="fa-solid fa-plus"></i> Add Subject</button>
+          <button type="button" class="btn btn-success" id="save-multi-exam-btn"><i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings</button>
+        </div>
+
+        <div class="config-summary" id="multi-exam-summary">
+          <strong>Ready:</strong> Configure each exam, set its timer, choose Random/Sequential order for every subject, then select which exams are active.
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3><i class="fa-solid fa-location-dot"></i> Examination Center Access</h3>
+        <p class="subtitle">Only students with the active center code can enter. Institute details are used automatically in the live dashboard and branded report.</p>
+        <div class="form-grid">
+          <div class="form-group"><label for="center-code">Center Code *</label><input type="text" id="center-code" placeholder="e.g. ACC-2026" autocomplete="off"></div>
+          <div class="form-group"><label for="center-name">Institute Name *</label><input type="text" id="center-name" value="ASHISH COMPETITION CENTRE (ACC)"></div>
+          <div class="form-group"><label for="center-location">Institute Location *</label><input type="text" id="center-location" value="DALTONGANJ"></div>
+          <div class="form-group"><label for="center-address">Full Address</label><input type="text" id="center-address" placeholder="Institute address"></div>
+          <div class="form-group"><label for="center-batch">Batch / Category</label><input type="text" id="center-batch" placeholder="e.g. R Batch"></div>
+        </div>
+        <button type="button" class="btn btn-success" onclick="saveCenterSettings()"><i class="fa-solid fa-key"></i> Activate Center Code</button>
+        <div class="config-summary" id="center-summary">No center code loaded.</div>
+      </div>
+
+      <!-- GENERAL SETTINGS THAT ARE NOT EXAM-SPECIFIC -->
+      <div class="admin-card general-config-card">
+        <h3>
+          <i class="fa-solid fa-calendar-check"></i>
+          Test Availability & Upload Settings
+        </h3>
+        <p class="subtitle">These settings control only the student entry period. They do NOT limit the exam duration. Once a student enters before the close time, the selected exam's full configured timer is available.</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="config-window-start">Overall Entry Start Time *</label>
+            <input type="datetime-local" id="config-window-start">
+          </div>
+
+          <div class="form-group">
+            <label for="config-window-end">Overall Entry Close Time *</label>
+            <input type="datetime-local" id="config-window-end">
+          </div>
+
+          <div class="form-group">
+            <label for="config-max-tab-switches">Maximum Tab Switches *</label>
+            <input type="number" id="config-max-tab-switches" min="1" max="20" step="1" value="2">
+            <small style="display:block;margin-top:6px;color:#64748b;">The examination auto-submits when this limit is reached.</small>
+          </div>
+        </div>
+
+        <div style="background:#f1f5f9;padding:1.25rem;border-radius:10px;margin-bottom:1.5rem;">
+          <label style="font-weight:700;color:var(--primary);">Question Upload Method:</label>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:.5rem;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <input type="radio" name="upload-mode" value="form" checked> Live Form
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <input type="radio" name="upload-mode" value="code"> Custom Code
+            </label>
+            <label style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+              <input type="radio" name="upload-mode" value="msword"> MS Word Parse
+            </label>
+          </div>
+        </div>
+
+        <button type="button" id="save-config-btn" onclick="saveGeneralSettings()" class="btn btn-success">
+          <i class="fa-solid fa-lock"></i>
+          Save Availability & Upload Settings
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SLIDE 2: SECURITY ANALYTICS -->
+    <!-- ========================================================= -->
+
+    <div
+      id="slide-2-content"
+      class="admin-slide-content"
+    >
+
+      <div class="admin-card">
+
+        <h3>
+          <i class="fa-solid fa-user-shield"></i>
+          Anti-Cheating & Security Analytics Tracker
+        </h3>
+
+        <p class="subtitle">
+          Live login status and completed personal analysis update automatically.
+        </p>
+
+        <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+          <button type="button" class="btn btn-accent" onclick="downloadSecurityAnalysis()">
+            <i class="fa-solid fa-file-arrow-down"></i> Download Security Analysis
+          </button>
+        </div>
+
+
+        <div class="stats-grid" id="analytics-stats">
+          <div class="stat-box"><div class="stat-label">Total Attempts</div><div class="stat-value" id="stat-attempts">0</div></div>
+          <div class="stat-box"><div class="stat-label">Active Exams</div><div class="stat-value" id="stat-exams">0</div></div>
+          <div class="stat-box"><div class="stat-label">Security Alerts</div><div class="stat-value" id="stat-alerts">0</div></div>
+          <div class="stat-box"><div class="stat-label">Average Score</div><div class="stat-value" id="stat-average">0%</div></div>
+        </div>
+
+        <div class="table-responsive">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Status / Student</th>
+                <th>Exam</th>
+                <th>Center</th>
+                <th>Login / Submit</th>
+                <th>Time Taken</th>
+                <th>Correct / Wrong / Attempted</th>
+                <th>Security / Penalty</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="analytics-table-body">
+
+              <tr>
+                <td
+                  colspan="5"
+                  style="text-align:center;"
+                >
+                  Loading analytics data...
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- SLIDE 3: LEADERBOARD -->
+    <!-- ========================================================= -->
+
+    <div
+      id="slide-3-content"
+      class="admin-slide-content"
+    >
+
+      <div class="admin-card">
+
+        <h3>
+          <i class="fa-solid fa-trophy"></i>
+          Live Leaderboard & Submission Time Logs
+        </h3>
+
+        <p class="subtitle">
+          Student scores sorted by performance along with exact submission time.
+        </p>
+
+
+        <div class="analytics-toolbar">
+          <div class="form-group">
+            <label for="leaderboard-exam-filter">Filter by Exam</label>
+            <select id="leaderboard-exam-filter">
+              <option value="all">All Exams</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="leaderboard-sort-filter">Sort Results</label>
+            <select id="leaderboard-sort-filter">
+              <option value="highest">Highest Score</option>
+              <option value="latest">Latest Submit</option>
+              <option value="lowest">Lowest Score</option>
+              <option value="earliest">Earliest Submit</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-refresh" onclick="resetLeaderboardFilters()"><i class="fa-solid fa-filter-circle-xmark"></i> Reset Filters</button>
+        </div>
+
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:1rem;
+            gap:10px;
+            flex-wrap:wrap;
+          "
+        >
+
+          <button
+            onclick="downloadBrandedExcel()"
+            class="btn btn-accent"
+          >
+            <i class="fa-solid fa-file-excel"></i>
+            Download Branded Excel Report
+          </button>
+
+
+          <button
+            onclick="clearAllResults()"
+            class="btn btn-danger"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+            Clear All Records
+          </button>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Rank</th>
+                <th>Student Details</th>
+                <th>Exam</th>
+                <th>Subjects</th>
+                <th>Score</th>
+                <th>Submitted At</th>
+                <th>Feedback</th>
+                <th>Action</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="leaderboard-table-body">
+
+              <tr>
+                <td
+                  colspan="5"
+                  style="text-align:center;"
+                >
+                  Loading leaderboard data...
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- FIREBASE + JAVASCRIPT -->
+  <!-- =========================================================== -->
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      getDocs,
+      deleteDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    import {
+      getAuth,
+      browserSessionPersistence,
+      onAuthStateChanged,
+      setPersistence,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+
+    /* ============================================================
+       FIREBASE CONFIG
+       ============================================================ */
+
+    const firebaseConfig = {
+
+      apiKey: "AIzaSyCeGPesXxNBWNdiJH6XYpuJAi9U5JMwvOc",
+
+      authDomain: "test-d6ee6.firebaseapp.com",
+
+      projectId: "test-d6ee6",
+
+      storageBucket: "test-d6ee6.firebasestorage.app",
+
+      messagingSenderId: "533839027531",
+
+      appId: "1:533839027531:web:98417498dc648e54695cce",
+
+      measurementId: "G-KCDLMWNS8S"
+
+    };
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+    const auth = getAuth(app);
+
+    let allStudentResults = [];
+
+
+    /* ============================================================
+       ADMIN LOGIN
+       ============================================================ */
+
+    let adminBootstrapped = false;
+
+    function setLoginBusy(isBusy) {
+      const button = document.querySelector('#login-overlay button[type="submit"]');
+      if (!button) return;
+      button.disabled = isBusy;
+      button.innerHTML = isBusy
+        ? '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...'
+        : '<i class="fa-solid fa-right-to-bracket"></i> Login to Panel';
+    }
+
+    async function verifyAdminAccess(user) {
+      if (!user) return false;
+      const adminSnap = await getDoc(doc(db, 'admins', user.uid));
+      return adminSnap.exists() && adminSnap.data()?.active === true;
+    }
+
+    function openAdminPanel() {
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('login-overlay').style.display = 'none';
+      document.getElementById('admin-main').style.display = 'block';
+      if (!adminBootstrapped) {
+        adminBootstrapped = true;
+        loadExamSettings();
+        fetchLiveDatabaseRecords();
+      }
+    }
+
+    function closeAdminPanel() {
+      document.getElementById('login-overlay').style.display = 'flex';
+      document.getElementById('admin-main').style.display = 'none';
+      adminBootstrapped = false;
+    }
+
+    window.handleLogin = async (e) => {
+
+      e.preventDefault();
+
+      const email =
+        document.getElementById('admin-user').value.trim();
+
+      const pass =
+        document.getElementById('admin-pass').value.trim();
+
+
+      const error = document.getElementById('login-error');
+      error.style.display = 'none';
+      setLoginBusy(true);
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+        const credential = await signInWithEmailAndPassword(auth, email, pass);
+        if (!await verifyAdminAccess(credential.user)) {
+          await signOut(auth);
+          throw new Error('not-authorised');
+        }
+        openAdminPanel();
+        document.getElementById('admin-pass').value = '';
+      } catch (err) {
+        console.error('Admin login failed:', err.code || err.message);
+        error.style.display = 'block';
+      } finally {
+        setLoginBusy(false);
+      }
+
+    };
+
+
+    /* ============================================================
+       LOGOUT
+       ============================================================ */
+
+    window.logoutAdmin = async () => {
+      await signOut(auth);
+      closeAdminPanel();
+    };
+
+
+    /* ============================================================
+       AUTO LOGIN FROM SESSION
+       ============================================================ */
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        closeAdminPanel();
+        return;
+      }
+      try {
+        if (await verifyAdminAccess(user)) openAdminPanel();
+        else {
+          await signOut(auth);
+          closeAdminPanel();
+        }
+      } catch (err) {
+        console.error('Admin session verification failed:', err);
+        closeAdminPanel();
+      }
+    });
+
+
+    /* ============================================================
+       SLIDE SWITCHING
+       ============================================================ */
+
+    window.switchSlide = (
+      slideNum,
+      clickedButton
+    ) => {
+
+      document
+        .querySelectorAll('.admin-slide-content')
+        .forEach(
+          s => s.classList.remove('active')
+        );
+
+
+      document
+        .querySelectorAll('.slide-tab-btn')
+        .forEach(
+          b => b.classList.remove('active')
+        );
+
+
+      const target =
+        document.getElementById(
+          `slide-${slideNum}-content`
+        );
+
+
+      if (target) {
+        target.classList.add('active');
+      }
+
+
+      if (clickedButton) {
+        clickedButton.classList.add('active');
+      }
+
+    };
+
+
+    /* ============================================================
+       MULTI-EXAM / SUBJECT CONFIGURATION
+       ============================================================ */
+    const DEFAULT_MULTI_EXAM_CONFIG = {
+      railway_group_d:{examName:'RRB Group D',timerMinutes:90,securityPenalty:1,active:true,subjects:[
+        {name:'All Questions',count:100,order:'random',source:'railway.html'}]},
+      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:120,securityPenalty:1,active:false,subjects:[
+        {name:'Child Development & Pedagogy',count:10,order:'random',source:'jtet/cdp.html'},
+        {name:'Language I',count:10,order:'random',source:'jtet/language1.html'},
+        {name:'Language II',count:10,order:'random',source:'jtet/language2.html'},
+        {name:'Mathematics',count:10,order:'random',source:'jtet/mathematics.html'},
+        {name:'Environmental Studies',count:10,order:'random',source:'jtet/evs.html'}]},
+      ssc_gd:{examName:'SSC GD',timerMinutes:60,securityPenalty:1,active:true,subjects:[
+        {name:'General Intelligence & Reasoning',count:20,order:'random',source:'ssc-gd/reasoning.html'},
+        {name:'General Knowledge & General Awareness',count:20,order:'random',source:'ssc-gd/gk-gs.html'},
+        {name:'Elementary Mathematics',count:20,order:'random',source:'ssc-gd/maths.html'},
+        {name:'English / Hindi',count:20,order:'random',source:'ssc-gd/english-hindi.html'}]}
+    };
+    // v4 repairs previously persisted swapped RRB/SSC timer values.
+    const EXAM_CONFIG_SCHEMA_VERSION = 4;
+    let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
+
+    function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
+    function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand TET',ssc_gd:'SSC GD'}[id]) || id); }
+    function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
+    function escapeHTML(value){ return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+
+    async function sha256(value){
+      const bytes=new TextEncoder().encode(String(value).trim().toUpperCase());
+      const digest=await crypto.subtle.digest('SHA-256',bytes);
+      return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    let currentCenterSettings={};
+    window.saveCenterSettings=async()=>{
+      const code=document.getElementById('center-code').value.trim().toUpperCase();
+      const instituteName=document.getElementById('center-name').value.trim();
+      const location=document.getElementById('center-location').value.trim();
+      const address=document.getElementById('center-address').value.trim();
+      const batch=document.getElementById('center-batch').value.trim();
+      if(!code||!instituteName||!location){alert('Center Code, Institute Name and Location are required.');return;}
+      try{
+        const centerId=await sha256(code);
+        const previousCenterId=currentCenterSettings.centerId||'';
+        currentCenterSettings={centerId,instituteName,location,address,batch,active:true};
+        await setDoc(doc(db,'centers',centerId),{...currentCenterSettings,updatedAt:new Date()},{merge:true});
+        if(previousCenterId&&previousCenterId!==centerId){
+          await setDoc(doc(db,'centers',previousCenterId),{active:false,replacedAt:new Date()},{merge:true});
+        }
+        await setDoc(doc(db,'exam_config','current_test'),{activeCenterId:centerId,instituteName,instituteLocation:location,instituteAddress:address,batchName:batch,updatedAt:new Date()},{merge:true});
+        document.getElementById('center-summary').innerHTML=`<strong>Active:</strong> ${escapeHTML(instituteName)} • ${escapeHTML(location)} • Code configured successfully.`;
+        alert('Center code activated. Share it only with students inside the examination center.');
+      }catch(err){console.error(err);alert('Center code could not be saved: '+err.message);}
+    };
+
+    function populateCenterSettings(data={}){
+      currentCenterSettings={
+        centerId:data.activeCenterId||'',
+        instituteName:data.instituteName||'ASHISH COMPETITION CENTRE (ACC)',
+        location:data.instituteLocation||'DALTONGANJ',
+        address:data.instituteAddress||'',
+        batch:data.batchName||''
+      };
+      document.getElementById('center-name').value=currentCenterSettings.instituteName;
+      document.getElementById('center-location').value=currentCenterSettings.location;
+      document.getElementById('center-address').value=currentCenterSettings.address;
+      document.getElementById('center-batch').value=currentCenterSettings.batch;
+      document.getElementById('center-code').value='';
+      document.getElementById('center-summary').innerHTML=currentCenterSettings.centerId
+        ? `<strong>Active:</strong> ${escapeHTML(currentCenterSettings.instituteName)} • ${escapeHTML(currentCenterSettings.location)} • Enter a new code only to replace it.`
+        : '<strong>Required:</strong> Create the center code before admitting students.';
+    }
+
+    function syncCurrentExamTimer(){
+      const id=getConfiguredExamId();
+      if(!multiExamConfig[id]) return;
+      const input=document.getElementById('per-exam-timer');
+      const fixedTimer=id==='railway_group_d'?90:id==='ssc_gd'?60:null;
+      if(fixedTimer!==null) multiExamConfig[id].timerMinutes=fixedTimer;
+      if(input){
+        input.value=fixedTimer??(Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '');
+        input.disabled=fixedTimer!==null;
+        input.title=fixedTimer!==null?'This examination duration is fixed by policy.':'';
+      }
+      const penalty=document.getElementById('per-exam-penalty');
+      if(penalty) penalty.value=Number.isFinite(Number(multiExamConfig[id].securityPenalty)) ? Number(multiExamConfig[id].securityPenalty) : 1;
+    }
+
+    function collectCurrentExamTimer(){
+      const id=getConfiguredExamId();
+      if(!multiExamConfig[id]) multiExamConfig[id]={examName:getExamDisplayName(id),timerMinutes:0,active:false,subjects:[]};
+      if(id==='railway_group_d') multiExamConfig[id].timerMinutes=90;
+      else if(id==='ssc_gd') multiExamConfig[id].timerMinutes=60;
+      const value=Number(document.getElementById('per-exam-timer')?.value);
+      if(!['railway_group_d','ssc_gd'].includes(id) && Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
+      const penalty=Number(document.getElementById('per-exam-penalty')?.value);
+      if(Number.isFinite(penalty) && penalty>=0) multiExamConfig[id].securityPenalty=penalty;
+    }
+
+    function renderActiveExamControls(){
+      const list=document.getElementById('active-exams-list'); if(!list)return;
+      list.innerHTML='';
+      getExamIds().forEach(id=>{
+        if(!multiExamConfig[id]) multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};
+        const wrap=document.createElement('div'); wrap.className='active-exam-option';
+        const checked=multiExamConfig[id].active===true;
+        wrap.innerHTML=`<input type="checkbox" id="active-exam-${id}" data-active-exam="${id}" ${checked?'checked':''}><label class="active-exam-label" for="active-exam-${id}"><i class="fa-solid fa-circle-check"></i><span>${escapeHTML(getExamDisplayName(id))}</span></label>`;
+        list.appendChild(wrap);
+      });
+      list.querySelectorAll('[data-active-exam]').forEach(cb=>cb.addEventListener('change',()=>{
+        multiExamConfig[cb.dataset.activeExam].active=cb.checked;
+        updateMultiExamSummary();
+      }));
+    }
+
+    function renderSubjectConfig(){
+      const list=document.getElementById('subject-config-list'); if(!list)return;
+      collectCurrentExamTimer();
+      const examId=getConfiguredExamId();
+      if(!multiExamConfig[examId])multiExamConfig[examId]={examName:examId,timerMinutes:0,active:false,subjects:[]};
+      const subjects=multiExamConfig[examId].subjects||[];
+      list.innerHTML='';
+      if(!subjects.length) list.innerHTML='<div style="padding:18px;text-align:center;color:#64748b;border:1px dashed #cbd5e1;border-radius:10px;">No subjects added. Click <strong>Add Subject</strong>.</div>';
+      subjects.forEach((subject,index)=>{
+        const row=document.createElement('div'); row.className='subject-row';
+        row.innerHTML=`<div class="form-group subject-name"><label>Subject Name *</label><input type="text" data-field="name" value="${escapeHTML(subject.name||'')}" placeholder="e.g. Maths"></div><div class="form-group"><label>Questions *</label><input type="number" data-field="count" min="1" value="${Number(subject.count)||1}"></div><div class="form-group"><label>Question Order *</label><select data-field="order"><option value="random" ${subject.order==='random'?'selected':''}>Random</option><option value="sequential" ${subject.order==='sequential'?'selected':''}>Sequential</option></select></div><div class="form-group"><label>Question Source *</label><input type="text" data-field="source" value="${escapeHTML(subject.source||'')}" placeholder="e.g. railway/maths.html"></div><button type="button" class="subject-remove" title="Remove Subject" data-remove="${index}"><i class="fa-solid fa-trash"></i></button>`;
+        list.appendChild(row);
+      });
+      list.querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click',()=>{collectCurrentExamTimer();multiExamConfig[examId].subjects.splice(Number(btn.dataset.remove),1);renderSubjectConfig();}));
+      list.querySelectorAll('.subject-row').forEach((row,idx)=>row.querySelectorAll('[data-field]').forEach(field=>{const sync=()=>{const key=field.dataset.field;multiExamConfig[examId].subjects[idx][key]=key==='count'?Number(field.value):field.value;updateMultiExamSummary();};field.addEventListener('input',sync);field.addEventListener('change',sync);}));
+      syncCurrentExamTimer();
+      updateMultiExamSummary();
+    }
+
+    function updateMultiExamSummary(){
+      const el=document.getElementById('multi-exam-summary');if(!el)return;
+      const id=getConfiguredExamId(),exam=multiExamConfig[id]||{subjects:[],timerMinutes:0};
+      const subjects=exam.subjects||[],total=subjects.reduce((n,s)=>n+(Number(s.count)||0),0);
+      const active=getExamIds().filter(x=>multiExamConfig[x]?.active).map(x=>getExamDisplayName(x));
+      el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} section(s) • ${total} student questions • Timer: ${Number(exam.timerMinutes)||0} min • Penalty: ${Number(exam.securityPenalty)||0}/violation. <br><strong>Active:</strong> ${active.length?escapeHTML(active.join(', ')):'None selected'}`;
+    }
+
+    function collectVisibleSubjectValues(){
+      const id=getConfiguredExamId();
+      if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};
+      const rows=[...document.querySelectorAll('#subject-config-list .subject-row')];
+      multiExamConfig[id].subjects=rows.map(row=>({name:row.querySelector('[data-field="name"]').value.trim(),count:Number(row.querySelector('[data-field="count"]').value),order:row.querySelector('[data-field="order"]').value,source:row.querySelector('[data-field="source"]').value.trim()}));
+      collectCurrentExamTimer();
+      return multiExamConfig[id].subjects;
+    }
+
+    function collectAllActiveExamStates(){
+      document.querySelectorAll('[data-active-exam]').forEach(cb=>{if(multiExamConfig[cb.dataset.activeExam])multiExamConfig[cb.dataset.activeExam].active=cb.checked;});
+    }
+
+    function validateMultiExamConfig(){
+      const activeIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
+      if(!activeIds.length) return 'Select at least one Active Exam.';
+      for(const id of activeIds){
+        const exam=multiExamConfig[id];
+        const timer=Number(exam.timerMinutes);
+        if(!Number.isFinite(timer)||timer<=0) return `${exam.examName||id}: Per Exam Timer must be greater than 0.`;
+        if(!exam.subjects?.length)return `${exam.examName||id}: Add at least one subject.`;
+        for(const subject of exam.subjects){
+          if(!subject.name||!Number.isFinite(Number(subject.count))||Number(subject.count)<=0||!subject.source)return `${exam.examName||id}: Every subject needs a name, question count and question source.`;
+          if(!['random','sequential'].includes(subject.order))return `${exam.examName||id}: Invalid question order for ${subject.name}.`;
+        }
+      }
+      return '';
+    }
+
+    async function saveMultiExamSettings(){
+      collectVisibleSubjectValues();
+      collectAllActiveExamStates();
+      const error=validateMultiExamConfig();
+      if(error){alert(error);return;}
+      const btn=document.getElementById('save-multi-exam-btn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Exam Settings...';
+      try{
+        const activeExamIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
+        await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamIds,activeExamId:activeExamIds[0] || '',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,updatedAt:new Date()},{merge:true});
+        renderActiveExamControls();
+        updateMultiExamSummary();
+        alert('Exam, timer, subject and active-exam settings saved successfully!');
+      }catch(err){console.error(err);alert('Failed to save exam & subject settings: '+err.message);}
+      finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings';}
+    }
+
+    function initializeMultiExamControls(savedConfig,savedActiveExam,savedActiveExamIds){
+      if(savedConfig&&typeof savedConfig==='object')multiExamConfig=JSON.parse(JSON.stringify(savedConfig));
+      getExamIds().forEach(id=>{if(!multiExamConfig[id])multiExamConfig[id]={...JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]))};if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=0;});
+      if(Array.isArray(savedActiveExamIds)) getExamIds().forEach(id=>multiExamConfig[id].active=savedActiveExamIds.includes(id));
+      const selector=document.getElementById('exam-selector');
+      if(selector){
+        selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';
+        selector.dataset.previousExamId=selector.value;
+        selector.onchange=()=>{
+          const previousId=selector.dataset.previousExamId;
+          const visiblePenalty=Number(document.getElementById('per-exam-penalty')?.value);
+          if(previousId&&multiExamConfig[previousId]&&Number.isFinite(visiblePenalty)&&visiblePenalty>=0){
+            multiExamConfig[previousId].securityPenalty=visiblePenalty;
+          }
+          selector.dataset.previousExamId=selector.value;
+          syncCurrentExamTimer();
+          renderSubjectConfig();
+          updateMultiExamSummary();
+        };
+      }
+      const timer=document.getElementById('per-exam-timer'); if(timer) timer.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
+      const penalty=document.getElementById('per-exam-penalty'); if(penalty) penalty.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
+      document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getConfiguredExamId();collectCurrentExamTimer();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});
+      document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);
+      renderActiveExamControls();
+      renderSubjectConfig();
+      syncCurrentExamTimer();
+    }
+
+    /* ============================================================
+       LOAD EXAM SETTINGS
+       ============================================================ */
+
+    async function loadExamSettings() {
+      try {
+        const docSnap=await getDoc(doc(db,'exam_config','current_test'));
+        if(docSnap.exists()){
+          const data=docSnap.data();
+          if(Number(data.schemaVersion||0)<EXAM_CONFIG_SCHEMA_VERSION){
+            const migrated=JSON.parse(JSON.stringify(data.multiExamConfig||DEFAULT_MULTI_EXAM_CONFIG));
+            getExamIds().forEach(id=>{if(!migrated[id])migrated[id]=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]));});
+            migrated.railway_group_d.examName='RRB Group D';
+            migrated.railway_group_d.active=true;
+            migrated.railway_group_d.timerMinutes=90;
+            migrated.railway_group_d.securityPenalty=Number.isFinite(Number(migrated.railway_group_d.securityPenalty))?Number(migrated.railway_group_d.securityPenalty):1;
+            migrated.railway_group_d.subjects=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG.railway_group_d.subjects));
+            migrated.ssc_gd.active=true;
+            migrated.ssc_gd.timerMinutes=60;
+            migrated.ssc_gd.securityPenalty=Number.isFinite(Number(migrated.ssc_gd.securityPenalty))?Number(migrated.ssc_gd.securityPenalty):1;
+            migrated.jharkhand_tet.active=false;
+            const activeExamIds=['railway_group_d','ssc_gd'];
+            await setDoc(doc(db,'exam_config','current_test'),{
+              multiExamConfig:migrated,
+              activeExamIds,
+              activeExamId:'railway_group_d',
+              schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,
+              updatedAt:new Date()
+            },{merge:true});
+            Object.assign(data,{multiExamConfig:migrated,activeExamIds,activeExamId:'railway_group_d',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION});
+          }
+          initializeMultiExamControls(data.multiExamConfig,data.activeExamId,data.activeExamIds);
+          populateCenterSettings(data);
+          if(data.windowStart) document.getElementById('config-window-start').value=new Date(data.windowStart).toISOString().slice(0,16);
+          if(data.windowEnd) document.getElementById('config-window-end').value=new Date(data.windowEnd).toISOString().slice(0,16);
+          document.getElementById('config-max-tab-switches').value=
+            Number.isInteger(Number(data.maxTabSwitches)) && Number(data.maxTabSwitches)>=1
+              ? Math.min(20,Number(data.maxTabSwitches)) : 2;
+          if(data.uploadMode){
+            const radio=document.querySelector(`input[name="upload-mode"][value="${data.uploadMode}"]`);
+            if(radio) radio.checked=true;
+          }
+        }else{
+          initializeMultiExamControls();
+          populateCenterSettings();
+        }
+      }catch(e){
+        console.error('Config load error:',e);
+        initializeMultiExamControls();
+        populateCenterSettings();
+      }
+    }
+
+    window.saveGeneralSettings = async () => {
+      const windowStartVal=document.getElementById('config-window-start')?.value;
+      const windowEndVal=document.getElementById('config-window-end')?.value;
+      const maxTabSwitches=Number(document.getElementById('config-max-tab-switches')?.value);
+      const uploadModeElement=document.querySelector('input[name="upload-mode"]:checked');
+      const uploadMode=uploadModeElement?uploadModeElement.value:'form';
+      if(!windowStartVal||!windowEndVal){alert('Please fill both Overall Entry Start and Entry Close time.');return;}
+      const start=new Date(windowStartVal).getTime(), end=new Date(windowEndVal).getTime();
+      if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start){alert('Overall Entry Close Time must be later than Entry Start Time.');return;}
+      if(!Number.isInteger(maxTabSwitches)||maxTabSwitches<1||maxTabSwitches>20){alert('Maximum Tab Switches must be a whole number between 1 and 20.');return;}
+      const saveBtn=document.getElementById('save-config-btn');saveBtn.disabled=true;saveBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Settings...';
+      try{
+        await setDoc(doc(db,'exam_config','current_test'),{windowStart:start,windowEnd:end,maxTabSwitches,uploadMode,updatedAt:new Date()},{merge:true});
+        alert('Entry window & upload settings saved successfully!');
+      }catch(err){console.error('Save general settings error:',err);alert('Failed to save settings: '+err.message);}
+      finally{saveBtn.disabled=false;saveBtn.innerHTML='<i class="fa-solid fa-lock"></i> Save Availability & Upload Settings';}
+    };
+
+    /* ============================================================
+       FETCH LIVE DATABASE RECORDS
+       ============================================================ */
+
+    let currentAnalyticsResults = [];
+
+    function normalizeExamName(r) {
+      return r.examName || r.exam || r.examTitle || r.testName || r.exam_id || r.examId || "Unknown Exam";
+    }
+
+    function normalizeExamId(r) {
+      return r.examId || r.exam_id || r.exam || normalizeExamName(r).toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    }
+
+    function normalizeSubjects(r) {
+      const value = r.subjects ?? r.subjectBreakdown ?? r.subjectResults ?? r.subject ?? r.subjectName;
+      if (Array.isArray(value)) {
+        return value.map(v => {
+          if (typeof v === 'string') return v;
+          return v?.name || v?.subjectName || v?.subject || '';
+        }).filter(Boolean);
+      }
+      if (value && typeof value === 'object') return Object.keys(value);
+      if (typeof value === 'string') return value.split(',').map(x => x.trim()).filter(Boolean);
+      return [];
+    }
+
+    function subjectBadges(subjects) {
+      if (!subjects.length) return '<span class="subject-badge">Not recorded</span>';
+      return subjects.map(s => `<span class="subject-badge">${escapeHTML(s)}</span>`).join('');
+    }
+
+    function getScorePercent(r) {
+      const raw = String(r.scoreText || '');
+      const m = raw.match(/(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+      if (m && Number(m[2]) > 0) return Math.max(0, Number(m[1]) / Number(m[2]) * 100);
+      if (Number.isFinite(Number(r.scorePercent))) return Number(r.scorePercent);
+      return null;
+    }
+
+    function populateLeaderboardFilters(results) {
+      const examFilter = document.getElementById('leaderboard-exam-filter');
+      if (!examFilter) return;
+
+      const currentExam = examFilter.value || 'all';
+
+      const exams = [...new Map(
+        results.map(r => [r.examId, r.examName])
+      ).entries()].sort((a,b) => a[1].localeCompare(b[1]));
+
+      examFilter.innerHTML =
+        '<option value="all">All Exams</option>' +
+        exams.map(([id,name]) =>
+          `<option value="${escapeHTML(id)}">${escapeHTML(name)}</option>`
+        ).join('');
+
+      examFilter.value =
+        exams.some(([id]) => id === currentExam) ? currentExam : 'all';
+    }
+
+    function getFilteredLeaderboardResults() {
+      const exam =
+        document.getElementById('leaderboard-exam-filter')?.value || 'all';
+
+      return currentAnalyticsResults.filter(r =>
+        ['result_pending_feedback','final_submitted'].includes(r.status) && (exam === 'all' || r.examId === exam)
+      );
+    }
+
+    function renderAnalyticsRows() {
+      const body = document.getElementById('analytics-table-body');
+      const data = currentAnalyticsResults;
+
+      if (!body) return;
+
+      body.innerHTML = '';
+
+      const alerts = data.reduce((sum,r)=>sum+(Number(r.securityViolations)||0),0);
+
+      const percents = data.map(getScorePercent).filter(v => v !== null);
+
+      document.getElementById('stat-attempts').textContent = data.length;
+      document.getElementById('stat-exams').textContent =
+        new Set(data.map(r => r.examId)).size;
+      document.getElementById('stat-alerts').textContent = alerts;
+      document.getElementById('stat-average').textContent =
+        percents.length
+          ? `${(percents.reduce((a,b)=>a+b,0)/percents.length).toFixed(1)}%`
+          : '0%';
+
+      if (!data.length) {
+        body.innerHTML =
+          '<tr><td colspan="7" style="text-align:center;">No submissions found for the selected filter.</td></tr>';
+        return;
+      }
+
+      data.forEach(r => {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td><span class="status-badge status-${escapeHTML(r.status)}">${escapeHTML(r.statusLabel)}</span><br><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
+          <td><span class="exam-badge">${escapeHTML(r.examName)}</span></td>
+          <td>${escapeHTML(r.centerName)}<br><small>${escapeHTML(r.centerLocation)}</small></td>
+          <td><span class="time-stamp">Login: ${escapeHTML(r.loginAtStr)}</span><span class="time-stamp">Submit: ${escapeHTML(r.submittedAtStr)}</span></td>
+          <td>${escapeHTML(r.timeTakenText)}</td>
+          <td><strong>${r.correct}</strong> / <span style="color:#b91c1c">${r.wrong}</span> / ${r.attempted}</td>
+          <td><span class="alert-indicator ${r.securityViolations>0?'alert-warn':'alert-safe'}">${r.securityViolations} violation(s)</span><br><small>Tab/Focus: ${r.tabSwitches} • Copy: ${r.copiesAttempted} • Penalty: -${r.penaltiesApplied}</small></td>`;
+
+        body.appendChild(tr);
+      });
+    }
+
+    window.downloadSecurityAnalysis = async () => {
+      const data=currentAnalyticsResults;
+      if(!data.length){alert('No security analysis data is available to download.');return;}
+      if(!window.ExcelJS){alert('Excel report library could not load. Check the internet connection and retry.');return;}
+      const workbook=new ExcelJS.Workbook();
+      const sheet=workbook.addWorksheet('Security Analysis');
+      sheet.columns=[
+        {header:'Student',key:'name',width:24},{header:'Email',key:'email',width:30},{header:'Status',key:'status',width:24},
+        {header:'Exam',key:'exam',width:22},{header:'Center / Batch',key:'center',width:28},{header:'Login At',key:'login',width:23},
+        {header:'Submitted At',key:'submit',width:23},{header:'Time Taken',key:'time',width:16},{header:'Score',key:'score',width:12},
+        {header:'Correct',key:'correct',width:10},{header:'Wrong',key:'wrong',width:10},{header:'Attempted',key:'attempted',width:11},
+        {header:'Violations',key:'violations',width:11},{header:'Tab / Focus',key:'tabs',width:11},{header:'Copy / Paste',key:'copies',width:12},
+        {header:'Penalty',key:'penalty',width:10},{header:'Feedback',key:'feedback',width:28},{header:'Doubt',key:'doubt',width:28}
+      ];
+      data.forEach(r=>sheet.addRow({name:r.name,email:r.email,status:r.statusLabel,exam:r.examName,center:[r.centerName,r.batch].filter(Boolean).join(' / '),login:r.loginAtStr,submit:r.submittedAtStr,time:r.timeTakenText,score:r.scoreText,correct:r.correct,wrong:r.wrong,attempted:r.attempted,violations:r.securityViolations,tabs:r.tabSwitches,copies:r.copiesAttempted,penalty:r.penaltiesApplied,feedback:r.feedback,doubt:r.doubt}));
+      sheet.getRow(1).font={bold:true,color:{argb:'FFFFFFFF'}};sheet.getRow(1).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1E3A8A'}};sheet.views=[{state:'frozen',ySplit:1}];sheet.autoFilter={from:'A1',to:'R1'};
+      const buffer=await workbook.xlsx.writeBuffer();
+      const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Bookesh_Security_Analysis_${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    };
+
+    function renderLeaderboardRows() {
+      const body = document.getElementById('leaderboard-table-body');
+
+      if (!body) return;
+
+      const sortMode=document.getElementById('leaderboard-sort-filter')?.value||'highest';
+      const sorters={
+        highest:(a,b)=>b.scoreVal-a.scoreVal||b.rawDate-a.rawDate,
+        latest:(a,b)=>b.rawDate-a.rawDate||b.scoreVal-a.scoreVal,
+        lowest:(a,b)=>a.scoreVal-b.scoreVal||b.rawDate-a.rawDate,
+        earliest:(a,b)=>a.rawDate-b.rawDate||b.scoreVal-a.scoreVal
+      };
+      const data = getFilteredLeaderboardResults().sort(sorters[sortMode]||sorters.highest);
+
+      body.innerHTML = '';
+
+      if (!data.length) {
+        body.innerHTML =
+          '<tr><td colspan="8" style="text-align:center;">No leaderboard records for the selected filter.</td></tr>';
+        return;
+      }
+
+      data.forEach((r, idx) => {
+        const pct = getScorePercent(r);
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td><span class="badge-rank">#${idx + 1}</span></td>
+          <td><strong>${escapeHTML(r.name)}</strong><br><span style="font-size:.8rem;color:var(--text-muted);">${escapeHTML(r.email)}</span></td>
+          <td><span class="exam-badge">${escapeHTML(r.examName)}</span></td>
+          <td>${subjectBadges(r.subjects)}</td>
+          <td><span class="score-main">${escapeHTML(String(r.scoreText))}</span>${pct !== null ? `<span class="score-percent">${pct.toFixed(1)}%</span>` : ''}</td>
+          <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
+          <td>${escapeHTML(String(r.feedback))}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              style="padding:0.5rem 0.75rem;font-size:0.8rem;"
+              onclick="deleteSingleResult('${r.id}')"
+              title="Delete this student's result"
+            >
+              <i class="fa-solid fa-trash-can"></i> Delete
+            </button>
+          </td>`;
+
+        body.appendChild(tr);
+      });
+    }
+
+    window.resetLeaderboardFilters = () => {
+      const e = document.getElementById('leaderboard-exam-filter');
+      if (e) e.value = 'all';
+      const s = document.getElementById('leaderboard-sort-filter');
+      if (s) s.value = 'highest';
+      renderLeaderboardRows();
+    };
+
+
+    let liveSessionsUnsubscribe=null;
+    window.fetchLiveDatabaseRecords = async () => {
+      const analyticsBody = document.getElementById('analytics-table-body');
+      const leaderboardBody = document.getElementById('leaderboard-table-body');
+      analyticsBody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>';
+      leaderboardBody.innerHTML = '<tr><td colspan="7" style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching records...</td></tr>';
+      try {
+        if(liveSessionsUnsubscribe) liveSessionsUnsubscribe();
+        liveSessionsUnsubscribe=onSnapshot(collection(db,'exam_sessions'),snap=>{
+        currentAnalyticsResults = [];
+        snap.forEach(docSnap => {
+          const r = docSnap.data();
+          let scoreVal = 0;
+          if (typeof r.score === 'string') scoreVal = parseFloat(r.score.split('/')[0]) || 0;
+          else if (typeof r.score === 'number') scoreVal = r.score;
+          let dateObj = new Date(0), loginObj=new Date(0);
+          if (r.submittedAt) dateObj = r.submittedAt.toDate ? r.submittedAt.toDate() : new Date(r.submittedAt);
+          if (r.loginAt) loginObj = r.loginAt.toDate ? r.loginAt.toDate() : new Date(r.loginAt);
+          const status=r.status||'logged_in';
+          currentAnalyticsResults.push({
+            id: docSnap.id,
+            name: r.name || 'Anonymous',
+            email: r.email || 'No Email',
+            scoreText: r.score || '0/0',
+            scoreVal,
+            rawDate: dateObj,
+            examName: normalizeExamName(r),
+            examId: normalizeExamId(r),
+            subjects: normalizeSubjects(r),
+            centerName:r.centerName||'Not recorded',centerLocation:r.centerLocation||'',centerAddress:r.centerAddress||'',batch:r.batch||'',
+            status,statusLabel:status==='final_submitted'?'Final Submitted':status==='result_pending_feedback'?'Result Ready — Feedback Pending':status==='in_progress'?'Test In Progress':'Logged In',
+            loginAtStr:loginObj.getTime()>0?loginObj.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'N/A',
+            tabSwitches: Number(r.tabSwitches ?? r.tab_switches ?? 0) || 0,
+            copiesAttempted: Number(r.copiesAttempted ?? r.copy_paste ?? 0) || 0,
+            penaltiesApplied: Number(r.penaltiesApplied ?? 0) || 0,
+            securityViolations:Number(r.securityViolations??0)||0,
+            correct:Number(r.correct??0)||0,wrong:Number(r.wrong??0)||0,attempted:Number(r.attempted??0)||0,
+            timeTakenSeconds:Number(r.timeTakenSeconds??0)||0,timeTakenText:r.timeTakenText||'—',rating:Number(r.rating??0)||0,doubt:r.doubt||'None',
+            submittedAtStr: dateObj.getTime() > 0 ? dateObj.toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'}) : 'N/A',
+            feedback: r.feedback || 'None'
+          });
+        });
+        currentAnalyticsResults.sort((a,b) => b.rawDate - a.rawDate);
+        populateLeaderboardFilters(currentAnalyticsResults);
+        renderAnalyticsRows();
+        renderLeaderboardRows();
+        const examFilter=document.getElementById('leaderboard-exam-filter');
+        const sortFilter=document.getElementById('leaderboard-sort-filter');
+        if(examFilter)examFilter.onchange=renderLeaderboardRows;
+        if(sortFilter)sortFilter.onchange=renderLeaderboardRows;
+        },err=>{
+        console.error(err);
+        analyticsBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
+        leaderboardBody.innerHTML = '<tr><td colspan="7" style="color:var(--danger);text-align:center;">Error loading database data.</td></tr>';
+        });
+      } catch (err) { console.error(err); }
+    };
+
+    /* ============================================================
+       DOWNLOAD RESULTS CSV
+       ============================================================ */
+
+    window.downloadResultsCSV = () => {
+      const data = getFilteredLeaderboardResults();
+      if (!data.length) { alert('No data available for the selected filter.'); return; }
+      let csv = 'Rank,Name,Email,Exam,Subjects,Score,Submitted At,Tab Switches,Copy Violations,Penalties Applied\n';
+      data.sort((a,b) => b.scoreVal - a.scoreVal || b.rawDate - a.rawDate).forEach((r,i) => {
+        const q = v => `"${String(v).replaceAll('"','""')}"`;
+        csv += `${i+1},${q(r.name)},${q(r.email)},${q(r.examName)},${q(r.subjects.join(' | '))},${q(r.scoreText)},${q(r.submittedAtStr)},${r.tabSwitches},${r.copiesAttempted},-${r.penaltiesApplied}\n`;
+      });
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Exam_Report_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    };
+
+    window.downloadBrandedExcel = async () => {
+      const data=getFilteredLeaderboardResults();
+      if(!data.length){alert('No completed student records are available for this report.');return;}
+      if(!window.ExcelJS){alert('Excel report library could not load. Check the internet connection and retry.');return;}
+      const sorted=[...data].sort((a,b)=>b.scoreVal-a.scoreVal||b.rawDate-a.rawDate);
+      const first=sorted[0]||{};
+      const institute=first.centerName||currentCenterSettings.instituteName||'Examination Institute';
+      const location=first.centerLocation||currentCenterSettings.location||'';
+      const address=first.centerAddress||currentCenterSettings.address||'';
+      const batch=first.batch||currentCenterSettings.batch||'';
+      const workbook=new ExcelJS.Workbook();
+      workbook.creator='Bookesh';workbook.created=new Date();
+      const sheet=workbook.addWorksheet('Student Test Report',{views:[{state:'frozen',ySplit:8}]});
+      const columns=['Rank','Name','Email','Status','Exam','Center / Batch','Score','Rating','Login At','Submitted At','Correct','Wrong','Attempted','Time Taken','Security Violations','Tab / Focus','Copy / Paste','Penalty','Feedback','Doubt'];
+      sheet.columns=columns.map((header,i)=>({header,key:'c'+i,width:[8,22,30,16,18,23,12,9,22,22,10,10,11,16,18,14,14,10,24,24][i]}));
+      sheet.spliceRows(1,1);
+      sheet.mergeCells('A1:Q1');sheet.getCell('A1').value=institute;sheet.getCell('A1').font={bold:true,size:18,color:{argb:'FF0B326B'}};sheet.getCell('A1').alignment={horizontal:'center'};
+      sheet.mergeCells('A2:Q2');sheet.getCell('A2').value=[location,address].filter(Boolean).join(' • ');sheet.getCell('A2').font={size:11,color:{argb:'FF64748B'}};sheet.getCell('A2').alignment={horizontal:'center'};
+      // Create a clean Bookesh mark locally so the report keeps its branding
+      // even when no external image server is available during download.
+      const brandSvg=`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="90" viewBox="0 0 300 90"><rect width="300" height="90" fill="white"/><path d="M34 20h18l8 37h66l10-26H62" fill="none" stroke="#0B326B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 18h52v30H72z" fill="#0B326B"/><path d="M78 23h40v20H78z" fill="white"/><circle cx="72" cy="70" r="7" fill="#0B326B"/><circle cx="120" cy="70" r="7" fill="#0B326B"/><text x="150" y="54" font-family="Arial,sans-serif" font-size="31" font-weight="700" fill="#0B326B">book</text><text x="226" y="54" font-family="Arial,sans-serif" font-size="31" font-weight="700" fill="#F59E0B">esh</text><text x="151" y="72" font-family="Arial,sans-serif" font-size="9" fill="#64748B">LEARNING INFRASTRUCTURE</text></svg>`;
+      try{
+        const logoData=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>{const canvas=document.createElement('canvas');canvas.width=300;canvas.height=90;canvas.getContext('2d').drawImage(image,0,0);resolve(canvas.toDataURL('image/png'));};image.onerror=reject;image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(brandSvg);});
+        const logoId=workbook.addImage({base64:logoData,extension:'png'});
+        sheet.addImage(logoId,{tl:{col:17.2,row:.05},ext:{width:180,height:54}});
+      }catch(err){console.warn('Report logo render skipped:',err);sheet.mergeCells('R1:T2');sheet.getCell('R1').value='BOOKESH';sheet.getCell('R1').font={bold:true,size:15,color:{argb:'FF0B326B'}};sheet.getCell('R1').alignment={horizontal:'center',vertical:'middle'};}
+      sheet.mergeCells('A3:T3');sheet.getCell('A3').value='STUDENT TEST REPORT';sheet.getCell('A3').font={bold:true,size:13,color:{argb:'FFFFFFFF'}};sheet.getCell('A3').fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0B326B'}};sheet.getCell('A3').alignment={horizontal:'center'};
+      sheet.mergeCells('A4:T4');sheet.getCell('A4').value="Test conducted by Bookesh — India's Students Learning Infrastructure";sheet.getCell('A4').font={bold:true,size:11,color:{argb:'FF0B326B'}};sheet.getCell('A4').alignment={horizontal:'center'};
+      sheet.mergeCells('A5:T5');sheet.getCell('A5').value='Secure digital assessment • Live monitoring • Transparent evaluation • Detailed performance analytics';sheet.getCell('A5').font={italic:true,size:10,color:{argb:'FF64748B'}};sheet.getCell('A5').alignment={horizontal:'center'};
+      sheet.mergeCells('A6:G6');sheet.getCell('A6').value=`Institute / Batch: ${institute}${batch?' / '+batch:''}`;
+      sheet.mergeCells('H6:N6');sheet.getCell('H6').value=`Report Date: ${new Date().toLocaleDateString('en-IN')}`;sheet.getCell('H6').alignment={horizontal:'center'};
+      sheet.mergeCells('O6:T6');sheet.getCell('O6').value=`Exam: ${document.getElementById('leaderboard-exam-filter')?.selectedOptions?.[0]?.text||'All Exams'}`;sheet.getCell('O6').alignment={horizontal:'right'};
+      ['A6','H6','O6'].forEach(ref=>{sheet.getCell(ref).font={bold:true,color:{argb:'FF0B326B'}};sheet.getCell(ref).fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFEAF2F8'}};});
+      const headerRow=sheet.getRow(8);headerRow.values=columns;headerRow.height=34;
+      headerRow.eachCell(cell=>{cell.font={bold:true,color:{argb:'FFFFFFFF'}};cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0B326B'}};cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};cell.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};});
+      sorted.forEach((r,i)=>{
+        const row=sheet.addRow([i+1,r.name,r.email,r.statusLabel,r.examName,[r.centerName,r.batch].filter(Boolean).join(' / '),r.scoreText,r.rating,r.loginAtStr,r.submittedAtStr,r.correct,r.wrong,r.attempted,r.timeTakenText,r.securityViolations,r.tabSwitches,r.copiesAttempted,r.penaltiesApplied,r.feedback,r.doubt]);
+        row.alignment={vertical:'middle',wrapText:true};
+        row.eachCell(cell=>{cell.border={top:{style:'thin',color:{argb:'FFB8C2CC'}},left:{style:'thin',color:{argb:'FFB8C2CC'}},bottom:{style:'thin',color:{argb:'FFB8C2CC'}},right:{style:'thin',color:{argb:'FFB8C2CC'}}};});
+        if(i%2) row.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF5F8FB'}};
+      });
+      sheet.autoFilter={from:'A8',to:'T8'};sheet.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9,margins:{left:.25,right:.25,top:.4,bottom:.4,header:.2,footer:.2}};
+      sheet.headerFooter.oddFooter='Bookesh • Secure Examination & Student Analytics';
+      const buffer=await workbook.xlsx.writeBuffer();
+      const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Bookesh_${institute.replace(/[^a-z0-9]+/gi,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    };
+
+    /* ============================================================
+       DELETE ONE STUDENT RESULT
+       ============================================================ */
+
+    window.deleteSingleResult = async (resultId) => {
+      if (!resultId) {
+        alert('Invalid result selected.');
+        return;
+      }
+
+      const record = currentAnalyticsResults.find(r => r.id === resultId);
+      const studentName = record?.name || 'this student';
+      const studentEmail = record?.email || 'No Email';
+
+      const confirmed = confirm(
+        `Are you sure you want to permanently delete this result?\n\nStudent: ${studentName}\nEmail: ${studentEmail}`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        await Promise.all([
+          deleteDoc(doc(db, 'results', resultId)),
+          deleteDoc(doc(db, 'attempt_locks', resultId)),
+          deleteDoc(doc(db, 'exam_sessions', resultId))
+        ]);
+
+        currentAnalyticsResults = currentAnalyticsResults.filter(
+          r => r.id !== resultId
+        );
+
+        populateLeaderboardFilters(currentAnalyticsResults);
+        renderAnalyticsRows();
+        renderLeaderboardRows();
+
+        alert('Student result deleted successfully!');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete student result: ' + err.message);
+      }
+    };
+
+    /* ============================================================
+       CLEAR ALL RESULTS
+       ============================================================ */
+
+    window.clearAllResults = async () => {
+
+      if (
+        !confirm(
+          "Are you sure you want to permanently delete all student submissions?"
+        )
+      ) {
+        return;
+      }
+
+
+      try {
+
+        const snap =
+          await getDocs(
+            collection(
+              db,
+              "results"
+            )
+          );
+
+
+        const lockSnap = await getDocs(collection(db, "attempt_locks"));
+        const sessionSnap = await getDocs(collection(db, "exam_sessions"));
+        const deletes = [
+          ...snap.docs.map(d => () => deleteDoc(doc(db, "results", d.id))),
+          ...lockSnap.docs.map(d => () => deleteDoc(doc(db, "attempt_locks", d.id))),
+          ...sessionSnap.docs.map(d => () => deleteDoc(doc(db, "exam_sessions", d.id)))
+        ];
+
+
+        // Keep concurrent writes bounded. A large examination can otherwise
+        // exhaust the browser/network and leave a partially cleared database.
+        const chunkSize=200;
+        for(let i=0;i<deletes.length;i+=chunkSize){
+          await Promise.all(deletes.slice(i,i+chunkSize).map(remove=>remove()));
+        }
+
+
+        alert(
+          "All student records cleared successfully!"
+        );
+
+
+        fetchLiveDatabaseRecords();
+
+
+      } catch (err) {
+
+        alert(
+          "Failed to clear records: " +
+          err.message
+        );
+
+      }
+
+    };
+
+
+  </script>
+
+</body>
+</html>
