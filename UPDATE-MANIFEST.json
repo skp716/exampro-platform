@@ -43,8 +43,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 147106,
-      "sha256": "a13425677c2eebfbe5233ed8f63e4da91e945f38427431d9a9da8614e8fde262"
+      "bytes": 147213,
+      "sha256": "19504c16dba23ce81a55ba52ffaddc0b6d10942a3a067077d2c15ea044069872"
     },
     {
       "path": "institute-admin.html",
@@ -67,11 +67,6 @@
       "sha256": "88829d9c5b6cbb88fb70d41926a0bbe1910ec12652f95e4722ed1a219ac37c8b"
     },
     {
-      "path": "tests/firebase-emulator.json",
-      "bytes": 144,
-      "sha256": "7df71b58987ac90c34c65cd5c17d3dfd194e14f4690bd14cc10003d996ecc049"
-    },
-    {
       "path": "tests/firebase-mock.js",
       "bytes": 3495,
       "sha256": "4b181863334e34ec25239bff6cd4b1d46267bbeba9c248d5a8076401df74c85c"
@@ -88,18 +83,23 @@
     },
     {
       "path": "tests/package.json",
-      "bytes": 518,
-      "sha256": "7b3c19edda0f50b8cb39d2e65d2bcfcd63cbbe00b8c4e1b1cf44b209c3d6e078"
+      "bytes": 533,
+      "sha256": "e16711f8178bac6331213c911763217ee1c4128cb4b0c94a7140a64f4d3cbdc2"
     },
     {
       "path": "tests/portal-smoke.cjs",
-      "bytes": 7804,
-      "sha256": "6cded3a46ef59f45de17da658b49e7c28c3d50e3f7affb89d0b502ba76ef47f0"
+      "bytes": 7808,
+      "sha256": "4dba3c0ea737fb7dba240b2b8fff11ff24ce77dfded9c7bee0548b2ce8c63e90"
     },
     {
       "path": "tests/regression.cjs",
       "bytes": 10963,
       "sha256": "60fc3ff4613ee062c831c5837cd1199336498205a66c5d6dd0c2e5a6f998835c"
+    },
+    {
+      "path": "firebase-emulator.json",
+      "bytes": 124,
+      "sha256": "98ef8dbd8d41c93a7be8511b86d1a0511861fca3250c240e0f8f5800358d6be9"
     }
   ]
 }
