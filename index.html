@@ -589,6 +589,8 @@
     let reserveQuestions = [];
     let securityEvents = [];
     let lastSecurityEventAt = 0;
+    let lastMultiTouchAt = 0;
+    let multiTouchActive = false;
     let initialFullscreenArea = 0;
     let securitySuppressedUntil = 0;
     let finalMetrics = {};
@@ -616,6 +618,31 @@
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible' && isExamActive) requestExamWakeLock();
     });
+
+    // Two-finger and three-finger gestures are allowed. They must not be
+    // treated as a security violation through blur, resize or context-menu
+    // side effects caused by mobile browsers.
+    document.addEventListener('touchstart', event => {
+      if (event.touches && event.touches.length >= 2) {
+        multiTouchActive = true;
+        lastMultiTouchAt = Date.now();
+        securitySuppressedUntil = Math.max(securitySuppressedUntil, lastMultiTouchAt + 2200);
+      }
+    }, {passive:true});
+
+    document.addEventListener('touchend', event => {
+      if (!event.touches || event.touches.length < 2) {
+        multiTouchActive = false;
+        lastMultiTouchAt = Date.now();
+        securitySuppressedUntil = Math.max(securitySuppressedUntil, lastMultiTouchAt + 900);
+      }
+    }, {passive:true});
+
+    document.addEventListener('touchcancel', () => {
+      multiTouchActive = false;
+      lastMultiTouchAt = Date.now();
+      securitySuppressedUntil = Math.max(securitySuppressedUntil, lastMultiTouchAt + 900);
+    }, {passive:true});
 
     async function ensureStudentAuth() {
       if (auth.currentUser) return auth.currentUser;
@@ -768,8 +795,9 @@
     }
 
     function recordSecurityViolation(reason){
-      if(!isExamActive||Date.now()<securitySuppressedUntil)return;
-      const now=Date.now();if(now-lastSecurityEventAt<1200)return;lastSecurityEventAt=now;
+      const now=Date.now();
+      if(!isExamActive||now<securitySuppressedUntil||multiTouchActive||now-lastMultiTouchAt<1200)return;
+      if(now-lastSecurityEventAt<1200)return;lastSecurityEventAt=now;
       tabSwitches=Math.min(maxTabSwitches,tabSwitches+1);
       const penalty=getPenaltyPerViolation();penaltiesApplied=Number((penaltiesApplied+penalty).toFixed(2));
       const changed=replaceViolatedQuestion();
