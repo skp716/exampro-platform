@@ -152,6 +152,9 @@
     .review-item { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #cbd5e1; }
     .review-item.correct-item { border-left-color: var(--success); }
     .review-item.wrong-item { border-left-color: var(--danger); }
+    .review-question { white-space: pre-wrap; line-height: 1.65; }
+    .review-equation { margin: 10px 0; padding: 10px; text-align: center; overflow-x: auto; background: #f8fbff; border-left: 3px solid #2563eb; }
+    .review-figure img { display: block; max-width: 100%; max-height: 520px; margin: 12px auto; object-fit: contain; }
 
     .rating-stars { display: flex; gap: 12px; margin: 1rem 0 1.5rem 0; }
     .rating-stars i { font-size: 2rem; color: #cbd5e1; cursor: pointer; }
@@ -222,7 +225,7 @@
     .q-number {font-weight:800;color:#111827;font-size:1rem;}
     .q-status {font-size:.78rem;color:#64748b;}
     .question-scroll {padding:28px 32px;overflow:auto;flex:1;}
-    .exam-q-text {font-size:1.08rem;line-height:1.78;color:#111827;font-weight:600;margin-bottom:24px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;hyphens:none;font-family:'Noto Sans Devanagari','Noto Sans','Inter',Arial,sans-serif;} .exam-q-text p,.option-content p{margin:0 0 12px;} .exam-q-text ul,.exam-q-text ol,.option-content ul,.option-content ol{margin:8px 0 12px 28px;} .exam-q-text li,.option-content li{margin:4px 0;} .exam-q-text pre,.option-content pre{white-space:pre-wrap;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f8fafc;padding:10px;border-radius:8px;} .exam-q-text code,.option-content code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;} .exam-q-text img,.option-content img{max-width:100%;height:auto;display:block;margin:14px auto;border-radius:8px;object-fit:contain;} .exam-q-text svg,.option-content svg{max-width:100%;height:auto;display:block;margin:14px auto;} .exam-q-text video,.option-content video,.exam-q-text iframe,.option-content iframe{max-width:100%;display:block;margin:14px auto;} .exam-q-text sub,.option-content sub,.exam-q-text sup,.option-content sup{font-size:.78em;line-height:0;} .question-image-block{display:flex;flex-direction:column;gap:14px;margin:6px 0 22px;} .question-image-block:empty{display:none;} .question-image-block img{display:block;max-width:min(100%,820px);max-height:650px;width:auto;height:auto;object-fit:contain;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;background:#fff;padding:5px;} .question-image-error{display:block;text-align:center;color:#64748b;font-size:.82rem;padding:8px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;} .exam-q-text table,.option-content table{width:auto;max-width:100%;border-collapse:collapse;margin:12px auto;overflow:auto;} .exam-q-text td,.exam-q-text th,.option-content td,.option-content th{border:1px solid #cbd5e1;padding:7px 10px;vertical-align:middle;} .exam-q-text .rich-center,.option-content .rich-center{text-align:center;}
+    .exam-q-text {font-size:1.08rem;line-height:1.78;color:#111827;font-weight:600;margin-bottom:24px;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;hyphens:none;font-family:'Noto Sans Devanagari','Noto Sans','Inter',Arial,sans-serif;} .exam-q-text p,.option-content p{margin:0 0 12px;} .exam-q-text ul,.exam-q-text ol,.option-content ul,.option-content ol{margin:8px 0 12px 28px;} .exam-q-text li,.option-content li{margin:4px 0;} .exam-q-text pre,.option-content pre{white-space:pre-wrap;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f8fafc;padding:10px;border-radius:8px;} .exam-q-text code,.option-content code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;} .exam-q-text img,.option-content img{max-width:100%;height:auto;display:block;margin:14px auto;border-radius:8px;object-fit:contain;} .exam-q-text svg,.option-content svg{max-width:100%;height:auto;display:block;margin:14px auto;} .exam-q-text video,.option-content video,.exam-q-text iframe,.option-content iframe{max-width:100%;display:block;margin:14px auto;} .exam-q-text sub,.option-content sub,.exam-q-text sup,.option-content sup{font-size:.78em;line-height:0;} .question-image-block{display:flex;flex-direction:column;gap:14px;margin:6px 0 22px;} .question-image-block:empty{display:none;} .question-image-block img{display:block;max-width:min(100%,820px);max-height:650px;width:auto;height:auto;object-fit:contain;margin:0 auto;border:1px solid #e2e8f0;border-radius:10px;background:#fff;padding:5px;} .question-image-error{display:block;text-align:center;color:#64748b;font-size:.82rem;padding:8px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;} .question-equation{display:none;margin:0 0 22px;padding:14px 16px;border:1px solid #dbe5f1;border-left:4px solid #2563eb;border-radius:8px;background:#f8fbff;text-align:center;font-size:1.08rem;overflow-x:auto;} .question-equation:not(:empty){display:block;} .exam-q-text table,.option-content table{width:auto;max-width:100%;border-collapse:collapse;margin:12px auto;overflow:auto;} .exam-q-text td,.exam-q-text th,.option-content td,.option-content th{border:1px solid #cbd5e1;padding:7px 10px;vertical-align:middle;} .exam-q-text .rich-center,.option-content .rich-center{text-align:center;}
     .exam-option {display:flex;align-items:flex-start;gap:12px;padding:13px 15px;margin-bottom:11px;border:1px solid #d8e0ea;border-radius:7px;background:#fff;cursor:pointer;transition:.15s ease;}
     .exam-option:hover {background:#f8fafc;border-color:#94a3b8;}
     .exam-option.selected {border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 1px #2563eb;}
@@ -410,6 +413,7 @@
             <div class="question-scroll">
               <div class="exam-q-text" id="q-text">Loading question...</div>
               <div class="question-image-block" id="question-image-block" aria-live="polite"></div>
+              <div class="question-equation" id="question-equation" aria-live="polite"></div>
               <div id="options-block"></div>
             </div>
             <div class="exam-actions">
@@ -1731,6 +1735,16 @@
             }
           } catch (_) {}
         }
+
+        // The repository stores some SSC figures as SSC/<name>.jpeg while
+        // the question JSON refers to assets/<name>.png.
+        const fileName = clean.split('/').pop() || '';
+        if (fileName) {
+          const stem = fileName.replace(/.(png|jpe?g|gif|webp|svg)$/i, '');
+          ['.png', '.jpeg', '.jpg'].forEach(ext => {
+            add(new URL(`SSC/${stem}${ext}`, window.location.origin + '/').href);
+          });
+        }
       }
       return candidates;
     }
@@ -1769,12 +1783,28 @@
       const keys = [
         'images','image','questionImage','questionImages','questionImageUrl','questionImageURL','question_image',
         'imageUrl','imageURL','image_url','imageSrc','image_src','imagePath','image_path','img','imgSrc','img_src',
-        'imgUrl','imgURL','diagram','diagramImage','diagramUrl','figure','figureImage','figureUrl','media','mediaUrl'
+        'imgUrl','imgURL','diagram','diagramImage','diagramUrl','figure','figureImage','figureUrl','visual','visuals','media','mediaUrl'
       ];
       keys.forEach(key => {
         if (qData && qData[key] != null) collectImageCandidates(qData[key], candidates);
       });
       return [...new Set(candidates.map(v => String(v).trim()).filter(Boolean))];
+    }
+
+    function renderQuestionEquation(qData) {
+      const el = document.getElementById('question-equation');
+      if (!el) return;
+      const value = normalizeRichText(
+        qData?.equation ??
+        qData?.formula ??
+        qData?.math ??
+        ''
+      ).trim();
+      el.innerHTML = '';
+      if (!value) return;
+      const alreadyDelimited = /\\\(|\\\)|\\\[|\\\]|\$\$/.test(value);
+      const expression = alreadyDelimited ? value : `\\(${escapeRichText(value)}\\)`;
+      el.innerHTML = expression;
     }
 
     function escapeRichText(value) {
@@ -2033,6 +2063,7 @@
         document.getElementById('q-text').innerHTML = `<div class="passage-box">${prepareRichContent(passageValue,sourceBaseUrl)}</div>` + document.getElementById('q-text').innerHTML;
       }
       renderQuestionImages(qData, sourceBaseUrl);
+      renderQuestionEquation(qData);
 
       const optionsBlock = document.getElementById('options-block');
       optionsBlock.innerHTML = '';
@@ -2200,6 +2231,22 @@
       queueProgressSave();
     };
 
+    function getReviewEquationHtml(q) {
+      const value = normalizeRichText(q?.equation ?? q?.formula ?? q?.math ?? '').trim();
+      if (!value) return '';
+      if (/\\\(|\\\[|\$\$/.test(value)) {
+        return `<div class="review-equation">${value}</div>`;
+      }
+      return `<div class="review-equation">\\(${escapeRichText(value)}\\)</div>`;
+    }
+
+    function getReviewFigureHtml(q, baseUrl) {
+      return getQuestionImageValues(q).map((src, imageIndex) => {
+        const url = escapeHtmlSafe(getMediaUrlCandidates(src, baseUrl)[0] || resolveMediaUrl(src, baseUrl));
+        return `<img src="${url}" alt="Question figure ${imageIndex + 1}" loading="eager">`;
+      }).join('');
+    }
+
     async function calculateAndShowResults() {
       clearInterval(timerInterval);
       clearInterval(heartbeatTimer);
@@ -2234,11 +2281,15 @@
 
         const reviewItem = document.createElement('div');
         reviewItem.className = `review-item ${selectedIdx === undefined ? '' : (isCorrect ? 'correct-item' : 'wrong-item')}`;
+        const reviewBaseUrl = q._questionSourceUrl || window.location.href;
         reviewItem.innerHTML = `
-          <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}${prepareRichContent(q.question || q.q,q._questionSourceUrl||window.location.href)}</h5>
+          <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}</h5>
+          <div class="review-question">${prepareRichContent(q.question || q.q,reviewBaseUrl)}</div>
+          ${getReviewEquationHtml(q)}
+          <div class="review-figure">${getReviewFigureHtml(q,reviewBaseUrl)}</div>
           <div style="font-size:0.85rem; line-height:1.5;">
-            <strong>Your Choice:</strong> ${selectedIdx===undefined?studentSelectionText:prepareRichContent(studentSelectionText,q._questionSourceUrl||window.location.href)} <br>
-            <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${prepareRichContent(correctSelectionText,q._questionSourceUrl||window.location.href)}</span>
+            <strong>Your Choice:</strong> ${selectedIdx===undefined?studentSelectionText:prepareRichContent(studentSelectionText,reviewBaseUrl)} <br>
+            <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${prepareRichContent(correctSelectionText,reviewBaseUrl)}</span>
           </div>
         `;
         reviewContainer.appendChild(reviewItem);
@@ -2288,6 +2339,7 @@
       report.opener=null;
       const title=`${selectedExamName||'Examination'} Performance Report`;
       report.document.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${escapeHtmlSafe(location.href)}"><title>${escapeHtmlSafe(title)}</title><script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};<\/script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px;line-height:1.45}h1{color:#173b82;margin-bottom:4px}.meta{border-collapse:collapse;width:100%;margin:18px 0}.meta td{border:1px solid #d8dee9;padding:8px}.review-item{break-inside:avoid;border:1px solid #d8dee9;border-left:4px solid #64748b;padding:12px;margin:10px 0;border-radius:5px}.correct-item{border-left-color:#16a34a}.wrong-item{border-left-color:#dc2626}img{max-width:100%;height:auto}.actions{margin-bottom:18px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><div class="actions"><button onclick="window.print()">Save as PDF / Print</button></div><h1>${escapeHtmlSafe(title)}</h1><p>Candidate: <strong>${escapeHtmlSafe(currentStudentName)}</strong> &nbsp; | &nbsp; ${escapeHtmlSafe(currentStudentEmail)}</p><table class="meta"><tr><td><strong>Score</strong><br>${escapeHtmlSafe(finalizedScoreString)}</td><td><strong>Correct</strong><br>${Number(finalMetrics.correct)||0}</td><td><strong>Wrong</strong><br>${Number(finalMetrics.wrong)||0}</td><td><strong>Penalty</strong><br>-${Number(penaltiesApplied)||0}</td></tr></table><h2>Question Evaluation</h2>${ledger}</body></html>`);
+      report.document.head.insertAdjacentHTML('beforeend', '<style>.review-question{white-space:pre-wrap;line-height:1.65}.review-equation{margin:10px 0;padding:10px;text-align:center;overflow-x:auto;background:#f8fbff;border-left:3px solid #2563eb}.review-figure img{display:block;max-width:100%;max-height:520px;margin:12px auto;object-fit:contain}.review-item h5{margin:0 0 8px;font-size:15px}</style>');
       report.document.close();
       report.focus();
       setTimeout(()=>report.print(),1200);
