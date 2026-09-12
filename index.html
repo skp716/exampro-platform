@@ -1960,10 +1960,7 @@
           }
           // Keep the question usable even if a referenced asset is missing.
           if (node.tagName === 'IMG') {
-            const fallback = document.createElement('div');
-            fallback.className = 'question-image-error';
-            fallback.textContent = 'Question image could not be loaded from the saved source path.';
-            node.replaceWith(fallback);
+            node.remove(); // Do not display a failed-image message below the figure.
           }
         };
         node.addEventListener('error', onError);
@@ -2091,7 +2088,7 @@
         document.getElementById('q-text').innerHTML = `<div class="passage-box">${prepareRichContent(passageValue,sourceBaseUrl)}</div>` + document.getElementById('q-text').innerHTML;
       }
       renderQuestionImages(qData, sourceBaseUrl);
-      renderQuestionEquation(qData);
+      // Separate equation box omitted; original question text is preserved.
 
       const optionsBlock = document.getElementById('options-block');
       optionsBlock.innerHTML = '';
@@ -2313,7 +2310,7 @@
         reviewItem.innerHTML = `
           <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}</h5>
           <div class="review-question">${prepareRichContent(q.question || q.q,reviewBaseUrl)}</div>
-          ${getReviewEquationHtml(q)}
+
           <div class="review-figure">${getReviewFigureHtml(q,reviewBaseUrl)}</div>
           <div style="font-size:0.85rem; line-height:1.5;">
             <strong>Your Choice:</strong> ${selectedIdx===undefined?studentSelectionText:prepareRichContent(studentSelectionText,reviewBaseUrl)} <br>
