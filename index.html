@@ -2088,7 +2088,7 @@
         document.getElementById('q-text').innerHTML = `<div class="passage-box">${prepareRichContent(passageValue,sourceBaseUrl)}</div>` + document.getElementById('q-text').innerHTML;
       }
       renderQuestionImages(qData, sourceBaseUrl);
-      // Separate equation box omitted; original question text is preserved.
+      renderQuestionEquation(qData);
 
       const optionsBlock = document.getElementById('options-block');
       optionsBlock.innerHTML = '';
@@ -2272,6 +2272,36 @@
       }).join('');
     }
 
+    function getCorrectOptionIndex(qData, options = getQuestionOptions(qData)) {
+      const raw = qData?.correctOption ?? qData?.correctAnswer ?? qData?.correct ?? qData?.answer ?? qData?.ans ?? qData?.a;
+      if (typeof raw === 'string') {
+        const value = raw.trim();
+        if (/^[A-D]$/i.test(value)) return value.toUpperCase().charCodeAt(0) - 65;
+        const textIndex = options.findIndex(option => String(option ?? '').trim() === value);
+        if (textIndex >= 0) return textIndex;
+      }
+      if (Number.isInteger(raw) && raw >= 0 && raw < options.length) return raw;
+      return -1;
+    }
+
+    function getOptionDisplayText(option, index) {
+      const raw = option && typeof option === 'object'
+        ? (option.text ?? option.label ?? option.value ?? option.answer ?? '')
+        : option;
+      const text = String(raw ?? '').trim();
+      return text || `Option ${String.fromCharCode(65 + index)}`;
+    }
+
+    function getReviewOptionImagesHtml(q, baseUrl) {
+      if (!Array.isArray(q?.optionImages)) return '';
+      const cards = q.optionImages.map((src, index) => {
+        if (!src) return '';
+        const url = escapeHtmlSafe(getMediaUrlCandidates(src, baseUrl)[0] || resolveMediaUrl(src, baseUrl));
+        return `<div class="review-option-image"><strong>${String.fromCharCode(65 + index)}.</strong><img src="${url}" alt="Option ${String.fromCharCode(65 + index)} figure" loading="eager"></div>`;
+      }).join('');
+      return cards ? `<div class="review-option-images">${cards}</div>` : '';
+    }
+
     async function calculateAndShowResults() {
       clearInterval(timerInterval);
       clearInterval(heartbeatTimer);
@@ -2287,17 +2317,18 @@
         const selectedIdx = selectedAnswers[idx];
         const questionOptions = getQuestionOptions(q);
 
+        const correctIdx = getCorrectOptionIndex(q, questionOptions);
         const studentSelectionText =
           selectedIdx !== undefined
-            ? questionOptions[selectedIdx]
+            ? getOptionDisplayText(questionOptions[selectedIdx], selectedIdx)
             : `<span style="color:var(--danger)">Not Attempted</span>`;
 
         const correctSelectionText =
-          getQuestionCorrectText(q, questionOptions) || 'N/A';
+          correctIdx >= 0 ? getOptionDisplayText(questionOptions[correctIdx], correctIdx) : 'N/A';
 
         const isCorrect =
           selectedIdx !== undefined &&
-          String(studentSelectionText) === String(correctSelectionText);
+          selectedIdx === correctIdx;
 
         if (selectedIdx !== undefined) {
           if (isCorrect) correctCount++;
@@ -2310,8 +2341,9 @@
         reviewItem.innerHTML = `
           <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}</h5>
           <div class="review-question">${prepareRichContent(q.question || q.q,reviewBaseUrl)}</div>
-
+          ${getReviewEquationHtml(q)}
           <div class="review-figure">${getReviewFigureHtml(q,reviewBaseUrl)}</div>
+          ${getReviewOptionImagesHtml(q,reviewBaseUrl)}
           <div style="font-size:0.85rem; line-height:1.5;">
             <strong>Your Choice:</strong> ${selectedIdx===undefined?studentSelectionText:prepareRichContent(studentSelectionText,reviewBaseUrl)} <br>
             <strong>Correct Answer:</strong> <span style="color:var(--success); font-weight:600">${prepareRichContent(correctSelectionText,reviewBaseUrl)}</span>
@@ -2364,10 +2396,23 @@
       report.opener=null;
       const title=`${selectedExamName||'Examination'} Performance Report`;
       report.document.write(`<!doctype html><html><head><meta charset="utf-8"><base href="${escapeHtmlSafe(location.href)}"><title>${escapeHtmlSafe(title)}</title><script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}};<\/script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px;line-height:1.45}h1{color:#173b82;margin-bottom:4px}.meta{border-collapse:collapse;width:100%;margin:18px 0}.meta td{border:1px solid #d8dee9;padding:8px}.review-item{break-inside:avoid;border:1px solid #d8dee9;border-left:4px solid #64748b;padding:12px;margin:10px 0;border-radius:5px}.correct-item{border-left-color:#16a34a}.wrong-item{border-left-color:#dc2626}img{max-width:100%;height:auto}.actions{margin-bottom:18px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><div class="actions"><button onclick="window.print()">Save as PDF / Print</button></div><h1>${escapeHtmlSafe(title)}</h1><p>Candidate: <strong>${escapeHtmlSafe(currentStudentName)}</strong> &nbsp; | &nbsp; ${escapeHtmlSafe(currentStudentEmail)}</p><table class="meta"><tr><td><strong>Score</strong><br>${escapeHtmlSafe(finalizedScoreString)}</td><td><strong>Correct</strong><br>${Number(finalMetrics.correct)||0}</td><td><strong>Wrong</strong><br>${Number(finalMetrics.wrong)||0}</td><td><strong>Penalty</strong><br>-${Number(penaltiesApplied)||0}</td></tr></table><h2>Question Evaluation</h2>${ledger}</body></html>`);
-      report.document.head.insertAdjacentHTML('beforeend', '<style>.review-question{white-space:pre-wrap;line-height:1.65}.review-equation{margin:10px 0;padding:10px;text-align:center;overflow-x:auto;background:#f8fbff;border-left:3px solid #2563eb}.review-figure img{display:block;max-width:100%;max-height:520px;margin:12px auto;object-fit:contain}.review-item h5{margin:0 0 8px;font-size:15px}</style>');
+      report.document.head.insertAdjacentHTML('beforeend', '<style>.review-question{white-space:pre-wrap;line-height:1.65}.review-equation{margin:10px 0;padding:10px;text-align:center;overflow-x:auto;background:#f8fbff;border-left:3px solid #2563eb}.review-figure img{display:block;max-width:100%;max-height:520px;margin:12px auto;object-fit:contain}.review-option-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.review-option-image{display:flex;align-items:flex-start;gap:8px;border:1px solid #d8dee9;padding:8px;break-inside:avoid}.review-option-image img{display:block;max-width:calc(100% - 28px);max-height:260px;object-fit:contain}.review-item h5{margin:0 0 8px;font-size:15px}</style>');
       report.document.close();
       report.focus();
-      setTimeout(()=>report.print(),1200);
+      const printWhenReady = async () => {
+        const images = [...report.document.images];
+        await Promise.all(images.map(image => image.complete ? Promise.resolve() : new Promise(resolve => {
+          image.addEventListener('load', resolve, {once:true});
+          image.addEventListener('error', resolve, {once:true});
+        })));
+        for (let attempt = 0; attempt < 40 && !report.MathJax?.typesetPromise; attempt++) {
+          await new Promise(resolve => setTimeout(resolve, 250));
+        }
+        if (report.MathJax?.typesetPromise) await report.MathJax.typesetPromise().catch(()=>{});
+        report.focus();
+        report.print();
+      };
+      printWhenReady();
     };
 
     function showExamModal(type, title, message, cancelText='Cancel', confirmText='OK', confirmClass='primary', onConfirm=null){
