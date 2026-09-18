@@ -2150,9 +2150,35 @@
       typesetExamMath();
     }
 
-    function typesetExamMath(){
-      if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
-        MathJax.typesetPromise([document.getElementById('q-text'), document.getElementById('options-block'), document.getElementById('review-ledger-container')]).catch(()=>{});
+    let mathTypesetRetry = null;
+    function typesetExamMath(attempt = 0){
+      const mathJax = window.MathJax;
+      const containers = [
+        document.getElementById('q-text'),
+        document.getElementById('question-equation'),
+        document.getElementById('options-block'),
+        document.getElementById('review-ledger-container')
+      ].filter(Boolean);
+
+      if (mathJax && typeof mathJax.typesetPromise === 'function') {
+        if (mathTypesetRetry) {
+          clearTimeout(mathTypesetRetry);
+          mathTypesetRetry = null;
+        }
+        // Questions are replaced in-place during navigation. Clear MathJax's
+        // previous bookkeeping before processing the fresh question content.
+        if (typeof mathJax.typesetClear === 'function') mathJax.typesetClear(containers);
+        mathJax.typesetPromise(containers).catch(error => {
+          console.error('[MathJax] Unable to render examination formula:', error);
+        });
+        return;
+      }
+
+      // The CDN script is asynchronous. The first question can otherwise open
+      // before MathJax is ready and remain as raw \[...\] / \(...\) text.
+      if (attempt < 40) {
+        if (mathTypesetRetry) clearTimeout(mathTypesetRetry);
+        mathTypesetRetry = setTimeout(() => typesetExamMath(attempt + 1), 125);
       }
     }
 
