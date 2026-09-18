@@ -360,8 +360,16 @@
     .active-exams-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
     .active-exam-option { position:relative; }
     .active-exam-option input { position:absolute; opacity:0; pointer-events:none; }
-    .active-exam-label { display:flex; align-items:center; gap:10px; padding:11px 12px; background:#fff; border:1px solid #dbeafe; border-radius:9px; cursor:pointer; font-size:.82rem; font-weight:700; color:#334155; transition:.2s; }
+    .active-exam-label { display:flex; align-items:center; gap:10px; padding:11px 12px; padding-right:44px; background:#fff; border:1px solid #dbeafe; border-radius:9px; cursor:pointer; font-size:.82rem; font-weight:700; color:#334155; transition:.2s; min-height:44px; }
     .active-exam-label i { color:#94a3b8; }
+    .active-exam-option { position:relative; }
+    .active-exam-edit { position:absolute; right:7px; top:7px; z-index:2; width:30px; height:30px; border:1px solid #bfdbfe; border-radius:7px; background:#eff6ff; color:#1d4ed8; cursor:pointer; display:grid; place-items:center; }
+    .active-exam-edit:hover { background:#dbeafe; }
+    .active-exam-name-editor { display:flex; gap:6px; align-items:center; width:100%; }
+    .active-exam-name-editor input { flex:1; min-width:0; padding:8px 9px; border:1px solid #93c5fd; border-radius:7px; outline:none; font-size:.82rem; font-weight:700; color:#1e293b; }
+    .active-exam-name-editor button { width:30px; height:30px; border:0; border-radius:6px; cursor:pointer; display:grid; place-items:center; }
+    .active-exam-name-save { background:#dcfce7; color:#15803d; }
+    .active-exam-name-cancel { background:#fee2e2; color:#b91c1c; }
     .active-exam-option input:checked + .active-exam-label { border-color:#2563eb; background:#dbeafe; color:#1e3a8a; box-shadow:0 0 0 2px rgba(37,99,235,.08); }
     .active-exam-option input:checked + .active-exam-label i { color:#2563eb; }
     .subject-config-list { display:grid; gap:12px; margin-top:14px; }
@@ -1153,12 +1161,39 @@
         if(!multiExamConfig[id]) multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};
         const wrap=document.createElement('div'); wrap.className='active-exam-option';
         const checked=multiExamConfig[id].active===true;
-        wrap.innerHTML=`<input type="checkbox" id="active-exam-${id}" data-active-exam="${id}" ${checked?'checked':''}><label class="active-exam-label" for="active-exam-${id}"><i class="fa-solid fa-circle-check"></i><span>${escapeHTML(getExamDisplayName(id))}</span></label>`;
+        wrap.innerHTML=`<input type="checkbox" id="active-exam-${id}" data-active-exam="${id}" ${checked?'checked':''}><label class="active-exam-label" for="active-exam-${id}"><i class="fa-solid fa-circle-check"></i><span class="active-exam-name">${escapeHTML(getExamDisplayName(id))}</span></label><button type="button" class="active-exam-edit" data-edit-exam="${id}" title="Edit exam name" aria-label="Edit exam name"><i class="fa-solid fa-pen"></i></button>`;
         list.appendChild(wrap);
       });
       list.querySelectorAll('[data-active-exam]').forEach(cb=>cb.addEventListener('change',()=>{
         multiExamConfig[cb.dataset.activeExam].active=cb.checked;
         updateMultiExamSummary();
+      }));
+      list.querySelectorAll('[data-edit-exam]').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.editExam;
+        const exam=multiExamConfig[id];
+        if(!exam)return;
+        const wrap=btn.closest('.active-exam-option');
+        const label=wrap?.querySelector('.active-exam-label');
+        if(!label)return;
+        const original=exam.examName||getExamDisplayName(id);
+        label.style.cursor='default';
+        label.innerHTML=`<div class="active-exam-name-editor"><input type="text" maxlength="100" value="${escapeHTML(original)}" aria-label="Exam name"><button type="button" class="active-exam-name-save" title="Save"><i class="fa-solid fa-check"></i></button><button type="button" class="active-exam-name-cancel" title="Cancel"><i class="fa-solid fa-xmark"></i></button></div>`;
+        const input=label.querySelector('input');
+        const finishSave=()=>{
+          const value=input.value.trim();
+          if(!value){ input.focus(); return; }
+          exam.examName=value;
+          renderActiveExamControls();
+          updateMultiExamSummary();
+        };
+        label.querySelector('.active-exam-name-save').addEventListener('click',finishSave);
+        label.querySelector('.active-exam-name-cancel').addEventListener('click',()=>{renderActiveExamControls();});
+        input.addEventListener('keydown',event=>{
+          if(event.key==='Enter'){event.preventDefault();finishSave();}
+          if(event.key==='Escape'){event.preventDefault();renderActiveExamControls();}
+        });
+        input.focus();
+        input.select();
       }));
     }
 
@@ -1207,6 +1242,9 @@
       if(!activeIds.length) return 'Select at least one Active Exam.';
       for(const id of activeIds){
         const exam=multiExamConfig[id];
+        exam.examName=String(exam.examName||'').trim();
+        if(!exam.examName) return `${id}: Exam Name is required.`;
+        if(exam.examName.length>100) return `${id}: Exam Name must be 100 characters or fewer.`;
         const timer=Number(exam.timerMinutes);
         if(!Number.isFinite(timer)||timer<=0) return `${exam.examName||id}: Per Exam Timer must be greater than 0.`;
         if(!exam.subjects?.length)return `${exam.examName||id}: Add at least one subject.`;
