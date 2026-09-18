@@ -1718,9 +1718,10 @@
 
     function normalizeRichText(value) {
       let text = decodeHtmlEntities(value);
-      // Some files contain the two characters \\n and \\r\\n instead of
-      // actual line breaks. Convert those only when they are not inside HTML.
-      text = text.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+      // Do not translate literal backslash sequences here. They are also the
+      // prefix of valid TeX commands: \\times, \\text, \\neq, etc. Converting
+      // "\\t" to a tab changed "\\times" into "imes" in exam equations.
+      // JSON question banks already decode real \n/\t escapes while parsing.
       return text;
     }
 
