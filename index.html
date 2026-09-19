@@ -990,7 +990,7 @@
 
       const addExam = (id, cfg) => {
         if (!cfg || typeof cfg !== 'object') return;
-        const name = cfg.name || cfg.examName || id;
+        const name = String(id) === 'jharkhand_tet' ? 'Jharkhand' : (cfg.name || cfg.examName || id);
         const subjects = cfg.subjects || {};
         exams.push({ id: String(id), name: String(name), ...cfg, subjects });
       };
