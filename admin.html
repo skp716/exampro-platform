@@ -561,7 +561,7 @@
               <label for="exam-selector">Exam Configuration</label>
               <select id="exam-selector">
                 <option value="railway_group_d">RRB Group D</option>
-                <option value="jharkhand_tet">Jharkhand TET</option>
+                <option value="jharkhand_tet">Jharkhand</option>
                 <option value="ssc_gd">SSC GD</option>
               </select>
             </div>
@@ -1061,7 +1061,7 @@
     const DEFAULT_MULTI_EXAM_CONFIG = {
       railway_group_d:{examName:'RRB Group D',timerMinutes:90,securityPenalty:1,active:true,subjects:[
         {name:'All Questions',count:100,order:'random',source:'railway.html'}]},
-      jharkhand_tet:{examName:'Jharkhand TET',timerMinutes:120,securityPenalty:1,active:false,subjects:[
+      jharkhand_tet:{examName:'Jharkhand',timerMinutes:120,securityPenalty:1,active:false,subjects:[
         {name:'Child Development & Pedagogy',count:10,order:'random',source:'jtet/cdp.html'},
         {name:'Language I',count:10,order:'random',source:'jtet/language1.html'},
         {name:'Language II',count:10,order:'random',source:'jtet/language2.html'},
@@ -1078,7 +1078,7 @@
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
 
     function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
-    function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand TET',ssc_gd:'SSC GD'}[id]) || id); }
+    function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand',ssc_gd:'SSC GD'}[id]) || id); }
     function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
     function escapeHTML(value){ return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
