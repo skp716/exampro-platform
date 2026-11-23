@@ -2061,7 +2061,7 @@
       if (Array.isArray(raw)) {
         return raw.map(value => {
           if (value && typeof value === 'object') {
-            return value.text ?? value.label ?? value.value ?? value.answer ?? '';
+            return value.text ?? value.label ?? value.value ?? value.answer ?? value.en ?? value.hi ?? '';
           }
           return value;
         });
@@ -2092,6 +2092,7 @@
     function getQuestionCorrectText(qData, options) {
       const raw =
         qData?.correctOption ??
+        qData?.correct_option ??
         qData?.correctAnswer ??
         qData?.correct ??
         qData?.answer ??
@@ -2138,7 +2139,7 @@
       renderSubjectNavigation();
 
       const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
-      let questionValue = qData.question ?? qData.q ?? qData.text ?? qData.questionText ?? '';
+      let questionValue = qData.question ?? qData.question_en ?? qData.question_hi ?? qData.q ?? qData.text ?? qData.questionText ?? '';
       let passageValue = qData.passage || '';
       // The SSC source carries the full Phule passage with Q76. Since the
       // question order is randomized, attach that source passage to Q76–80.
