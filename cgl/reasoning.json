@@ -1,0 +1,762 @@
+{
+"subject": "Reasoning",
+"exam": "SSC CHSL 2025 Tier - 1",
+"date": "12/11/2025",
+"total_questions": 50,
+"shifts_included": [
+"12/11/2025 (2nd Shift)",
+"12/11/2025 (3rd Shift)"
+],
+"questions": [
+{
+"id": 1,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 26,
+"question_en": "In a certain code language, GALEPROOF is written as LFQJKWTTK. How will FACECLOTHS be written in that language?",
+"question_hi": "किसी कोड भाषा में, GALEPROOF को LFQJKWTTK लिखा जाता है। तो FACECLOTHS को कैसे लिखा जाएगा?",
+"options": {
+"a": {"en": "KFHJHQTYMX", "hi": "KFHJHQTYMX"},
+"b": {"en": "KFHJHQTYLX", "hi": "KFHJHQTYLX"},
+"c": {"en": "KFHFHRTYMX", "hi": "KFHFHRTYMX"},
+"d": {"en": "KFHJHRTYMX", "hi": "KFHJHRTYMX"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 2,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 27,
+"question_en": "In a certain code language where BOTTLE is written as CPUUMF, TIFFIN as UJGGJO, and DOOR as EPPS, how will MONITOR be written using this systematic encoding method?",
+"question_hi": "एक विशेष कोड भाषा में जहाँ BOTTLE को CPUUMF, TIFFIN को UJGGJO, और DOOR को EPPS लिखा जाता है, तो इस व्यवस्थित एन्कोडिंग विधि का उपयोग करते हुए MONITOR को कैसे लिखा जाएगा?",
+"options": {
+"a": {"en": "NPOJUPS", "hi": "NPOJUPS"},
+"b": {"en": "NPOJUNS", "hi": "NPOJUNS"},
+"c": {"en": "NPOHUPS", "hi": "NPOHUPS"},
+"d": {"en": "KPOJUPS", "hi": "KPOJUPS"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 3,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 28,
+"question_en": "In a certain code system, if SACRAMENTAL is coded as TBDSBNFOUBM and MACHINATION as NBDIJOBUJPO, then what will be the code for WALLPAPER?",
+"question_hi": "एक निश्चित कोड प्रणाली में, यदि SACRAMENTAL को TBDSBNFOUBM और MACHINATION को NBDIJOBUJPO के रूप में कोडित किया जाता है, तो WALLPAPER का कोड क्या होगा?",
+"options": {
+"a": {"en": "XBMMQBOFS", "hi": "XBMMQBOFS"},
+"b": {"en": "XBMMQBQFS", "hi": "XBMMQBQFS"},
+"c": {"en": "XBMMQBQFQ", "hi": "XBMMQBQFQ"},
+"d": {"en": "YBMMQBQFS", "hi": "YBMMQBQFS"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 4,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 29,
+"question_en": "Statement: Online education has grown rapidly in recent years. However, many students do not have access to proper devices and stable internet. Education experts advise strengthening digital infrastructure and providing affordable devices to ensure inclusive education.\nConclusions:\nI. Lack of digital access creates inequality in education.\nII. Strengthening digital infrastructure can improve online education.\nIII. Online education is not effective for all students.\nWhich conclusion(s) necessarily follow(s)?",
+"question_hi": "कथन: हाल के वर्षों में ऑनलाइन शिक्षा में तेजी से वृद्धि हुई है। लेकिन कई छात्रों के पास उचित उपकरण और स्थिर इंटरनेट की सुविधा नहीं है। शिक्षा विशेषज्ञ समावेशी शिक्षा सुनिश्चित करने के लिए डिजिटल बुनियादी ढांचे को मजबूत करने और सस्ते उपकरण उपलब्ध कराने की सलाह देते हैं।\nनिष्कर्ष:\nI. डिजिटल सुविधा की कमी शिक्षा में असमानता पैदा करती है।\nII. डिजिटल बुनियादी ढांचे को मजबूत करने से ऑनलाइन शिक्षा में सुधार हो सकता है।\nIII. ऑनलाइन शिक्षा सभी छात्रों के लिए प्रभावी नहीं है।\nकौन-सा निष्कर्ष आवश्यक रूप से अनुसरण करता है?",
+"options": {
+"a": {"en": "Only I follows", "hi": "केवल I अनुसरण करता है"},
+"b": {"en": "I and II follow", "hi": "I और II अनुसरण करते हैं"},
+"c": {"en": "Only III follows", "hi": "केवल III अनुसरण करता है"},
+"d": {"en": "All follow", "hi": "सभी अनुसरण करते हैं"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 5,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 30,
+"question_en": "Rohan has received two internship offers. One offers a higher stipend but requires long working hours and weekend work. The other offers a moderate stipend, fixed working hours, and weekend holidays. Rohan values his personal time and sports. Which is the most suitable option?",
+"question_hi": "रोहन को दो इंटर्नशिप के प्रस्ताव मिले हैं। एक में अधिक स्टाइपेंड है लेकिन लंबे कार्य घंटे और सप्ताहांत में काम करना पड़ता है। दूसरी में मध्यम स्टाइपेंड, निश्चित कार्य समय और सप्ताहांत अवकाश है। रोहन अपने निजी समय और खेलकूद को महत्व देता है। सबसे उपयुक्त विकल्प कौन सा है?",
+"options": {
+"a": {"en": "The internship with the higher stipend", "hi": "अधिक स्टाइपेंड वाली इंटर्नशिप"},
+"b": {"en": "The moderate stipend internship with fixed working hours", "hi": "निश्चित कार्य समय वाली मध्यम स्टाइपेंड इंटर्नशिप"},
+"c": {"en": "Accepting both internships simultaneously", "hi": "दोनों इंटर्नशिप एक साथ स्वीकार करना"},
+"d": {"en": "Rejecting both and looking for a new internship", "hi": "दोनों को अस्वीकार कर नई इंटर्नशिप ढूँढना"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 6,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 31,
+"question_en": "If '@' means '+', '%' means '-', '$' means '×', find the value of: 12 % 14 $ 8 % 6 = ? (Note: Some symbol definitions were partially faded in the source PDF).",
+"question_hi": "यदि '@' का अर्थ '+', '%' का अर्थ '-', '$' का अर्थ '×' है, तो मान ज्ञात कीजिए: 12 % 14 $ 8 % 6 = ? (नोट: मूल PDF में कुछ चिह्न आंशिक रूप से अस्पष्ट हैं)।",
+"options": {
+"a": {"en": "-104", "hi": "-104"},
+"b": {"en": "-95", "hi": "-95"},
+"c": {"en": "-44", "hi": "-44"},
+"d": {"en": "-103", "hi": "-103"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 7,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 32,
+"question_en": "If '$' means '-', '%' means '×', '#' means '+', then find the value of: 8 # 18 # 24 # 10 = ?",
+"question_hi": "यदि '$' का अर्थ '-', '%' का अर्थ '×', '#' का अर्थ '+', तो मान ज्ञात कीजिए: 8 # 18 # 24 # 10 = ?",
+"options": {
+"a": {"en": "59", "hi": "59"},
+"b": {"en": "61", "hi": "61"},
+"c": {"en": "60", "hi": "60"},
+"d": {"en": "62", "hi": "62"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 8,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 33,
+"question_en": "In a row of 35 students, Ravi is 15th from the left and Priya is 10th from the right. How many students are sitting between Ravi and Priya?",
+"question_hi": "35 छात्रों की एक पंक्ति में, रवि बाएं से 15वें स्थान पर है और प्रिया दाएं से 10वें स्थान पर है। रवि और प्रिया के बीच कितने छात्र बैठे हैं?",
+"options": {
+"a": {"en": "18", "hi": "18"},
+"b": {"en": "19", "hi": "19"},
+"c": {"en": "10", "hi": "10"},
+"d": {"en": "15", "hi": "15"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 9,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 34,
+"question_en": "In a row of 100 students, if Varun is 33rd from the left and there are 29 students between Varun and Rajat, what is Rajat's position from the right end? (Rajat is to the right of Varun)",
+"question_hi": "100 छात्रों की एक पंक्ति में, यदि वरुण बाएं से 33वें स्थान पर है तथा वरुण और रजत के बीच 29 छात्र हैं, तो दाएं छोर से रजत का स्थान क्या है? (रजत, वरुण के दाईं ओर है)",
+"options": {
+"a": {"en": "40", "hi": "40"},
+"b": {"en": "37", "hi": "37"},
+"c": {"en": "38", "hi": "38"},
+"d": {"en": "42", "hi": "42"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 10,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 35,
+"question_en": "Statement: Should online education be made mandatory in higher education institutions?\nArgument I: Yes, online education provides students with flexibility and quality study material.\nArgument II: No, many students do not have reliable internet and digital devices.\nDecide which argument is strong.",
+"question_hi": "कथन: क्या उच्च शिक्षा संस्थानों में ऑनलाइन शिक्षा को अनिवार्य किया जाना चाहिए?\nतर्क I: हाँ, ऑनलाइन शिक्षा छात्रों को लचीलापन और गुणवत्तापूर्ण अध्ययन सामग्री उपलब्ध कराती है।\nतर्क II: नहीं, कई छात्रों के पास विश्वसनीय इंटरनेट और डिजिटल उपकरण नहीं हैं।\nतय करें कि कौन सा तर्क मजबूत है।",
+"options": {
+"a": {"en": "Only I is strong", "hi": "केवल I मजबूत है"},
+"b": {"en": "Only II is strong", "hi": "केवल II मजबूत है"},
+"c": {"en": "Both I and II are strong", "hi": "दोनों I और II मजबूत हैं"},
+"d": {"en": "Neither I nor II is strong", "hi": "ना तो I और ना ही II मजबूत है"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 11,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 36,
+"question_en": "Statement: Road accidents in the city have increased rapidly due to overspeeding and violation of traffic rules.\nCourse of Action I: Deployment of traffic police should be increased and strict action should be taken against rule breakers.\nCourse of Action II: Private vehicles should be completely banned in the city for one month.\nWhich course of action logically follows?",
+"question_hi": "कथन: तेज गति और यातायात नियमों के उल्लंघन के कारण शहर में सड़क दुर्घटनाओं में तेजी से वृद्धि हुई है।\nकार्यवाही I: यातायात पुलिस की तैनाती बढ़ाई जाए और नियम तोड़ने वालों पर कड़ी कार्रवाई की जाए।\nकार्यवाही II: एक महीने के लिए शहर में निजी वाहनों पर पूरी तरह प्रतिबंध लगा दिया जाए।\nकौन सी कार्यवाही तार्किक रूप से अनुसरण करती है?",
+"options": {
+"a": {"en": "Only I follows", "hi": "केवल I अनुसरण करता है"},
+"b": {"en": "Only II follows", "hi": "केवल II अनुसरण करता है"},
+"c": {"en": "Both follow", "hi": "दोनों लागू होते हैं"},
+"d": {"en": "Either I or II follows", "hi": "या तो I या II अनुसरण करता है"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 12,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 37,
+"question_en": "Find the next letter in the series: C, F, J, O, ?",
+"question_hi": "श्रृंखला में अगला अक्षर ज्ञात कीजिए: C, F, J, O, ?",
+"options": {
+"a": {"en": "U", "hi": "U"},
+"b": {"en": "V", "hi": "V"},
+"c": {"en": "W", "hi": "W"},
+"d": {"en": "X", "hi": "X"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 13,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 38,
+"question_en": "Continue the sequence: T, P, L, H, ?",
+"question_hi": "अनुक्रम जारी रखें: T, P, L, H, ?",
+"options": {
+"a": {"en": "D", "hi": "D"},
+"b": {"en": "E", "hi": "E"},
+"c": {"en": "F", "hi": "F"},
+"d": {"en": "G", "hi": "G"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 14,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 39,
+"question_en": "A manufacturing company has found a minor defect in a batch of its products. No accident has occurred so far, but it could become serious if ignored. Management wants to solve the problem without unnecessarily damaging the company's image. What should be the logical decision?",
+"question_hi": "एक निर्माण कंपनी को अपने उत्पादों के एक बैच में छोटी सी खामी मिली है। अभी तक इससे कोई दुर्घटना नहीं हुई है, लेकिन अनदेखी करने पर यह गंभीर हो सकती है। प्रबंधन बिना अनावश्यक रूप से कंपनी की छवि को नुकसान पहुँचाए समस्या को हल करना चाहता है। सही निर्णय क्या होगा?",
+"options": {
+"a": {"en": "Ignore the defect since no accident has occurred.", "hi": "चूँकि कोई दुर्घटना नहीं हुई है, इसलिए खामी को नजरअंदाज कर देना।"},
+"b": {"en": "Immediately recall all products and stop production.", "hi": "तुरंत सभी उत्पाद वापस मँगाकर उत्पादन बंद कर देना।"},
+"c": {"en": "Fix the defect internally and continue selling without informing customers.", "hi": "अंदरूनी रूप से खामी ठीक कर लेना और ग्राहकों को बताए बिना बिक्री जारी रखना।"},
+"d": {"en": "Inform customers about the issue and take immediate corrective steps.", "hi": "ग्राहकों को समस्या की जानकारी देना और तुरंत सुधारात्मक कदम उठाना।"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 15,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 40,
+"question_en": "Which of the following words CANNOT be formed using the letters of the word "DEMOCRATIC"?",
+"question_hi": "निम्नलिखित में से कौन सा शब्द "DEMOCRATIC" के अक्षरों से नहीं बनाया जा सकता है?",
+"options": {
+"a": {"en": "MEDIA", "hi": "MEDIA"},
+"b": {"en": "MODERATE", "hi": "MODERATE"},
+"c": {"en": "DIET", "hi": "DIET"},
+"d": {"en": "TRACE", "hi": "TRACE"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 16,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 41,
+"question_en": "A company manager notices that team members often miss project deadlines due to a lack of mutual coordination and communication. What is the appropriate problem-solving method?",
+"question_hi": "एक कंपनी प्रबंधक देखता है कि टीम के सदस्य आपसी समन्वय और संवाद की कमी के कारण अक्सर परियोजना की समय-सीमा चूक जाते हैं। उचित समस्या समाधान विधि क्या है?",
+"options": {
+"a": {"en": "Hold regular team meetings and use task-monitoring tools", "hi": "नियमित टीम बैठकें करना और कार्य-निगरानी उपकरणों का उपयोग करना"},
+"b": {"en": "Ignore the problem and hope it fixes itself", "hi": "समस्या को नजरअंदाज करना और उम्मीद करना कि यह अपने आप ठीक हो जाएगी"},
+"c": {"en": "Publicly criticize employees who miss deadlines", "hi": "समय-सीमा चूकने वाले कर्मचारियों की सार्वजनिक रूप से आलोचना करना"},
+"d": {"en": "Cancel all future projects", "hi": "सभी भविष्य की परियोजनाएँ रद्द कर देना"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 17,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 42,
+"question_en": "Select the option related to the third letter-pair in the same way as the second letter-pair is related to the first: BC : ED :: DE : ?",
+"question_hi": "उस विकल्प का चयन करें जो तीसरे अक्षर-युग्म से उसी प्रकार संबंधित है जैसे दूसरा पहले से संबंधित है: BC : ED :: DE : ?",
+"options": {
+"a": {"en": "GF", "hi": "GF"},
+"b": {"en": "GE", "hi": "GE"},
+"c": {"en": "HF", "hi": "HF"},
+"d": {"en": "GD", "hi": "GD"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 18,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 43,
+"question_en": "Select the option related to the third letter-pair in the same way as the second letter-pair is related to the first: CN : XM :: DL : ?",
+"question_hi": "उस विकल्प का चयन करें जो तीसरे अक्षर-युग्म से उसी प्रकार संबंधित है जैसे दूसरा पहले से संबंधित है: CN : XM :: DL : ?",
+"options": {
+"a": {"en": "WO", "hi": "WO"},
+"b": {"en": "YJ", "hi": "YJ"},
+"c": {"en": "WL", "hi": "WL"},
+"d": {"en": "WN", "hi": "WN"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 19,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 44,
+"question_en": "Find the next element that logically replaces the question mark (?): 8, 25, 59, 127, ?",
+"question_hi": "उस अगले तत्व को ज्ञात करें जो तार्किक रूप से ? को प्रतिस्थापित करता है: 8, 25, 59, 127, ?",
+"options": {
+"a": {"en": "253", "hi": "253"},
+"b": {"en": "263", "hi": "263"},
+"c": {"en": "274", "hi": "274"},
+"d": {"en": "265", "hi": "265"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 20,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 45,
+"question_en": "Find the next element that logically replaces the question mark (?): 11, 30, 68, 144, ?",
+"question_hi": "उस अगले तत्व को ज्ञात करें जो तार्किक रूप से ? को प्रतिस्थापित करता है: 11, 30, 68, 144, ?",
+"options": {
+"a": {"en": "311", "hi": "311"},
+"b": {"en": "296", "hi": "296"},
+"c": {"en": "291", "hi": "291"},
+"d": {"en": "303", "hi": "303"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 21,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 46,
+"question_en": "Find the next element that logically replaces the question mark (?): 20, 31, 64, 163, ?",
+"question_hi": "उस अगले तत्व को ज्ञात करें जो तार्किक रूप से ? को प्रतिस्थापित करता है: 20, 31, 64, 163, ?",
+"options": {
+"a": {"en": "461", "hi": "461"},
+"b": {"en": "453", "hi": "453"},
+"c": {"en": "460", "hi": "460"},
+"d": {"en": "474", "hi": "474"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 22,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 47,
+"question_en": "Three of the following pairs follow the same pattern, except one. Which pair does not follow the pattern?",
+"question_hi": "निम्नलिखित जोड़ियों में से तीन एक ही पैटर्न का पालन करती हैं, एक जोड़ी को छोड़कर। कौन सी जोड़ी इस पैटर्न का पालन नहीं करती?",
+"options": {
+"a": {"en": "20 : 17", "hi": "20 : 17"},
+"b": {"en": "40 : 28", "hi": "40 : 28"},
+"c": {"en": "36 : 31", "hi": "36 : 31"},
+"d": {"en": "25 : 33", "hi": "25 : 33"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 23,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 48,
+"question_en": "You notice that a team member who used to be very enthusiastic has recently become withdrawn and less communicative. What would be the most socially sensible step?",
+"question_hi": "आप देखते हैं कि एक टीम सदस्य जो पहले बहुत उत्साही था, हाल ही में अलग-थलग और कम संवाद करने लगा है। सबसे सामाजिक रूप से समझदारी भरा कदम क्या होगा?",
+"options": {
+"a": {"en": "Talk privately, express concern, and offer support", "hi": "निजी रूप से बात कर चिंता व्यक्त करना और सहायता की पेशकश करना"},
+"b": {"en": "Call them out in a meeting for not participating", "hi": "बैठक में उसकी भागीदारी न होने पर उसे टोकना"},
+"c": {"en": "Ignore the behavior and focus on your own work", "hi": "व्यवहार को नजरअंदाज करना और अपने काम पर ध्यान देना"},
+"d": {"en": "Immediately report to senior management", "hi": "तुरंत वरिष्ठ प्रबंधन को रिपोर्ट करना"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 24,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 49,
+"question_en": "Choose the correct order of the given words as they would appear in an English dictionary:\n1. Damocloids  2. Damnifying  3. Daltonisms  4. Darwinized  5. Dasymeters",
+"question_hi": "दिए गए शब्दों के सही क्रम को चुनें जैसे वे अंग्रेजी शब्दकोश में दिखाई देंगे:\n1. Damocloids  2. Damnifying  3. Daltonisms  4. Darwinized  5. Dasymeters",
+"options": {
+"a": {"en": "5, 1, 2, 4, 3", "hi": "5, 1, 2, 4, 3"},
+"b": {"en": "3, 2, 1, 4, 5", "hi": "3, 2, 1, 4, 5"},
+"c": {"en": "3, 1, 4, 2, 5", "hi": "3, 1, 4, 2, 5"},
+"d": {"en": "3, 1, 2, 4, 5", "hi": "3, 1, 2, 4, 5"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 25,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 50,
+"question_en": "Choose the correct order of the given words as they would appear in an English dictionary:\n1. Production  2. Progress  3. Program  4. Project  5. Profit  6. Producer",
+"question_hi": "दिए गए शब्दों के सही क्रम को चुनें जैसे वे अंग्रेजी शब्दकोश में दिखाई देंगे:\n1. Production  2. Progress  3. Program  4. Project  5. Profit  6. Producer",
+"options": {
+"a": {"en": "6, 1, 5, 3, 2, 4", "hi": "6, 1, 5, 3, 2, 4"},
+"b": {"en": "6, 1, 5, 2, 3, 4", "hi": "6, 1, 5, 2, 3, 4"},
+"c": {"en": "6, 5, 1, 2, 3, 4", "hi": "6, 5, 1, 2, 3, 4"},
+"d": {"en": "6, 5, 2, 4, 3, 1", "hi": "6, 5, 2, 4, 3, 1"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 26,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 26,
+"question_en": "Statement: Online education is rapidly becoming popular among students, offering them flexible study schedules and wide availability of resources. Schools have reduced classroom-related expenses and saved on physical infrastructure. However, some students face challenges such as lack of motivation and lack of interaction with classmates. Studies show that a blended learning model can effectively combine the benefits of online and face-to-face education.\nConclusions:\nI. Online education always lowers the quality of education.\nII. Adopting online education methods saves money for schools.\nIII. Blended learning is an effective way to combine online and face-to-face education.\nWhich conclusion(s) necessarily follow(s)?",
+"question_hi": "कथन: ऑनलाइन शिक्षा विद्यार्थियों के बीच तेजी से लोकप्रिय हो रही है, जिससे उन्हें लचीले अध्ययन कार्यक्रम और संसाधनों की व्यापक उपलब्धता मिलती है। स्कूलों ने कक्षा संबंधी खर्चों में कमी की है और भौतिक बुनियादी ढांचे पर बचत की है। हालांकि, कुछ विद्यार्थियों को प्रेरणा की कमी और सहपाठियों के साथ संवाद की कमी जैसी चुनौतियों का सामना करना पड़ता है। अध्ययनों से पता चलता है कि मिश्रित शिक्षा मॉडल ऑनलाइन और प्रत्यक्ष शिक्षा के लाभों को प्रभावी ढंग से संयोजित कर सकता है।\nनिष्कर्ष:\nI. ऑनलाइन शिक्षा हमेशा शिक्षा की गुणवत्ता को कम करती है।\nII. ऑनलाइन शिक्षा पद्धतियों को अपनाने से स्कूलों को धन की बचत होती है।\nIII. मिश्रित शिक्षा ऑनलाइन और प्रत्यक्ष शिक्षा को संयोजित करने का एक प्रभावी तरीका है।\nकौन सा निष्कर्ष अनिवार्य रूप से सिद्ध होता है?",
+"options": {
+"a": {"en": "Only I follows", "hi": "केवल I सिद्ध होता है"},
+"b": {"en": "Only II follows", "hi": "केवल II सिद्ध होता है"},
+"c": {"en": "Only III follows", "hi": "केवल III सिद्ध होता है"},
+"d": {"en": "Both II and III follow", "hi": "II और III दोनों सिद्ध होते हैं"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 27,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 27,
+"question_en": "Rohit owns a popular local cafe. A large franchise has offered to buy 70% of his business. Although this offer would give him significant financial gain, Rohit would lose most of his control over daily operations and the unique personal touch that attracts his regular customers. What is the best option?",
+"question_hi": "रोहित एक लोकप्रिय स्थानीय कैफे का मालिक है। एक बड़ी फ्रेंचाइजी ने उनके व्यवसाय का 70% हिस्सा खरीदने का प्रस्ताव दिया है। हालांकि इस प्रस्ताव से उन्हें काफी आर्थिक लाभ होगा, लेकिन रोहित दैनिक संचालन पर अपना अधिकांश नियंत्रण और अपने नियमित ग्राहकों को आकर्षित करने वाला अनूठा व्यक्तिगत स्पर्श खो देगा। सबसे अच्छा विकल्प क्या है?",
+"options": {
+"a": {"en": "Accept immediately for financial gain", "hi": "आर्थिक लाभ के लिए तुरंत स्वीकार करें"},
+"b": {"en": "Reject outright to maintain full control", "hi": "पूर्ण नियंत्रण बनाए रखने के लिए स्पष्ट रूप से अस्वीकार करें"},
+"c": {"en": "Negotiate for a smaller stake and partial control", "hi": "कम हिस्सेदारी और आंशिक नियंत्रण के लिए बातचीत करें"},
+"d": {"en": "Close the cafe and start a new business", "hi": "कैफे बंद करके नया व्यवसाय शुरू करें"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 28,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 28,
+"question_en": "If '&' means '+', '$' means '-', '%' means '÷', '@' means '×', then find the value of: 30 $ 4 @ 5 @ 5 = ?",
+"question_hi": "यदि '&' का अर्थ '+', '$' का अर्थ '-', '%' का अर्थ '÷', '@' का अर्थ '×', तो मान ज्ञात कीजिए: 30 $ 4 @ 5 @ 5 = ?",
+"options": {
+"a": {"en": "-49", "hi": "-49"},
+"b": {"en": "-35", "hi": "-35"},
+"c": {"en": "-60", "hi": "-60"},
+"d": {"en": "-70", "hi": "-70"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 29,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 29,
+"question_en": "When a teammate in your project group gets disappointed by a last-minute reallocation of tasks and stops participating in discussions, what would be the most appropriate way to handle this situation?",
+"question_hi": "जब आपके प्रोजेक्ट समूह में किसी साथी को अंतिम समय पर कार्यों के पुनः आवंटन से निराशा होती है और वह चर्चाओं में भाग लेना बंद कर देता है, तो इस स्थिति को संभालने का सबसे उपयुक्त तरीका क्या होगा?",
+"options": {
+"a": {"en": "Continue working without including them", "hi": "उनको शामिल किए बिना काम जारी रखना"},
+"b": {"en": "Criticize them for being overly sensitive", "hi": "अत्यधिक संवेदनशील होने के लिए उनकी आलोचना करना"},
+"c": {"en": "Quietly remove them from the group", "hi": "चुपचाप उन्हें समूह से हटा देना"},
+"d": {"en": "Talk to them calmly, explain the reason for the change, and involve them in future planning", "hi": "शांतिपूर्वक उनसे बात करना, बदलाव का कारण समझाना और भविष्य की योजना में उन्हें शामिल करना"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 30,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 30,
+"question_en": "In a queue of 50 people, Ram is 14th from the front and Raju is 18th from the back. How many people are standing between Ram and Raju?",
+"question_hi": "50 लोगों की एक कतार में, राम आगे से 14वें स्थान पर और राजू पीछे से 18वें स्थान पर है। राम और राजू के बीच कितने लोग खड़े हैं?",
+"options": {
+"a": {"en": "19", "hi": "19"},
+"b": {"en": "20", "hi": "20"},
+"c": {"en": "18", "hi": "18"},
+"d": {"en": "21", "hi": "21"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 31,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 31,
+"question_en": "Statement: Reports show that children in rural areas are dropping out of primary school due to a lack of quality education.\nCourse of Action I: The government needs to develop basic facilities and incentive schemes.\nCourse of Action II: Regular checks on children's learning progress should be conducted.\nWhich course of action logically follows?",
+"question_hi": "कथन: रिपोर्टों से पता चलता है कि ग्रामीण क्षेत्रों में बच्चे प्राथमिक विद्यालय में शिक्षा की गुणवत्ता में कमी के कारण छोड़कर जा रहे हैं।\nकार्यवाही I: सरकार को बुनियादी सुविधाओं का विकास और प्रोत्साहन योजनाओं की जरूरत है।\nकार्यवाही II: बच्चों के सीखने की प्रगति की नियमित जाँच करनी चाहिए।\nकौन सी कार्यवाही तार्किक रूप से अनुसरण करती है?",
+"options": {
+"a": {"en": "Only I follows", "hi": "केवल I अनुसरण करता है"},
+"b": {"en": "Only II follows", "hi": "केवल II अनुसरण करता है"},
+"c": {"en": "Both follow", "hi": "दोनों लागू होते हैं"},
+"d": {"en": "Either I or II follows", "hi": "या तो I या II अनुसरण करता है"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 32,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 32,
+"question_en": "Which letter should come next in the following series: C, F, I, L, ?",
+"question_hi": "निम्नलिखित श्रृंखला में अगला अक्षर कौन सा आना चाहिए: C, F, I, L, ?",
+"options": {
+"a": {"en": "O", "hi": "O"},
+"b": {"en": "P", "hi": "P"},
+"c": {"en": "N", "hi": "N"},
+"d": {"en": "Q", "hi": "Q"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 33,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 33,
+"question_en": "A school principal has to select a class monitor. All students have good academic records, but one student is known for discipline, responsibility, and helping classmates. Who should be selected?",
+"question_hi": "एक स्कूल के प्रधानाचार्य को कक्षा पर्यवेक्षक का चयन करना है। सभी छात्रों का शैक्षणिक रिकॉर्ड अच्छा है, लेकिन एक छात्र अनुशासन, जिम्मेदारी और सहपाठियों की मदद करने के लिए जाना जाता है। किसे चुना जाना चाहिए?",
+"options": {
+"a": {"en": "The student with the highest marks", "hi": "सबसे अधिक अंक प्राप्त करने वाला छात्र"},
+"b": {"en": "The student who participates in the most competitions", "hi": "सबसे अधिक प्रतियोगिताओं में भाग लेने वाला छात्र"},
+"c": {"en": "The student known for discipline and responsibility", "hi": "अनुशासन और जिम्मेदारी के लिए प्रसिद्ध छात्र"},
+"d": {"en": "The student studying in the school for the longest time", "hi": "सबसे लंबे समय से विद्यालय में पढ़ने वाला छात्र"}
+},
+"correct_option": "c",
+"has_image": false
+},
+{
+"id": 34,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 34,
+"question_en": "Which of the following words CANNOT be formed from the letters of the word "ENVIRONMENT"?",
+"question_hi": "निम्नलिखित में से कौन सा शब्द "ENVIRONMENT" के अक्षरों से नहीं बनाया जा सकता है?",
+"options": {
+"a": {"en": "METER", "hi": "METER"},
+"b": {"en": "IRON", "hi": "IRON"},
+"c": {"en": "TONE", "hi": "TONE"},
+"d": {"en": "RAIN", "hi": "RAIN"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 35,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 35,
+"question_en": "A mirror is placed on the line AB. Which of the option figures will be the correct mirror image of the question figure? (Image-based question from PDF)",
+"question_hi": "एक दर्पण को रेखा AB पर रखा गया है। विकल्प आकृतियों में से कौन सी आकृति प्रश्न आकृति की सही प्रतिबिंब होगी? (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Figure (a)", "hi": "आकृति (a)"},
+"b": {"en": "Figure (b)", "hi": "आकृति (b)"},
+"c": {"en": "Figure (c)", "hi": "आकृति (c)"},
+"d": {"en": "Figure (d)", "hi": "आकृति (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 36,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 36,
+"question_en": "On school sports day, two teams want to use the main playground at the same time. What should the event in-charge do?",
+"question_hi": "विद्यालय के खेल दिवस पर, दो टीमें एक ही समय पर मुख्य खेल मैदान का उपयोग करना चाहती हैं। कार्यक्रम प्रभारी को क्या करना चाहिए?",
+"options": {
+"a": {"en": "Allow only the team that was practicing earlier", "hi": "केवल उस टीम को अनुमति दे जो पहले से अभ्यास कर रही थी"},
+"b": {"en": "Schedule the event by fairly dividing time for both teams", "hi": "दोनों टीमों के लिए समय का न्यायसंगत बँटवारा कर कार्यक्रम तय करे"},
+"c": {"en": "Cancel the event of one team", "hi": "एक टीम का कार्यक्रम रद्द कर दे"},
+"d": {"en": "Decide by tossing a coin", "hi": "सिक्का उछालकर निर्णय ले"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 37,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 37,
+"question_en": "City garbage collection is frequently delayed and several areas are being missed. What would be the most logical improvement?",
+"question_hi": "शहर के कचरा संग्रहण में अक्सर देरी हो रही है और कई क्षेत्र छूट रहे हैं। सबसे तार्किक सुधार क्या होगा?",
+"options": {
+"a": {"en": "Redesign collection routes based on area density and shortest paths", "hi": "क्षेत्र घनत्व और सबसे छोटे रास्तों के आधार पर संग्रहण मार्ग को पुनः डिज़ाइन करना"},
+"b": {"en": "Increase fines on residents", "hi": "निवासियों पर जुर्माना बढ़ाना"},
+"c": {"en": "Continue the existing schedule to avoid confusion", "hi": "भ्रम से बचने के लिए मौजूदा कार्यक्रम को जारी रखना"},
+"d": {"en": "Add more trucks without planning", "hi": "बिना योजना बनाए अधिक ट्रक जोड़ना"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 38,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 38,
+"question_en": "Select the option related to the third letter-pair in the same way as the second is related to the first: SU : QW :: VW : ?",
+"question_hi": "उस विकल्प का चयन करें जो तीसरे अक्षर-युग्म से उसी प्रकार संबंधित है जैसे दूसरा पहले से संबंधित है: SU : QW :: VW : ?",
+"options": {
+"a": {"en": "YT", "hi": "YT"},
+"b": {"en": "WT", "hi": "WT"},
+"c": {"en": "WS", "hi": "WS"},
+"d": {"en": "TY", "hi": "TY"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 39,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 39,
+"question_en": "Find the next element that logically replaces the question mark (?): 7, 19, 67, 259, ?",
+"question_hi": "उस अगले तत्व को ज्ञात करें जो तार्किक रूप से ? को प्रतिस्थापित करता है: 7, 19, 67, 259, ?",
+"options": {
+"a": {"en": "1036", "hi": "1036"},
+"b": {"en": "1027", "hi": "1027"},
+"c": {"en": "1045", "hi": "1045"},
+"d": {"en": "1025", "hi": "1025"}
+},
+"correct_option": "b",
+"has_image": false
+},
+{
+"id": 40,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 40,
+"question_en": "Three of the following pairs follow the same pattern, except one. Which pair does not follow the pattern?",
+"question_hi": "निम्नलिखित जोड़ियों में से तीन एक ही पैटर्न का पालन करती हैं, एक जोड़ी को छोड़कर। कौन सी जोड़ी इस पैटर्न का पालन नहीं करती?",
+"options": {
+"a": {"en": "4, 9", "hi": "4, 9"},
+"b": {"en": "9, 16", "hi": "9, 16"},
+"c": {"en": "49, 64", "hi": "49, 64"},
+"d": {"en": "81, 121", "hi": "81, 121"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 41,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 41,
+"question_en": "A piece of paper is folded and punched as shown in the question figures. From the given options, indicate how it will appear when opened. (Image-based question from PDF)",
+"question_hi": "एक कागज़ के टुकड़े को प्रश्न आकृतियों में दर्शाए अनुसार मोड़ा गया है तथा छिद्रित किया गया है। दिए गए विकल्पों में से बताइए कि खोलने पर यह कैसा दिखाई देगा। (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Figure (a)", "hi": "आकृति (a)"},
+"b": {"en": "Figure (b)", "hi": "आकृति (b)"},
+"c": {"en": "Figure (c)", "hi": "आकृति (c)"},
+"d": {"en": "Figure (d)", "hi": "आकृति (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 42,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 42,
+"question_en": "Select the option in which the question figure is embedded/hidden (rotation is not allowed). (Image-based question from PDF)",
+"question_hi": "दिए गए विकल्पों में से उस विकल्प का चयन कीजिए जिसमें प्रश्न आकृति छिपी हुई/अंतर्निहित है। (घुमाने की अनुमति नहीं है) (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Figure (a)", "hi": "आकृति (a)"},
+"b": {"en": "Figure (b)", "hi": "आकृति (b)"},
+"c": {"en": "Figure (c)", "hi": "आकृति (c)"},
+"d": {"en": "Figure (d)", "hi": "आकृति (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 43,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 43,
+"question_en": "Select the number that can replace the question mark (?) in the following matrix:\nRow 1: 4 | 7 | 6\nRow 2: 15 | ? | 21\nRow 3: 44 | 68 | 60",
+"question_hi": "निम्नलिखित आव्यूह में वह संख्या चुनिए जिसे प्रश्न चिह्न (?) के स्थान पर रखा जा सकता है:\nपंक्ति 1: 4 | 7 | 6\nपंक्ति 2: 15 | ? | 21\nपंक्ति 3: 44 | 68 | 60",
+"options": {
+"a": {"en": "24", "hi": "24"},
+"b": {"en": "20", "hi": "20"},
+"c": {"en": "18", "hi": "18"},
+"d": {"en": "19", "hi": "19"}
+},
+"correct_option": "a",
+"has_image": false
+},
+{
+"id": 44,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 44,
+"question_en": "In the figure given below, the circle represents lions, the rectangle represents deer, and the triangle represents rabbits. How many rabbits are neither lions nor deer? (Image-based Venn diagram from PDF)",
+"question_hi": "नीचे दिए गए चित्र में वृत्त शेरों को, आयत हिरणों को और त्रिभुज खरगोशों को दर्शाता है। कितने खरगोश न तो शेर हैं और न ही हिरण? (PDF से वेन आरेख प्रश्न)",
+"options": {
+"a": {"en": "5", "hi": "5"},
+"b": {"en": "8", "hi": "8"},
+"c": {"en": "1", "hi": "1"},
+"d": {"en": "3", "hi": "3"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 45,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 45,
+"question_en": "Select the Venn diagram that best represents the relationship between the following classes: Omnivores, Bear, Cattle. (Image-based question from PDF)",
+"question_hi": "वह आरेख चुनिए जो नीचे दिए गए वर्गों के बीच के संबंध का सही निरूपण करता है: सर्वभक्षी, भालू, मवेशी। (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Diagram (a)", "hi": "आरेख (a)"},
+"b": {"en": "Diagram (b)", "hi": "आरेख (b)"},
+"c": {"en": "Diagram (c)", "hi": "आरेख (c)"},
+"d": {"en": "Diagram (d)", "hi": "आरेख (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 46,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 46,
+"question_en": "Choose the correct order of the given words as they would appear in an English dictionary:\n1. Astronomy  2. Astrologer  3. Asteroid  4. Astrological  5. Astronaut",
+"question_hi": "दिए गए शब्दों के सही क्रम को चुनें जैसे वे अंग्रेजी शब्दकोश में दिखाई देंगे:\n1. Astronomy  2. Astrologer  3. Asteroid  4. Astrological  5. Astronaut",
+"options": {
+"a": {"en": "5, 2, 3, 4, 1", "hi": "5, 2, 3, 4, 1"},
+"b": {"en": "2, 1, 4, 3, 5", "hi": "2, 1, 4, 3, 5"},
+"c": {"en": "3, 4, 2, 1, 5", "hi": "3, 4, 2, 1, 5"},
+"d": {"en": "3, 2, 4, 5, 1", "hi": "3, 2, 4, 5, 1"}
+},
+"correct_option": "d",
+"has_image": false
+},
+{
+"id": 47,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 47,
+"question_en": "Which answer figure will complete the pattern in the question figure? (Rotation is not allowed) (Image-based question from PDF)",
+"question_hi": "कौन सी उत्तर आकृति प्रश्न आकृति के प्रतिरूप को पूरा करेगी? (घुमाने की अनुमति नहीं है) (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Figure (a)", "hi": "आकृति (a)"},
+"b": {"en": "Figure (b)", "hi": "आकृति (b)"},
+"c": {"en": "Figure (c)", "hi": "आकृति (c)"},
+"d": {"en": "Figure (d)", "hi": "आकृति (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 48,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 48,
+"question_en": "Select the option that is related to the third figure in the same way as the second figure is related to the first figure. (Image-based question from PDF)",
+"question_hi": "उस विकल्प का चयन करें जो तीसरे चित्र से उसी प्रकार संबंधित हो जिस प्रकार दूसरा चित्र पहले चित्र से संबंधित है। (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Figure (a)", "hi": "आकृति (a)"},
+"b": {"en": "Figure (b)", "hi": "आकृति (b)"},
+"c": {"en": "Figure (c)", "hi": "आकृति (c)"},
+"d": {"en": "Figure (d)", "hi": "आकृति (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 49,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 49,
+"question_en": "Select the figure from the given options that can replace the question mark (?) in the following figure series. (Image-based question from PDF)",
+"question_hi": "निम्नलिखित आकृति श्रृंखला में, दिए गए विकल्पों में से उस आकृति का चयन कीजिए जिसे प्रश्नवाचक चिन्ह (?) के स्थान पर रखा जा सकता है। (PDF से आकृति-आधारित प्रश्न)",
+"options": {
+"a": {"en": "Figure (a)", "hi": "आकृति (a)"},
+"b": {"en": "Figure (b)", "hi": "आकृति (b)"},
+"c": {"en": "Figure (c)", "hi": "आकृति (c)"},
+"d": {"en": "Figure (d)", "hi": "आकृति (d)"}
+},
+"correct_option": null,
+"has_image": true
+},
+{
+"id": 50,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 50,
+"question_en": "In a certain code language, 'CUKT' is coded as 'GYOX' and 'BSEU' is coded as 'FWIY'. How will 'AGSV' be coded in the same code language?",
+"question_hi": "एक विशिष्ट कोड भाषा में 'CUKT' को 'GYOX' और 'BSEU' को 'FWIY' के रूप में कोडित किया जाता है। उसी कोड भाषा में 'AGSV' को कैसे कोडित किया जाएगा?",
+"options": {
+"a": {"en": "EZZW", "hi": "EZZW"},
+"b": {"en": "EKWZ", "hi": "EKWZ"},
+"c": {"en": "EZWZ", "hi": "EZWZ"},
+"d": {"en": "EKZW", "hi": "EKZW"}
+},
+"correct_option": "b",
+"has_image": false
+}
+]
+}

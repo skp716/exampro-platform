@@ -1,0 +1,712 @@
+{
+"subject": "General Awareness",
+"exam": "SSC CHSL 2025 Tier - 1",
+"date": "12/11/2025",
+"total_questions": 50,
+"shifts_included": [
+"12/11/2025 (2nd Shift)",
+"12/11/2025 (3rd Shift)"
+],
+"questions": [
+{
+"id": 1,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 76,
+"question_en": "An Indian female athlete created history by participating in fencing at the Tokyo Olympic Games. Who was she?",
+"question_hi": "एक भारतीय महिला खिलाड़ी ने टोक्यो ओलंपिक खेलों में तलवारबाजी (फेंसिंग) में भाग लेकर इतिहास रच दिया। वह कौन थीं?",
+"options": {
+"a": {"en": "Bhavani Devi", "hi": "भवानी देवी"},
+"b": {"en": "P. V. Sindhu", "hi": "पी. वी. सिंधु"},
+"c": {"en": "Manu Bhaker", "hi": "मनु भाकर"},
+"d": {"en": "Dipa Karmakar", "hi": "दीपा कर्माकर"}
+},
+"correct_option": "a"
+},
+{
+"id": 2,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 77,
+"question_en": "As of May 2025, who holds the position of Chairman of the Bar Council of India?",
+"question_hi": "मई 2025 तक, बार काउंसिल ऑफ इंडिया के अध्यक्ष पद पर कौन आसीन हैं?",
+"options": {
+"a": {"en": "Kapil Sibal", "hi": "कपिल सिब्बल"},
+"b": {"en": "Manan Mishra", "hi": "मनन मिश्रा"},
+"c": {"en": "Dushyant Dave", "hi": "दुष्यंत दवे"},
+"d": {"en": "Harish Salve", "hi": "हरीश साल्वे"}
+},
+"correct_option": "b"
+},
+{
+"id": 3,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 78,
+"question_en": "The program named "EmpowHER Biz – Sapno Ki Udaan" to support women entrepreneurs under WEP was launched in collaboration with which organization?",
+"question_hi": "WEP के तहत महिला उद्यमियों को सहयोग देने के लिए "एम्पोवहर बिज़ - सपनों की उड़ान" नामक कार्यक्रम किस संस्था के सहयोग से शुरू किया गया था?",
+"options": {
+"a": {"en": "New Shop", "hi": "न्यू शॉप"},
+"b": {"en": "SEWA Bharat", "hi": "सेवा भारत"},
+"c": {"en": "Tata Group", "hi": "टाटा समूह"},
+"d": {"en": "Amazon India", "hi": "अमेज़न इंडिया"}
+},
+"correct_option": "a"
+},
+{
+"id": 4,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 79,
+"question_en": "What is the main objective of the National Geospatial Mission proposed in the Union Budget 2025-26?",
+"question_hi": "केंद्रीय बजट 2025-26 में प्रस्तावित नेशनल जियोस्पेशियल मिशन का मुख्य उद्देश्य क्या है?",
+"options": {
+"a": {"en": "To establish an integrated geospatial framework to support governance, planning, and development", "hi": "शासन, योजना और विकास को सहायता प्रदान करने के लिए एक एकीकृत भू-स्थानिक ढांचा स्थापित करना"},
+"b": {"en": "To encourage private companies to launch satellites", "hi": "निजी कंपनियों को सैटेलाइट लॉन्च करने के लिए प्रोत्साहित करना"},
+"c": {"en": "To provide free GPS navigation services in rural areas", "hi": "ग्रामीण क्षेत्रों में मुफ्त GPS नेविगेशन सेवाएं प्रदान करना"},
+"d": {"en": "To track climate change solely through satellite images", "hi": "केवल सैटेलाइट इमेज के माध्यम से जलवायु परिवर्तन को ट्रैक करना"}
+},
+"correct_option": "a"
+},
+{
+"id": 5,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 80,
+"question_en": "Which 2025 index reported that account ownership in India has increased to 89% since 2011?",
+"question_hi": "2025 के किस सूचकांक में यह बताया गया है कि भारत में खाता स्वामित्व 2011 से बढ़कर 89% हो गया है?",
+"options": {
+"a": {"en": "Fiscal Health Index 2025", "hi": "फिस्कल हेल्थ इंडेक्स 2025"},
+"b": {"en": "Gross Financial Index 2025", "hi": "ग्रॉस फाइनेंशियल इंडेक्स 2025"},
+"c": {"en": "Global Findex 2025", "hi": "ग्लोबल फाइंडेक्स 2025"},
+"d": {"en": "National Strategy for Financial Education", "hi": "नेशनल स्ट्रेटेजी फॉर फाइनेंशियल एजुकेशन"}
+},
+"correct_option": "c"
+},
+{
+"id": 6,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 81,
+"question_en": "Which conservation initiative is recognized as the world's first inter-continental translocation of a large wild carnivore, moving animals from one continent to another?",
+"question_hi": "कौन-सी संरक्षण पहल को बड़े जंगली मांसाहारी के विश्व के पहले अंतर-महाद्वीपीय स्थानांतरण के रूप में मान्यता प्राप्त है, जिसमें जानवरों को एक महाद्वीप से दूसरे महाद्वीप में ले जाया गया?",
+"options": {
+"a": {"en": "Project Tiger", "hi": "प्रोजेक्ट टाइगर"},
+"b": {"en": "Project Cheetah", "hi": "प्रोजेक्ट चीता"},
+"c": {"en": "Project Crocodile", "hi": "प्रोजेक्ट क्रोकोडाइल"},
+"d": {"en": "Project Panther", "hi": "प्रोजेक्ट पैंथर"}
+},
+"correct_option": "b"
+},
+{
+"id": 7,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 82,
+"question_en": "Which of the following books has been written by Manu Joseph?",
+"question_hi": "मनु जोसेफ ने निम्नलिखित में से कौन-सी पुस्तक लिखी है?",
+"options": {
+"a": {"en": "The Inheritance of Loss", "hi": "द इनहेरिटेंस ऑफ लॉस"},
+"b": {"en": "Clear Light of Day", "hi": "क्लियर लाइट ऑफ डे"},
+"c": {"en": "The Illicit Happiness of Other People", "hi": "द इलिसिट हैप्पीनेस ऑफ अदर पीपल"},
+"d": {"en": "The God of Small Things", "hi": "द गॉड ऑफ स्मॉल थिंग्स"}
+},
+"correct_option": "c"
+},
+{
+"id": 8,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 83,
+"question_en": "Abhang Vani is a devotional folk song style traditionally associated with which Indian state?",
+"question_hi": "अभंग वाणी किस भारतीय राज्य से पारंपरिक रूप से जुड़ी हुई भक्तिमय लोक गीत शैली है?",
+"options": {
+"a": {"en": "Karnataka", "hi": "कर्नाटक"},
+"b": {"en": "Gujarat", "hi": "गुजरात"},
+"c": {"en": "Maharashtra", "hi": "महाराष्ट्र"},
+"d": {"en": "Odisha", "hi": "ओडिशा"}
+},
+"correct_option": "c"
+},
+{
+"id": 9,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 84,
+"question_en": "Which of the following traditional dances is performed on the full moon night of Holi in Uttarakhand?",
+"question_hi": "उत्तराखंड में होली की पूर्णिमा की रात को निम्नलिखित में से कौन-सा पारंपरिक नृत्य किया जाता है?",
+"options": {
+"a": {"en": "Dandiya", "hi": "डांडिया"},
+"b": {"en": "Yakshagana", "hi": "यक्षगान"},
+"c": {"en": "Jhora", "hi": "झोड़ा"},
+"d": {"en": "Dollu Kunitha", "hi": "डोल्लू कुनिथा"}
+},
+"correct_option": "c"
+},
+{
+"id": 10,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 85,
+"question_en": "A satellite that moves in the equatorial plane, has zero orbital inclination, and orbits the Earth at an altitude of about 36,000 km is classified under which type of orbit?",
+"question_hi": "एक उपग्रह जो भूमध्यरेखीय तल में गति करता है, जिसका कक्षीय झुकाव शून्य है, और जो पृथ्वी के चारों ओर लगभग 36,000 किमी की ऊंचाई पर परिक्रमा करता है, उसे किस प्रकार की कक्षा के तहत वर्गीकृत किया गया है?",
+"options": {
+"a": {"en": "Low Earth Orbit (LEO)", "hi": "निम्न पृथ्वी कक्षा (LEO)"},
+"b": {"en": "Medium Earth Orbit (MEO)", "hi": "मध्यम पृथ्वी कक्षा (MEO)"},
+"c": {"en": "Geostationary Orbit", "hi": "भू-स्थैतिक कक्षा"},
+"d": {"en": "Highly Elliptical Orbit (HEO)", "hi": "अत्यधिक दीर्घवृत्तीय कक्षा (HEO)"}
+},
+"correct_option": "c"
+},
+{
+"id": 11,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 86,
+"question_en": "The rate of evaporation depends on factors such as exposed surface area, wind speed, and humidity in the air. Which of the following factors does NOT significantly affect the rate of evaporation?",
+"question_hi": "वाष्पीकरण की दर खुले सतह क्षेत्र, वायु की गति और वायु में नमी जैसे कारकों पर निर्भर करती है। निम्नलिखित में से कौन सा कारक वाष्पीकरण की दर को महत्वपूर्ण रूप से प्रभावित नहीं करता है?",
+"options": {
+"a": {"en": "Ambient temperature", "hi": "परिवेश का तापमान"},
+"b": {"en": "Airflow over the surface", "hi": "सतह के ऊपर वायु का प्रवाह"},
+"c": {"en": "Buoyant force", "hi": "उत्प्लावक बल"},
+"d": {"en": "Amount of moisture in the air", "hi": "वायु में नमी की मात्रा"}
+},
+"correct_option": "c"
+},
+{
+"id": 12,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 87,
+"question_en": "By what name is the energy stored in an object due to its position above the ground known?",
+"question_hi": "किसी वस्तु में भूमि (ज़मीन) के ऊपर उसकी स्थिति के कारण संचित ऊर्जा को किस नाम से जाना जाता है?",
+"options": {
+"a": {"en": "Kinetic energy", "hi": "गतिज ऊर्जा"},
+"b": {"en": "Gravitational potential energy", "hi": "गुरुत्वीय स्थितिज ऊर्जा"},
+"c": {"en": "Chemical energy", "hi": "रासायनिक ऊर्जा"},
+"d": {"en": "Thermal energy", "hi": "ऊष्मीय ऊर्जा"}
+},
+"correct_option": "b"
+},
+{
+"id": 13,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 88,
+"question_en": "Where was India's first airport-based, self-powered indoor air quality monitoring facility named 'Pavana Chitra' inaugurated in October 2024?",
+"question_hi": "अक्टूबर 2024 में भारत की पहली हवाई अड्डा-आधारित, स्व-ऊर्जा संचालित इनडोर वायु गुणवत्ता निगरानी सुविधा, जिसका नाम 'पवना चित्र' है, का उद्घाटन किस स्थान पर किया गया?",
+"options": {
+"a": {"en": "Rajiv Gandhi International Airport, Hyderabad", "hi": "राजीव गांधी अंतरराष्ट्रीय हवाई अड्डा, हैदराबाद"},
+"b": {"en": "Thiruvananthapuram International Airport", "hi": "तिरुवनंतपुरम अंतरराष्ट्रीय हवाई अड्डा"},
+"c": {"en": "Cochin International Airport", "hi": "कोचीन अंतरराष्ट्रीय हवाई अड्डा"},
+"d": {"en": "Sardar Vallabhbhai Patel International Airport, Ahmedabad", "hi": "सरदार वल्लभभाई पटेल अंतरराष्ट्रीय हवाई अड्डा, अहमदाबाद"}
+},
+"correct_option": "b"
+},
+{
+"id": 14,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 89,
+"question_en": "In August 2025, which Indian Railway zone became the first zone to replace single-use plastic in trains with compostable bioplastics?",
+"question_hi": "अगस्त 2025 में कौन-सा भारतीय रेलवे ज़ोन ट्रेनों में एकल-उपयोग प्लास्टिक को कम्पोस्टेबल बायोप्लास्टिक से बदलने वाला पहला ज़ोन बना?",
+"options": {
+"a": {"en": "Eastern Railway", "hi": "पूर्वी रेलवे"},
+"b": {"en": "Northeast Frontier Railway", "hi": "पूर्वोत्तर सीमांत रेलवे"},
+"c": {"en": "Central Railway", "hi": "मध्य रेलवे"},
+"d": {"en": "South Western Railway", "hi": "दक्षिण पश्चिम रेलवे"}
+},
+"correct_option": "b"
+},
+{
+"id": 15,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 90,
+"question_en": "Which of the following rulers were assassinated by their own nobles?\nI. Farrukhsiyar\nII. Alamgir II\nIII. Pushyamitra Shunga",
+"question_hi": "निम्नलिखित में से किन शासकों की हत्या उनके ही सरदारों द्वारा की गई थी?\nI. फ़र्रुख़ सियर\nII. आलमगीर द्वितीय\nIII. पुष्यमित्र शुंग",
+"options": {
+"a": {"en": "Only I", "hi": "केवल I"},
+"b": {"en": "Only II", "hi": "केवल II"},
+"c": {"en": "Both I and II", "hi": "I और II दोनों"},
+"d": {"en": "Neither I nor III", "hi": "न तो I और न ही III"}
+},
+"correct_option": "c"
+},
+{
+"id": 16,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 91,
+"question_en": "In microeconomics, what is the diagram that shows the relationship between price and quantity demanded called?",
+"question_hi": "व्यष्टि अर्थशास्त्र में, वह आरेख जो कीमत और माँगी गई मात्रा के बीच संबंध को दर्शाता है, क्या कहलाता है?",
+"options": {
+"a": {"en": "Price-quantity line", "hi": "कीमत-मात्रा रेखा"},
+"b": {"en": "Demand curve", "hi": "माँग वक्र"},
+"c": {"en": "Supply schedule", "hi": "आपूर्ति अनुसूची"},
+"d": {"en": "Seller graph", "hi": "विक्रेता ग्राफ"}
+},
+"correct_option": "b"
+},
+{
+"id": 17,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 92,
+"question_en": "In which year did India launch the National Infrastructure Pipeline (NIP) to promote long-term infrastructure investment?",
+"question_hi": "भारत ने किस वर्ष दीर्घकालिक बुनियादी ढांचा निवेश को बढ़ावा देने के लिए राष्ट्रीय बुनियादी ढांचा पाइपलाइन (NIP) शुरू की?",
+"options": {
+"a": {"en": "2018", "hi": "2018"},
+"b": {"en": "2019", "hi": "2019"},
+"c": {"en": "2020", "hi": "2020"},
+"d": {"en": "2021", "hi": "2021"}
+},
+"correct_option": "b"
+},
+{
+"id": 18,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 93,
+"question_en": "Abhijit Sen chaired the committee constituted on the Wholesale Price Index (WPI), which submitted its recommendations in which year?",
+"question_hi": "अभिजीत सेन ने थोक मूल्य सूचकांक (WPI) पर गठित उस समिति की अध्यक्षता की थी, जिसने अपनी सिफारिशें किस वर्ष प्रस्तुत की थीं?",
+"options": {
+"a": {"en": "2006", "hi": "2006"},
+"b": {"en": "2008", "hi": "2008"},
+"c": {"en": "2009", "hi": "2009"},
+"d": {"en": "2011", "hi": "2011"}
+},
+"correct_option": "b"
+},
+{
+"id": 19,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 94,
+"question_en": "Which of the following subjects is included in the Concurrent List of the Indian Constitution, where both Parliament and State Legislatures have the power to make laws?",
+"question_hi": "भारतीय संविधान की समवर्ती सूची में निम्नलिखित में से कौन सा विषय शामिल है, जहाँ संसद और राज्य विधानमंडल दोनों को कानून बनाने की शक्ति प्राप्त है?",
+"options": {
+"a": {"en": "Defence", "hi": "रक्षा"},
+"b": {"en": "Criminal matters", "hi": "आपराधिक मामले"},
+"c": {"en": "Broadcasting (Radio and Television)", "hi": "प्रसारण (रेडियो और टेलीविजन)"},
+"d": {"en": "Foreign affairs", "hi": "विदेश मामले"}
+},
+"correct_option": "b"
+},
+{
+"id": 20,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 95,
+"question_en": "Which of the following is NOT considered a major cropping season in India?",
+"question_hi": "निम्नलिखित में से किसे भारत में मुख्य फसल ऋतु नहीं माना जाता है?",
+"options": {
+"a": {"en": "Summer sowing", "hi": "ग्रीष्मकालीन बुआई"},
+"b": {"en": "Zaid", "hi": "जायद"},
+"c": {"en": "Rabi", "hi": "रबी"},
+"d": {"en": "Kharif", "hi": "खरीफ"}
+},
+"correct_option": "a"
+},
+{
+"id": 21,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 96,
+"question_en": "K. C. Pant served as the Deputy Chairman of the Planning Commission primarily during the formulation and implementation of which Five-Year Plan?",
+"question_hi": "के.सी. पंत ने मुख्य रूप से किस पंचवर्षीय योजना के निर्माण और उसे लागू करने के दौरान योजना आयोग के उपाध्यक्ष के रूप में कार्य किया?",
+"options": {
+"a": {"en": "Eighth Five-Year Plan", "hi": "आठवीं पंचवर्षीय योजना"},
+"b": {"en": "Ninth Five-Year Plan", "hi": "नौवीं पंचवर्षीय योजना"},
+"c": {"en": "Tenth Five-Year Plan", "hi": "दसवीं पंचवर्षीय योजना"},
+"d": {"en": "Eleventh Five-Year Plan", "hi": "ग्यारहवीं पंचवर्षीय योजना"}
+},
+"correct_option": "c"
+},
+{
+"id": 22,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 97,
+"question_en": "In international trade, which of the following are classified as non-tariff measures used to regulate imports and protect domestic industries?\nI. Anti-dumping measures\nII. Technical barriers to trade\nIII. Export subsidies",
+"question_hi": "अंतरराष्ट्रीय व्यापार में, निम्नलिखित में से किसे आयात को विनियमित करने और घरेलू उद्योगों की रक्षा के लिए उपयोग किए जाने वाले गैर-प्रशुल्क उपायों के रूप में वर्गीकृत किया गया है?\nI. एंटी-डंपिंग उपाय\nII. व्यापार के लिए तकनीकी बाधाएं\nIII. निर्यात सब्सिडी",
+"options": {
+"a": {"en": "Only I", "hi": "केवल I"},
+"b": {"en": "Only II", "hi": "केवल II"},
+"c": {"en": "Both I and II", "hi": "I और II दोनों"},
+"d": {"en": "All of the above", "hi": "उपरोक्त सभी"}
+},
+"correct_option": "c"
+},
+{
+"id": 23,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 98,
+"question_en": "The decline in the death rate in India between 1921 and 1951 was mainly due to which factor?",
+"question_hi": "भारत में 1921 और 1951 के बीच मृत्यु दर में गिरावट मुख्य रूप से किस कारक के कारण हुई थी?",
+"options": {
+"a": {"en": "World War II", "hi": "द्वितीय विश्व युद्ध"},
+"b": {"en": "Technological advancement in AI (Artificial Intelligence)", "hi": "AI (आर्टिफिशियल इंटेलिजेंस) में तकनीकी प्रगति"},
+"c": {"en": "Increase in fertility rate", "hi": "प्रजनन दर में वृद्धि"},
+"d": {"en": "Better healthcare and sanitation", "hi": "बेहतर स्वास्थ्य सेवा और स्वच्छता"}
+},
+"correct_option": "d"
+},
+{
+"id": 24,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 99,
+"question_en": "What are the temporary, finger-like projections of an amoeba's cell surface used for movement and capturing food called?",
+"question_hi": "अमीबा की कोशिका सतह के अस्थायी, उंगली जैसे उभार, जिनका उपयोग गति और भोजन ग्रहण करने के लिए किया जाता है, क्या कहलाते हैं?",
+"options": {
+"a": {"en": "Microvilli", "hi": "माइक्रोविली"},
+"b": {"en": "Filopodia", "hi": "फिलोपोडिया"},
+"c": {"en": "Pseudopodia", "hi": "पादाभ (स्यूडोपोडिया)"},
+"d": {"en": "Lamellipodia", "hi": "लैमेलीपोडिया"}
+},
+"correct_option": "c"
+},
+{
+"id": 25,
+"shift": "12/11/2025 (2nd Shift)",
+"original_q_no": 100,
+"question_en": "In Vedic philosophy, among the four goals of human life (Purusharthas), the term 'Moksha' means:",
+"question_hi": "वैदिक दर्शन में, मानव जीवन के चार लक्ष्यों (पुरुषार्थों) में 'मोक्ष' शब्द का अर्थ है:",
+"options": {
+"a": {"en": "Fulfillment of worldly desires", "hi": "सांसारिक इच्छाओं की पूर्ति"},
+"b": {"en": "Social recognition", "hi": "सामाजिक पहचान प्राप्त करना"},
+"c": {"en": "Spiritual liberation", "hi": "आध्यात्मिक स्वतंत्रता"},
+"d": {"en": "Material prosperity", "hi": "भौतिक समृद्धि"}
+},
+"correct_option": "c"
+},
+{
+"id": 26,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 76,
+"question_en": "Which Article of the Indian Constitution directs the State to ensure that the operation of the legal system promotes justice on a basis of equal opportunity and provides free legal aid?",
+"question_hi": "भारतीय संविधान का कौन सा अनुच्छेद राज्य को यह सुनिश्चित करने का निर्देश देता है कि कानूनी प्रणाली का संचालन समान अवसर के आधार पर न्याय को बढ़ावा दे और निःशुल्क विधिक सहायता प्रदान करे?",
+"options": {
+"a": {"en": "Article 46", "hi": "अनुच्छेद 46"},
+"b": {"en": "Article 35", "hi": "अनुच्छेद 35"},
+"c": {"en": "Article 39A", "hi": "अनुच्छेद 39 A"},
+"d": {"en": "Article 42", "hi": "अनुच्छेद 42"}
+},
+"correct_option": "c"
+},
+{
+"id": 27,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 77,
+"question_en": "In the year 2024, which of the following leaders was posthumously awarded the Bharat Ratna?",
+"question_hi": "वर्ष 2024 में, निम्नलिखित में से किस नेता को मरणोपरांत भारत रत्न से सम्मानित किया गया था?",
+"options": {
+"a": {"en": "B. R. Ambedkar (Posthumous)", "hi": "बी. आर. अंबेडकर (मरणोपरांत)"},
+"b": {"en": "Jayaprakash Narayan (Posthumous)", "hi": "जयप्रकाश नारायण (मरणोपरांत)"},
+"c": {"en": "Lal Bahadur Shastri (Posthumous)", "hi": "लाल बहादुर शास्त्री (मरणोपरांत)"},
+"d": {"en": "Karpoori Thakur (Posthumous)", "hi": "कर्पूरी ठाकुर (मरणोपरांत)"}
+},
+"correct_option": "d"
+},
+{
+"id": 28,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 78,
+"question_en": "With an allocation of Rs. 20,000 crore in the Union Budget 2025-26, the government aims to operationalize how many indigenously developed Small Modular Reactors (SMRs) by the year 2033?",
+"question_hi": "केंद्रीय बजट 2025-26 में ₹20,000 करोड़ के आवंटन के साथ, सरकार का लक्ष्य वर्ष 2033 तक कितने स्वदेशी रूप से विकसित स्मॉल मॉड्यूलर रिएक्टरों (SMRs) को संचालित करना है?",
+"options": {
+"a": {"en": "7", "hi": "7"},
+"b": {"en": "11", "hi": "11"},
+"c": {"en": "5", "hi": "5"},
+"d": {"en": "9", "hi": "9"}
+},
+"correct_option": "c"
+},
+{
+"id": 29,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 79,
+"question_en": "According to the 'World Happiness Report' released in March 2025, what is India's global rank?",
+"question_hi": "मार्च 2025 में जारी 'वर्ल्ड हैप्पीनेस रिपोर्ट' (World Happiness Report) के अनुसार, वैश्विक स्तर पर भारत का स्थान क्या है?",
+"options": {
+"a": {"en": "146th", "hi": "146वां"},
+"b": {"en": "131st", "hi": "131वां"},
+"c": {"en": "118th", "hi": "118वां"},
+"d": {"en": "96th", "hi": "96वां"}
+},
+"correct_option": "c"
+},
+{
+"id": 30,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 80,
+"question_en": "According to UNICEF's 'State of the World's Children 2024' report, by the 2050s, more than one-third of the global child population will be concentrated in four specific countries. Which of the following countries is NOT part of this group?",
+"question_hi": "यूनिसेफ (UNICEF) की 'स्टेट ऑफ द वर्ल्ड्स चिल्ड्रेन 2024' रिपोर्ट के अनुसार, 2050 के दशक तक, वैश्विक बाल आबादी का एक-तिहाई से अधिक हिस्सा चार विशिष्ट देशों में केंद्रित होगा। निम्नलिखित में से कौन सा देश इस समूह का हिस्सा नहीं है?",
+"options": {
+"a": {"en": "Sudan", "hi": "सूडान"},
+"b": {"en": "India", "hi": "भारत"},
+"c": {"en": "Pakistan", "hi": "पाकिस्तान"},
+"d": {"en": "China", "hi": "चीन"}
+},
+"correct_option": "a"
+},
+{
+"id": 31,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 81,
+"question_en": "In May 2025, which district achieved the distinction of becoming India's first district to run entirely on solar energy?",
+"question_hi": "मई 2025 में, किस जिले ने पूरी तरह से सौर ऊर्जा पर चलने वाला भारत का पहला जिला बनने का गौरव प्राप्त किया?",
+"options": {
+"a": {"en": "Rewa", "hi": "रीवा"},
+"b": {"en": "Diu", "hi": "दीव"},
+"c": {"en": "Jaisalmer", "hi": "जैसलमेर"},
+"d": {"en": "Kochi", "hi": "कोच्चि"}
+},
+"correct_option": "b"
+},
+{
+"id": 32,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 82,
+"question_en": "Renowned classical vocalist Ashwini Bhide Deshpande belongs to which Hindustani classical 'Gharana'?",
+"question_hi": "प्रसिद्ध शास्त्रीय गायिका अश्विनी भिड़े देशपांडे किस हिंदुस्तानी शास्त्रीय 'घराने' से संबंधित हैं?",
+"options": {
+"a": {"en": "Gwalior Gharana", "hi": "ग्वालियर घराना"},
+"b": {"en": "Jaipur-Atrauli Gharana", "hi": "जयपुर-अतरौली घराना"},
+"c": {"en": "Agra Gharana", "hi": "आगरा घराना"},
+"d": {"en": "Mewati Gharana", "hi": "मेवाती घराना"}
+},
+"correct_option": "b"
+},
+{
+"id": 33,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 83,
+"question_en": "Which Indian author wrote the famous book 'In an Antique Land'?",
+"question_hi": "प्रसिद्ध पुस्तक 'इन एन एंटीक लैंड' किस भारतीय लेखक ने लिखी है?",
+"options": {
+"a": {"en": "Vikram Seth", "hi": "विक्रम सेठ"},
+"b": {"en": "Arundhati Roy", "hi": "अरुंधति रॉय"},
+"c": {"en": "Amitav Ghosh", "hi": "अमिताभ घोष"},
+"d": {"en": "Jhumpa Lahiri", "hi": "झुंपा लाहिड़ी"}
+},
+"correct_option": "c"
+},
+{
+"id": 34,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 84,
+"question_en": "The book 'Love is Always Right and Other Musings' is the work of which Indian author and columnist?",
+"question_hi": "'लव इज ऑलवेज राइट एंड अदर म्यूज़िंग्स' पुस्तक किस भारतीय लेखक और स्तंभकार की कृति है?",
+"options": {
+"a": {"en": "Twinkle Khanna", "hi": "ट्विंकल खन्ना"},
+"b": {"en": "Vinita Dawra Nangia", "hi": "विनीता डावरा नांगिया"},
+"c": {"en": "Shobhaa De", "hi": "शोभा डे"},
+"d": {"en": "Sudha Murty", "hi": "सुधा मूर्ति"}
+},
+"correct_option": "b"
+},
+{
+"id": 35,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 85,
+"question_en": "Identify the folk dance of Chhattisgarh popularly known as the "Parrot Dance".",
+"question_hi": "छत्तीसगढ़ के उस लोक नृत्य की पहचान करें जिसे लोकप्रिय रूप से "तोता नृत्य" (Parrot Dance) कहा जाता है।",
+"options": {
+"a": {"en": "Sua Dance", "hi": "सुआ नृत्य"},
+"b": {"en": "Giddha Dance", "hi": "गिद्धा नृत्य"},
+"c": {"en": "Garba Dance", "hi": "गरबा नृत्य"},
+"d": {"en": "Bihu Dance", "hi": "बिहू नृत्य"}
+},
+"correct_option": "a"
+},
+{
+"id": 36,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 86,
+"question_en": "In Indian space research terminology, what does the letter "N" stand for in INCOSPAR?",
+"question_hi": "भारतीय अंतरिक्ष अनुसंधान शब्दावली में, INCOSPAR में अक्षर "N" क्या दर्शाता है?",
+"options": {
+"a": {"en": "National", "hi": "नेशनल"},
+"b": {"en": "Nuclear", "hi": "न्यूक्लियर"},
+"c": {"en": "Navigational", "hi": "नेविगेशनल"},
+"d": {"en": "Network", "hi": "नेटवर्क"}
+},
+"correct_option": "a"
+},
+{
+"id": 37,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 87,
+"question_en": "The weight of an object on Earth is 441 N. What is the mass of the object? (Take g = 9.8 m/s^2)",
+"question_hi": "पृथ्वी पर एक वस्तु का भार 441 N है। वस्तु का द्रव्यमान क्या है? (g = 9.8 m/s^2 लें)",
+"options": {
+"a": {"en": "50 kg", "hi": "50 किग्रा"},
+"b": {"en": "42 kg", "hi": "42 किग्रा"},
+"c": {"en": "36 kg", "hi": "36 किग्रा"},
+"d": {"en": "45 kg", "hi": "45 किग्रा"}
+},
+"correct_option": "d"
+},
+{
+"id": 38,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 88,
+"question_en": "According to a NASA study, which planet's rings are disappearing at a worst-case-scenario rate?",
+"question_hi": "नासा के अध्ययन के अनुसार, किस ग्रह के वलय सबसे खराब स्थिति की दर से लुप्त हो रहे हैं?",
+"options": {
+"a": {"en": "Mars", "hi": "मंगल"},
+"b": {"en": "Saturn", "hi": "शनि"},
+"c": {"en": "Venus", "hi": "शुक्र"},
+"d": {"en": "Mercury", "hi": "बुध"}
+},
+"correct_option": "b"
+},
+{
+"id": 39,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 89,
+"question_en": "Around 1713, Sawai Raja Jai Singh of Amber was appointed as the Subedar (Governor) of which region?",
+"question_hi": "लगभग 1713 के आसपास, आमेर के सवाई राजा जय सिंह को किस क्षेत्र का सूबेदार (गवर्नर) नियुक्त किया गया था?",
+"options": {
+"a": {"en": "Awadh", "hi": "अवध"},
+"b": {"en": "Gujarat", "hi": "गुजरात"},
+"c": {"en": "Deccan", "hi": "दक्कन"},
+"d": {"en": "Malwa", "hi": "मालवा"}
+},
+"correct_option": "d"
+},
+{
+"id": 40,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 90,
+"question_en": "Which of the following statements is correct regarding the sale of government assets such as the sale of shares in Public Sector Undertakings (PSUs)?",
+"question_hi": "सार्वजनिक क्षेत्र के उपक्रमों (PSU) में शेयरों की बिक्री जैसी सरकारी संपत्तियों की बिक्री के संबंध में निम्नलिखित में से कौन सा कथन सही है?",
+"options": {
+"a": {"en": "It permanently increases the fiscal deficit.", "hi": "यह राजकोषीय घाटे को स्थायी रूप से बढ़ाता है।"},
+"b": {"en": "The proceeds from the sale of shares are part of 'Capital Receipts'.", "hi": "शेयरों की बिक्री से प्राप्त राशि 'पूंजीगत प्राप्तियों' का हिस्सा होती है।"},
+"c": {"en": "The proceeds from the sale of shares are treated as 'Revenue Receipts'.", "hi": "शेयरों की बिक्री से प्राप्त राशि को 'राजस्व प्राप्तियों' के रूप में माना जाता है।"},
+"d": {"en": "It increases government liabilities.", "hi": "इससे सरकारी देनदारियों में वृद्धि होती है।"}
+},
+"correct_option": "b"
+},
+{
+"id": 41,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 91,
+"question_en": "The establishment of the Foreign Investment Promotion Board (FIPB) in India was the result of which Industrial Policy?",
+"question_hi": "भारत में विदेशी निवेश संवर्धन बोर्ड (FIPB) की स्थापना किस औद्योगिक नीति का परिणाम थी?",
+"options": {
+"a": {"en": "1956", "hi": "1956"},
+"b": {"en": "1977", "hi": "1977"},
+"c": {"en": "1980", "hi": "1980"},
+"d": {"en": "1991", "hi": "1991"}
+},
+"correct_option": "d"
+},
+{
+"id": 42,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 92,
+"question_en": "In which of the following years was Rani Lakshmibai defeated and killed?",
+"question_hi": "रानी लक्ष्मीबाई को निम्नलिखित में से किस वर्ष पराजित किया गया और उनकी हत्या कर दी गई थी?",
+"options": {
+"a": {"en": "June 1858", "hi": "जून 1858"},
+"b": {"en": "July 1857", "hi": "जुलाई 1857"},
+"c": {"en": "February 1859", "hi": "फरवरी 1859"},
+"d": {"en": "August 1860", "hi": "अगस्त 1860"}
+},
+"correct_option": "a"
+},
+{
+"id": 43,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 93,
+"question_en": "During 2001-02, the excise duty structure in India was rationalized into a single CENVAT (Central Value Added Tax) rate of what percentage?",
+"question_hi": "2001-02 के दौरान, भारत में उत्पाद शुल्क संरचना को कितने प्रतिशत की एकल सेनवैट (केंद्रीय मूल्य वर्धित कर) दर में तर्कसंगत बनाया गया था?",
+"options": {
+"a": {"en": "16", "hi": "16"},
+"b": {"en": "12", "hi": "12"},
+"c": {"en": "18", "hi": "18"},
+"d": {"en": "20", "hi": "20"}
+},
+"correct_option": "a"
+},
+{
+"id": 44,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 94,
+"question_en": "At whose disposal is the Contingency Fund of a State in India placed?",
+"question_hi": "भारत के किसी राज्य की आकस्मिकता निधि किसके पास होती है?",
+"options": {
+"a": {"en": "Chief Secretary", "hi": "मुख्य सचिव"},
+"b": {"en": "Accountant General", "hi": "महालेखाकार"},
+"c": {"en": "Governor", "hi": "राज्यपाल"},
+"d": {"en": "Advocate General", "hi": "महाधिवक्ता"}
+},
+"correct_option": "c"
+},
+{
+"id": 45,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 95,
+"question_en": "The operation of which port is affected due to heavy silt deposition in the Hooghly River?",
+"question_hi": "हुगली नदी में भारी गाद (silt) के जमाव के कारण किस बंदरगाह का संचालन प्रभावित होता है?",
+"options": {
+"a": {"en": "Paradip Port", "hi": "पारादीप बंदरगाह"},
+"b": {"en": "Visakhapatnam Port", "hi": "विशाखापत्तनम बंदरगाह"},
+"c": {"en": "Haldia Port", "hi": "हल्दिया बंदरगाह"},
+"d": {"en": "Kolkata Port", "hi": "कोलकाता बंदरगाह"}
+},
+"correct_option": "d"
+},
+{
+"id": 46,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 96,
+"question_en": "What was the main role of the Planning Commission of India?",
+"question_hi": "भारत के योजना आयोग की मुख्य भूमिका क्या थी?",
+"options": {
+"a": {"en": "To control government expenditure", "hi": "सरकारी खर्च को नियंत्रित करना"},
+"b": {"en": "To manage public debt", "hi": "सार्वजनिक ऋण का प्रबंधन करना"},
+"c": {"en": "To formulate and implement Five-Year Plans", "hi": "पंचवर्षीय योजनाओं को तैयार करना और कार्यान्वित करना"},
+"d": {"en": "To monitor banking policies", "hi": "बैंकिंग नीतियों की निगरानी करना"}
+},
+"correct_option": "c"
+},
+{
+"id": 47,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 97,
+"question_en": "In which year was the National Youth Policy launched in India (as per the given options)?",
+"question_hi": "भारत में राष्ट्रीय युवा नीति किस वर्ष शुरू की गई थी?",
+"options": {
+"a": {"en": "2000", "hi": "2000"},
+"b": {"en": "2012", "hi": "2012"},
+"c": {"en": "2014", "hi": "2014"},
+"d": {"en": "2016", "hi": "2016"}
+},
+"correct_option": "c"
+},
+{
+"id": 48,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 98,
+"question_en": "In humans, which organ of the digestive system secretes lipase to digest emulsified fats?",
+"question_hi": "मनुष्यों में, पाचन तंत्र का कौन सा अंग इमल्सीकृत वसा को पचाने के लिए लाइपेज का स्राव करता है?",
+"options": {
+"a": {"en": "Stomach", "hi": "आमाशय"},
+"b": {"en": "Liver", "hi": "यकृत"},
+"c": {"en": "Pancreas", "hi": "अग्न्याशय"},
+"d": {"en": "Oesophagus", "hi": "ग्रासनली"}
+},
+"correct_option": "c"
+},
+{
+"id": 49,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 99,
+"question_en": "Which statement is correct about haemoglobin in humans?\nI. It acts as a respiratory pigment.\nII. It is responsible for blood clotting.",
+"question_hi": "मनुष्यों में हीमोग्लोबिन के बारे में कौन सा कथन सही है?\nI. यह श्वसन वर्णक के रूप में कार्य करता है।\nII. यह रक्त के थक्के जमने के लिए उत्तरदायी है।",
+"options": {
+"a": {"en": "Only II", "hi": "केवल II"},
+"b": {"en": "Neither I nor II", "hi": "न तो I और न ही II"},
+"c": {"en": "Only I", "hi": "केवल I"},
+"d": {"en": "Both I and II", "hi": "I और II दोनों"}
+},
+"correct_option": "c"
+},
+{
+"id": 50,
+"shift": "12/11/2025 (3rd Shift)",
+"original_q_no": 100,
+"question_en": "In ancient India, what was the summary/compilation of assemblies or texts called?",
+"question_hi": "प्राचीन भारत में, सम्मेलनों के सारांश को क्या कहा जाता था?",
+"options": {
+"a": {"en": "Agama", "hi": "आगम"},
+"b": {"en": "Veda", "hi": "वेद"},
+"c": {"en": "Upanishad", "hi": "उपनिषद"},
+"d": {"en": "Samhita", "hi": "संहिता"}
+},
+"correct_option": "d"
+}
+]
+}
