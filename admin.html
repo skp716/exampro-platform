@@ -1101,7 +1101,9 @@
       if(!id||id.length<2){alert('Please enter a category name containing at least two letters or numbers.');return;}
       if(multiExamConfig[id]||deletedExamIds.includes(id)){alert('This category ID already exists. Choose a different name.');return;}
       multiExamConfig[id]={examName:name,timerMinutes:60,securityPenalty:1,active:false,subjects:[]};
-      renderExamSelector(id);renderActiveExamControls();renderSubjectConfig();updateMultiExamSummary();
+      renderExamSelector(id);
+      const timerInput=document.getElementById('per-exam-timer');if(timerInput)timerInput.value=60;
+      renderActiveExamControls();renderSubjectConfig();updateMultiExamSummary();
     }
     function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand',ssc_gd:'SSC GD'}[id]) || id); }
     function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
@@ -1192,11 +1194,12 @@
       list.querySelectorAll('[data-delete-exam]').forEach(btn=>btn.addEventListener('click',()=>{
         const id=btn.dataset.deleteExam;
         if(!multiExamConfig[id])return;
+        if(getExamIds().length<=1){alert('At least one exam category must remain.');return;}
         if(!confirm(`Delete the "${getExamDisplayName(id)}" category configuration? Historical results, attempts and question files will NOT be deleted.`))return;
         collectCurrentExamTimer();
         delete multiExamConfig[id];
         if(!deletedExamIds.includes(id))deletedExamIds.push(id);
-        renderExamSelector();renderActiveExamControls();renderSubjectConfig();updateMultiExamSummary();
+        renderExamSelector();syncCurrentExamTimer();renderActiveExamControls();renderSubjectConfig();updateMultiExamSummary();
       }));
       list.querySelectorAll('[data-edit-exam]').forEach(btn=>btn.addEventListener('click',()=>{
         const id=btn.dataset.editExam;
@@ -1213,6 +1216,7 @@
           const value=input.value.trim();
           if(!value){ input.focus(); return; }
           exam.examName=value;
+          renderExamSelector(id);
           renderActiveExamControls();
           updateMultiExamSummary();
         };
