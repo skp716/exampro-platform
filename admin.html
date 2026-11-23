@@ -590,6 +590,7 @@
         <div class="subject-config-list" id="subject-config-list"></div>
 
         <div class="multi-exam-actions">
+          <button type="button" class="btn" id="add-exam-category-btn"><i class="fa-solid fa-folder-plus"></i> Add Exam Category</button>
           <button type="button" class="btn" id="add-subject-btn"><i class="fa-solid fa-plus"></i> Add Subject</button>
           <button type="button" class="btn btn-success" id="save-multi-exam-btn"><i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings</button>
         </div>
@@ -604,8 +605,8 @@
         <p class="subtitle">Only students with the active center code can enter. Institute details are used automatically in the live dashboard and branded report.</p>
         <div class="form-grid">
           <div class="form-group"><label for="center-code">Center Code *</label><input type="text" id="center-code" placeholder="e.g. ACC-2026" autocomplete="off"></div>
-          <div class="form-group"><label for="center-name">Institute Name *</label><input type="text" id="center-name" value="ASHISH COMPETITION CENTRE (ACC)"></div>
-          <div class="form-group"><label for="center-location">Institute Location *</label><input type="text" id="center-location" value="DALTONGANJ"></div>
+          <div class="form-group"><label for="center-name">Institute Name *</label><input type="text" id="center-name" placeholder="Enter institute name"></div>
+          <div class="form-group"><label for="center-location">Institute Location *</label><input type="text" id="center-location" placeholder="Enter institute location"></div>
           <div class="form-group"><label for="center-address">Full Address</label><input type="text" id="center-address" placeholder="Institute address"></div>
           <div class="form-group"><label for="center-batch">Batch / Category</label><input type="text" id="center-batch" placeholder="e.g. R Batch"></div>
         </div>
@@ -1081,10 +1082,27 @@
         {name:'English Comprehension',count:25,order:'random',source:''}]}
     };
     // v4 repairs previously persisted swapped RRB/SSC timer values.
-    const EXAM_CONFIG_SCHEMA_VERSION = 4;
+    const EXAM_CONFIG_SCHEMA_VERSION = 5;
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
+    let deletedExamIds = [];
 
-    function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd','ssc_cgl']; }
+    function getExamIds(){ return Object.keys(multiExamConfig).filter(id=>/^[a-z0-9][a-z0-9_-]{1,59}$/.test(id) && !deletedExamIds.includes(id)); }
+    function renderExamSelector(selectedId){
+      const selector=document.getElementById('exam-selector'); if(!selector)return;
+      const previous=selectedId||selector.value;
+      selector.innerHTML=getExamIds().map(id=>`<option value="${escapeHTML(id)}">${escapeHTML(getExamDisplayName(id))}</option>`).join('');
+      selector.value=getExamIds().includes(previous)?previous:(getExamIds()[0]||'');
+    }
+    function createExamCategory(){
+      const name=String(prompt('Enter the new exam category name:')||'').trim();
+      if(!name)return;
+      if(name.length>100){alert('Category name must be 100 characters or fewer.');return;}
+      const id=name.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,60);
+      if(!id||id.length<2){alert('Please enter a category name containing at least two letters or numbers.');return;}
+      if(multiExamConfig[id]||deletedExamIds.includes(id)){alert('This category ID already exists. Choose a different name.');return;}
+      multiExamConfig[id]={examName:name,timerMinutes:60,securityPenalty:1,active:false,subjects:[]};
+      renderExamSelector(id);renderActiveExamControls();renderSubjectConfig();updateMultiExamSummary();
+    }
     function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand',ssc_gd:'SSC GD'}[id]) || id); }
     function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
     function escapeHTML(value){ return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -1120,8 +1138,8 @@
     function populateCenterSettings(data={}){
       currentCenterSettings={
         centerId:data.activeCenterId||'',
-        instituteName:data.instituteName||'ASHISH COMPETITION CENTRE (ACC)',
-        location:data.instituteLocation||'DALTONGANJ',
+        instituteName:data.instituteName||'Examination Institute',
+        location:data.instituteLocation||'',
         address:data.instituteAddress||'',
         batch:data.batchName||''
       };
@@ -1139,12 +1157,10 @@
       const id=getConfiguredExamId();
       if(!multiExamConfig[id]) return;
       const input=document.getElementById('per-exam-timer');
-      const fixedTimer=id==='railway_group_d'?90:id==='ssc_gd'?60:null;
-      if(fixedTimer!==null) multiExamConfig[id].timerMinutes=fixedTimer;
       if(input){
-        input.value=fixedTimer??(Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '');
-        input.disabled=fixedTimer!==null;
-        input.title=fixedTimer!==null?'This examination duration is fixed by policy.':'';
+        input.value=Number(multiExamConfig[id].timerMinutes)>0 ? Number(multiExamConfig[id].timerMinutes) : '';
+        input.disabled=false;
+        input.title='';
       }
       const penalty=document.getElementById('per-exam-penalty');
       if(penalty) penalty.value=Number.isFinite(Number(multiExamConfig[id].securityPenalty)) ? Number(multiExamConfig[id].securityPenalty) : 1;
@@ -1153,10 +1169,8 @@
     function collectCurrentExamTimer(){
       const id=getConfiguredExamId();
       if(!multiExamConfig[id]) multiExamConfig[id]={examName:getExamDisplayName(id),timerMinutes:0,active:false,subjects:[]};
-      if(id==='railway_group_d') multiExamConfig[id].timerMinutes=90;
-      else if(id==='ssc_gd') multiExamConfig[id].timerMinutes=60;
       const value=Number(document.getElementById('per-exam-timer')?.value);
-      if(!['railway_group_d','ssc_gd'].includes(id) && Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
+      if(Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
       const penalty=Number(document.getElementById('per-exam-penalty')?.value);
       if(Number.isFinite(penalty) && penalty>=0) multiExamConfig[id].securityPenalty=penalty;
     }
@@ -1168,12 +1182,21 @@
         if(!multiExamConfig[id]) multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};
         const wrap=document.createElement('div'); wrap.className='active-exam-option';
         const checked=multiExamConfig[id].active===true;
-        wrap.innerHTML=`<input type="checkbox" id="active-exam-${id}" data-active-exam="${id}" ${checked?'checked':''}><label class="active-exam-label" for="active-exam-${id}"><i class="fa-solid fa-circle-check"></i><span class="active-exam-name">${escapeHTML(getExamDisplayName(id))}</span></label><button type="button" class="active-exam-edit" data-edit-exam="${id}" title="Edit exam name" aria-label="Edit exam name"><i class="fa-solid fa-pen"></i></button>`;
+        wrap.innerHTML=`<input type="checkbox" id="active-exam-${escapeHTML(id)}" data-active-exam="${escapeHTML(id)}" ${checked?'checked':''}><label class="active-exam-label" for="active-exam-${escapeHTML(id)}"><i class="fa-solid fa-circle-check"></i><span class="active-exam-name">${escapeHTML(getExamDisplayName(id))}</span></label><button type="button" class="active-exam-edit" data-edit-exam="${escapeHTML(id)}" title="Edit exam name" aria-label="Edit exam name"><i class="fa-solid fa-pen"></i></button><button type="button" class="active-exam-edit" data-delete-exam="${escapeHTML(id)}" title="Delete category" aria-label="Delete category" style="color:#dc2626"><i class="fa-solid fa-trash"></i></button>`;
         list.appendChild(wrap);
       });
       list.querySelectorAll('[data-active-exam]').forEach(cb=>cb.addEventListener('change',()=>{
         multiExamConfig[cb.dataset.activeExam].active=cb.checked;
         updateMultiExamSummary();
+      }));
+      list.querySelectorAll('[data-delete-exam]').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.deleteExam;
+        if(!multiExamConfig[id])return;
+        if(!confirm(`Delete the "${getExamDisplayName(id)}" category configuration? Historical results, attempts and question files will NOT be deleted.`))return;
+        collectCurrentExamTimer();
+        delete multiExamConfig[id];
+        if(!deletedExamIds.includes(id))deletedExamIds.push(id);
+        renderExamSelector();renderActiveExamControls();renderSubjectConfig();updateMultiExamSummary();
       }));
       list.querySelectorAll('[data-edit-exam]').forEach(btn=>btn.addEventListener('click',()=>{
         const id=btn.dataset.editExam;
@@ -1271,7 +1294,7 @@
       const btn=document.getElementById('save-multi-exam-btn');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Exam Settings...';
       try{
         const activeExamIds=getExamIds().filter(id=>multiExamConfig[id]?.active);
-        await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,activeExamIds,activeExamId:activeExamIds[0] || '',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,updatedAt:new Date()},{merge:true});
+        await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig,deletedExamIds,activeExamIds,activeExamId:activeExamIds[0] || '',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,updatedAt:new Date()},{merge:true});
         renderActiveExamControls();
         updateMultiExamSummary();
         alert('Exam, timer, subject and active-exam settings saved successfully!');
@@ -1279,8 +1302,10 @@
       finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Exam & Subject Settings';}
     }
 
-    function initializeMultiExamControls(savedConfig,savedActiveExam,savedActiveExamIds){
+    function initializeMultiExamControls(savedConfig,savedActiveExam,savedActiveExamIds,savedDeletedExamIds){
+      deletedExamIds=Array.isArray(savedDeletedExamIds)?savedDeletedExamIds.filter(id=>typeof id==='string'):[];
       if(savedConfig&&typeof savedConfig==='object')multiExamConfig=JSON.parse(JSON.stringify(savedConfig));
+      else multiExamConfig=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
        const sourceAliases = {
          'ssc-gd/reasoning.html':'SSC/reasoning.html',
          'ssc-gd/gk-gs.html':'SSC/GK.HTML',
@@ -1293,11 +1318,12 @@
            if(sourceAliases[key]) subject.source=sourceAliases[key];
          });
        });
-       getExamIds().forEach(id=>{if(!multiExamConfig[id])multiExamConfig[id]={...JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]))};if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=0;});
+       Object.entries(DEFAULT_MULTI_EXAM_CONFIG).forEach(([id,cfg])=>{if(!multiExamConfig[id]&&!deletedExamIds.includes(id))multiExamConfig[id]=JSON.parse(JSON.stringify(cfg));});
+       getExamIds().forEach(id=>{if(typeof multiExamConfig[id].timerMinutes!=='number')multiExamConfig[id].timerMinutes=Number(multiExamConfig[id].timerMinutes)||0;});
       if(Array.isArray(savedActiveExamIds)) getExamIds().forEach(id=>multiExamConfig[id].active=savedActiveExamIds.includes(id));
       const selector=document.getElementById('exam-selector');
       if(selector){
-        selector.value=savedActiveExam&&multiExamConfig[savedActiveExam]?savedActiveExam:'railway_group_d';
+        renderExamSelector(savedActiveExam);
         selector.dataset.previousExamId=selector.value;
         selector.onchange=()=>{
           const previousId=selector.dataset.previousExamId;
@@ -1313,6 +1339,7 @@
       }
       const timer=document.getElementById('per-exam-timer'); if(timer) timer.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
       const penalty=document.getElementById('per-exam-penalty'); if(penalty) penalty.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
+      document.getElementById('add-exam-category-btn')?.addEventListener('click',createExamCategory);
       document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getConfiguredExamId();collectCurrentExamTimer();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});
       document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);
       renderActiveExamControls();
@@ -1331,27 +1358,15 @@
           const data=docSnap.data();
           if(Number(data.schemaVersion||0)<EXAM_CONFIG_SCHEMA_VERSION){
             const migrated=JSON.parse(JSON.stringify(data.multiExamConfig||DEFAULT_MULTI_EXAM_CONFIG));
-            getExamIds().forEach(id=>{if(!migrated[id])migrated[id]=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG[id]));});
-            migrated.railway_group_d.examName='RRB Group D';
-            migrated.railway_group_d.active=true;
-            migrated.railway_group_d.timerMinutes=90;
-            migrated.railway_group_d.securityPenalty=Number.isFinite(Number(migrated.railway_group_d.securityPenalty))?Number(migrated.railway_group_d.securityPenalty):1;
-            migrated.railway_group_d.subjects=JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG.railway_group_d.subjects));
-            migrated.ssc_gd.active=true;
-            migrated.ssc_gd.timerMinutes=60;
-            migrated.ssc_gd.securityPenalty=Number.isFinite(Number(migrated.ssc_gd.securityPenalty))?Number(migrated.ssc_gd.securityPenalty):1;
-            migrated.jharkhand_tet.active=false;
-            const activeExamIds=['railway_group_d','ssc_gd'];
-            await setDoc(doc(db,'exam_config','current_test'),{
-              multiExamConfig:migrated,
-              activeExamIds,
-              activeExamId:'railway_group_d',
-              schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,
-              updatedAt:new Date()
-            },{merge:true});
-            Object.assign(data,{multiExamConfig:migrated,activeExamIds,activeExamId:'railway_group_d',schemaVersion:EXAM_CONFIG_SCHEMA_VERSION});
+            const removed=Array.isArray(data.deletedExamIds)?data.deletedExamIds:[];
+            Object.entries(DEFAULT_MULTI_EXAM_CONFIG).forEach(([id,cfg])=>{if(!migrated[id]&&!removed.includes(id))migrated[id]=JSON.parse(JSON.stringify(cfg));});
+            Object.entries(migrated).forEach(([id,exam])=>{if(!Number.isFinite(Number(exam.timerMinutes))||Number(exam.timerMinutes)<=0)exam.timerMinutes=Number(DEFAULT_MULTI_EXAM_CONFIG[id]?.timerMinutes)||60;});
+            const activeExamIds=Array.isArray(data.activeExamIds)&&data.activeExamIds.length?data.activeExamIds.filter(id=>migrated[id]&&!removed.includes(id)):Object.keys(migrated).filter(id=>migrated[id]?.active===true&&!removed.includes(id));
+            const activeExamId=activeExamIds.includes(data.activeExamId)?data.activeExamId:(activeExamIds[0]||'');
+            await setDoc(doc(db,'exam_config','current_test'),{multiExamConfig:migrated,deletedExamIds:removed,activeExamIds,activeExamId,schemaVersion:EXAM_CONFIG_SCHEMA_VERSION,updatedAt:new Date()},{merge:true});
+            Object.assign(data,{multiExamConfig:migrated,deletedExamIds:removed,activeExamIds,activeExamId,schemaVersion:EXAM_CONFIG_SCHEMA_VERSION});
           }
-          initializeMultiExamControls(data.multiExamConfig,data.activeExamId,data.activeExamIds);
+          initializeMultiExamControls(data.multiExamConfig,data.activeExamId,data.activeExamIds,data.deletedExamIds);
           populateCenterSettings(data);
           if(data.windowStart) document.getElementById('config-window-start').value=new Date(data.windowStart).toISOString().slice(0,16);
           if(data.windowEnd) document.getElementById('config-window-end').value=new Date(data.windowEnd).toISOString().slice(0,16);
