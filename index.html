@@ -2139,13 +2139,14 @@
       renderSubjectNavigation();
 
       const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
-      let questionValue = qData.question ?? qData.question_en ?? qData.question_hi ?? qData.q ?? qData.text ?? qData.questionText ?? '';
+      const questionCandidates = [qData.question, qData.question_en, qData.question_hi, qData.q, qData.text, qData.questionText];
+      let questionValue = questionCandidates.find(value => typeof value === 'string' && value.trim()) || '';
       let passageValue = qData.passage || '';
       // The SSC source carries the full Phule passage with Q76. Since the
       // question order is randomized, attach that source passage to Q76–80.
       if(!passageValue && Number(qData.id)>=76 && Number(qData.id)<=80){
         const anchor=[...questionsList,...reserveQuestions].find(q=>Number(q.id)===76);
-        const anchorText=anchor?.question??anchor?.q??'';
+        const anchorText=[anchor?.question,anchor?.question_en,anchor?.question_hi,anchor?.q].find(value=>typeof value==='string'&&value.trim())||'';
         const passageStart=anchorText.indexOf('\n')+1;
         const questionStart=anchorText.indexOf('\nमहात्मा फुले के अनुसार');
         if(passageStart>0&&questionStart>passageStart)passageValue=anchorText.slice(passageStart,questionStart);
