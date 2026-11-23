@@ -563,6 +563,7 @@
                 <option value="railway_group_d">RRB Group D</option>
                 <option value="jharkhand_tet">Jharkhand</option>
                 <option value="ssc_gd">SSC GD</option>
+                <option value="ssc_cgl">SSC CGL</option>
               </select>
             </div>
 
@@ -1071,13 +1072,19 @@
         {name:'General Intelligence & Reasoning',count:20,order:'random',source:'SSC/reasoning.html'},
         {name:'General Knowledge & General Awareness',count:20,order:'random',source:'SSC/GK.HTML'},
         {name:'Elementary Mathematics',count:20,order:'random',source:'SSC/math.html'},
-        {name:'English / Hindi',count:20,order:'random',source:'SSC/hindi.html'}]}
+        {name:'English / Hindi',count:20,order:'random',source:'SSC/hindi.html'}]},
+      // SSC CGL starts disabled. Add/confirm the CGL question-bank file paths in Admin before enabling it.
+      ssc_cgl:{examName:'SSC CGL',timerMinutes:60,securityPenalty:1,active:false,subjects:[
+        {name:'General Intelligence & Reasoning',count:25,order:'random',source:''},
+        {name:'General Awareness',count:25,order:'random',source:''},
+        {name:'Quantitative Aptitude',count:25,order:'random',source:''},
+        {name:'English Comprehension',count:25,order:'random',source:''}]}
     };
     // v4 repairs previously persisted swapped RRB/SSC timer values.
     const EXAM_CONFIG_SCHEMA_VERSION = 4;
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
 
-    function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd']; }
+    function getExamIds(){ return ['railway_group_d','jharkhand_tet','ssc_gd','ssc_cgl']; }
     function getExamDisplayName(id){ return (multiExamConfig[id]?.examName || ({railway_group_d:'Railway Group D',jharkhand_tet:'Jharkhand',ssc_gd:'SSC GD'}[id]) || id); }
     function getConfiguredExamId(){ return document.getElementById('exam-selector')?.value || 'railway_group_d'; }
     function escapeHTML(value){ return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
