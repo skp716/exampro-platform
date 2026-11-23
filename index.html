@@ -317,8 +317,8 @@
     <div class="slide active" id="slide-1">
       <div class="brand-header">
         <div class="brand-mark"><i class="fa-solid fa-building-columns"></i></div>
-        <div class="brand-name">ASHISH COMPETITION CENTRE (ACC)</div>
-        <div class="brand-sub">DALTONGANJ</div>
+        <div class="brand-name">Examination Institute</div>
+        <div class="brand-sub"></div>
       </div>
       <h2><i class="fa-solid fa-user-lock"></i> Candidate Login</h2>
       <p class="subtitle">Enter your details to access the online examination portal.</p>
@@ -353,8 +353,8 @@
     <div class="slide" id="slide-2">
       <div class="brand-header">
         <div class="brand-mark"><i class="fa-solid fa-building-columns"></i></div>
-        <div class="brand-name">ASHISH COMPETITION CENTRE (ACC)</div>
-        <div class="brand-sub">DALTONGANJ</div>
+        <div class="brand-name">Examination Institute</div>
+        <div class="brand-sub"></div>
       </div>
       <h2><i class="fa-solid fa-clipboard-list"></i> Instructions</h2>
       <p class="subtitle">Please read all instructions carefully before starting.</p>
@@ -394,7 +394,7 @@
         <div class="exam-topbar">
           <div class="exam-institute">
             <div class="mini-logo"><i class="fa-solid fa-building-columns"></i></div>
-            <div><strong>ASHISH COMPETITION CENTRE (ACC)</strong><span>DALTONGANJ</span></div>
+            <div><strong class="exam-brand-name">Examination Institute</strong><span class="exam-brand-location"></span></div>
           </div>
           <div class="topbar-right">
             <div class="topbar-stat"><span>Questions</span><b id="top-question-count">0 / 0</b></div>
@@ -451,6 +451,7 @@
     <div class="slide" id="slide-4">
       <h2><i class="fa-solid fa-square-poll-horizontal"></i> Performance Dashboard</h2>
       <p class="subtitle">Your metrics and evaluation sheet.</p>
+      <div class="results-institute-brand" style="text-align:center;margin:0 0 18px;"><strong class="brand-name">Examination Institute</strong><div class="brand-sub" style="color:#64748b;letter-spacing:1px;"></div></div>
       
       <div class="score-board">
         <div class="score-card">
@@ -753,17 +754,12 @@
     }
 
     function applyCenterBranding(center){
-      const institute=center?.instituteName||'Examination Center';
-      const location=center?.location||'';
+      const institute=String(center?.instituteName||'Examination Institute');
+      const location=String(center?.location||'');
       document.querySelectorAll('.brand-name').forEach(el=>el.textContent=institute);
       document.querySelectorAll('.brand-sub').forEach(el=>el.textContent=location);
-      const examInstitute=document.querySelector('.exam-institute');
-      if(examInstitute){
-        const title=examInstitute.querySelector('strong');
-        const sub=examInstitute.querySelector('span');
-        if(title)title.textContent=institute;
-        if(sub)sub.textContent=location;
-      }
+      document.querySelectorAll('.exam-brand-name').forEach(el=>el.textContent=institute);
+      document.querySelectorAll('.exam-brand-location').forEach(el=>el.textContent=location);
     }
 
     async function claimLoginSession(){
@@ -1523,8 +1519,7 @@
 
       const activeExam = selectedExamConfig || getSelectedExamConfig();
       const configuredQuestions = activeExam ? getExamTotalQuestions(activeExam) : examConfigData?.studentLimit;
-      const configuredMinutes = isRailwayExam(activeExam) ? 90 : activeExam?.id==='ssc_gd' ? 60 :
-        (Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes)));
+      const configuredMinutes = Number(activeExam?.timerMinutes) > 0 ? Number(activeExam.timerMinutes) : (Number(activeExam?.durationMinutes) > 0 ? Number(activeExam.durationMinutes) : Number(examConfigData?.durationMinutes));
 
       questionEl.innerText = (Number.isFinite(Number(configuredQuestions)) && Number(configuredQuestions) > 0)
         ? Number(configuredQuestions)
@@ -1679,8 +1674,7 @@
           selectedAnswers = {}; questionStatus = {}; securityEvents = [];
           tabSwitches = 0; copiesAttempted = 0; penaltiesApplied = 0;
           currentQuestionIndex = 0; examStartTime = Date.now();
-          const configuredDuration = isRailwayExam(selectedExamConfig) ? 90 : selectedExamId==='ssc_gd' ? 60 :
-            (Number(selectedExamConfig?.timerMinutes)||Number(selectedExamConfig?.durationMinutes)||Number(examConfigData?.durationMinutes));
+          const configuredDuration = Number(selectedExamConfig?.timerMinutes)||Number(selectedExamConfig?.durationMinutes)||Number(examConfigData?.durationMinutes);
           examEndTime = Date.now() + configuredDuration*60*1000;
           questionsList.forEach((_, i) => questionStatus[i] = 'not-visited');
         }
