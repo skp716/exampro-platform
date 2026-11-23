@@ -1076,13 +1076,13 @@
         {name:'English / Hindi',count:20,order:'random',source:'SSC/hindi.html'}]},
       // SSC CGL starts disabled. Add/confirm the CGL question-bank file paths in Admin before enabling it.
       ssc_cgl:{examName:'SSC CGL',timerMinutes:60,securityPenalty:1,active:false,subjects:[
-        {name:'General Intelligence & Reasoning',count:25,order:'random',source:''},
-        {name:'General Awareness',count:25,order:'random',source:''},
-        {name:'Quantitative Aptitude',count:25,order:'random',source:''},
-        {name:'English Comprehension',count:25,order:'random',source:''}]}
+        {name:'General Intelligence & Reasoning',count:25,order:'random',source:'cgl/reasoning.json'},
+        {name:'General Awareness',count:25,order:'random',source:'cgl/gkgs.json'},
+        {name:'Quantitative Aptitude',count:25,order:'random',source:'cgl/maths.json'},
+        {name:'English Comprehension',count:25,order:'random',source:'cgl/english.json'}]}
     };
     // v4 repairs previously persisted swapped RRB/SSC timer values.
-    const EXAM_CONFIG_SCHEMA_VERSION = 5;
+    const EXAM_CONFIG_SCHEMA_VERSION = 6;
     let multiExamConfig = JSON.parse(JSON.stringify(DEFAULT_MULTI_EXAM_CONFIG));
     let deletedExamIds = [];
 
@@ -1364,6 +1364,14 @@
             const migrated=JSON.parse(JSON.stringify(data.multiExamConfig||DEFAULT_MULTI_EXAM_CONFIG));
             const removed=Array.isArray(data.deletedExamIds)?data.deletedExamIds:[];
             Object.entries(DEFAULT_MULTI_EXAM_CONFIG).forEach(([id,cfg])=>{if(!migrated[id]&&!removed.includes(id))migrated[id]=JSON.parse(JSON.stringify(cfg));});
+            // v6: repair empty persisted SSC CGL source paths without overwriting custom paths.
+            const cglDefaults=DEFAULT_MULTI_EXAM_CONFIG.ssc_cgl?.subjects||[];
+            if(migrated.ssc_cgl && Array.isArray(migrated.ssc_cgl.subjects)){
+              migrated.ssc_cgl.subjects.forEach((subject,index)=>{
+                const fallback=cglDefaults.find(item=>item.name===subject.name)||cglDefaults[index];
+                if(fallback && !String(subject.source||subject.file||subject.questionSource||subject.questionFile||subject.path||'').trim()) subject.source=fallback.source;
+              });
+            }
             Object.entries(migrated).forEach(([id,exam])=>{if(!Number.isFinite(Number(exam.timerMinutes))||Number(exam.timerMinutes)<=0)exam.timerMinutes=Number(DEFAULT_MULTI_EXAM_CONFIG[id]?.timerMinutes)||60;});
             const activeExamIds=Array.isArray(data.activeExamIds)&&data.activeExamIds.length?data.activeExamIds.filter(id=>migrated[id]&&!removed.includes(id)):Object.keys(migrated).filter(id=>migrated[id]?.active===true&&!removed.includes(id));
             const activeExamId=activeExamIds.includes(data.activeExamId)?data.activeExamId:(activeExamIds[0]||'');
