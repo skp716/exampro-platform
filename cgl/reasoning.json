@@ -950,7 +950,7 @@
           "hi": "आकृति (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "b",
       "has_image": true,
       "images": [
         "../cgl image/Q35_mirror_image.jpg"
@@ -1115,7 +1115,7 @@
           "hi": "आकृति (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "a",
       "has_image": true,
       "images": [
         "../cgl image/Q41_paper_folding.jpg"
@@ -1145,7 +1145,7 @@
           "hi": "आकृति (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "a",
       "has_image": true,
       "images": [
         "../cgl image/Q42_hidden_figure.jpg"
@@ -1202,7 +1202,7 @@
           "hi": "3"
         }
       },
-      "correct_option": null,
+      "correct_option": "b",
       "has_image": true,
       "images": [
         "../cgl image/Q44_venn_diagram.jpg"
@@ -1232,7 +1232,7 @@
           "hi": "आरेख (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "b",
       "has_image": true,
       "images": [
         "../cgl image/Q45_venn_diagram_options.jpg"
@@ -1289,7 +1289,7 @@
           "hi": "आकृति (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "a",
       "has_image": true,
       "images": [
         "../cgl image/Q47_missing_figure.jpg"
@@ -1319,7 +1319,7 @@
           "hi": "आकृति (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "a",
       "has_image": true,
       "images": [
         "../cgl image/Q48_figure_analogy.jpg"
@@ -1349,7 +1349,7 @@
           "hi": "आकृति (d)"
         }
       },
-      "correct_option": null,
+      "correct_option": "c",
       "has_image": true,
       "images": [
         "../cgl image/Q49_symbol_sequence.jpg"
