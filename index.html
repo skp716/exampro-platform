@@ -397,7 +397,7 @@
             <div><strong class="exam-brand-name">Examination Institute</strong><span class="exam-brand-location"></span></div>
           </div>
           <div class="topbar-right">
-            <label id="exam-language-wrap" class="exam-language-wrap" style="display:none;color:#fff;font-size:.75rem;font-weight:700;gap:6px;align-items:center;text-transform:none;letter-spacing:0;margin:0;">Language <select id="exam-language-select" aria-label="Select question language" style="border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:7px 9px;background:#fff;color:#123;font-weight:700;"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
+            <label id="exam-language-wrap" class="exam-language-wrap" style="display:none;color:#fff;font-size:.75rem;font-weight:700;gap:6px;align-items:center;text-transform:none;letter-spacing:0;margin:0;">Language <select id="exam-language-select" aria-label="Select question language" onchange="changeExamLanguage(this.value)" style="border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:7px 9px;background:#fff;color:#123;font-weight:700;"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
             <div class="topbar-stat"><span>Questions</span><b id="top-question-count">0 / 0</b></div>
             <div class="exam-timer"><i class="fa-regular fa-clock"></i><span id="timer-display">00:00</span></div>
             <button class="palette-toggle" id="palette-toggle" onclick="toggleMobilePalette()" aria-label="Open question palette"><i class="fa-solid fa-bars"></i></button>
