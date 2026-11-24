@@ -12,7 +12,7 @@
       "id": 1,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 1,
-      "question_en": "Identify the part of the sentence that contains a grammatical error: A. The team, B. was confident about their strategy, C. and hoped it, D. would succeed.",
+      "question_en": "Identify the part of the sentence that contains a grammatical error: \nA. The team, B. was confident about their strategy, C. and hoped it, D. would succeed.",
       "options": {
         "a": {
           "en": "The team"
@@ -33,7 +33,7 @@
       "id": 2,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 2,
-      "question_en": "Fill in the blank with the most appropriate phrase: All hiring decisions for the new department will be made strictly _____.",
+      "question_en": "Fill in the blank with the most appropriate phrase: \nAll hiring decisions for the new department will be made strictly _____.",
       "options": {
         "a": {
           "en": "under the table"
@@ -54,7 +54,7 @@
       "id": 3,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 3,
-      "question_en": "Select the most appropriate synonym of the word: PEAK",
+      "question_en": "Select the most appropriate synonym of the word: <strong>PEAK</strong>",
       "options": {
         "a": {
           "en": "Abyss"
@@ -75,7 +75,7 @@
       "id": 4,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 4,
-      "question_en": "Fill in the blank with the most appropriate idiom: Rahul's abrupt decision to step down caught everyone _____.",
+      "question_en": "Fill in the blank with the most appropriate idiom: \nRahul's abrupt decision to step down caught everyone _____.",
       "options": {
         "a": {
           "en": "off guard"
@@ -97,7 +97,7 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 5,
       "passage_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.",
-      "question_en": "What is the main focus of modern education as mentioned in the passage?",
+      "question_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.\nWhat is the main focus of modern education as mentioned in the passage?",
       "options": {
         "a": {
           "en": "Competitive examinations"
@@ -118,7 +118,7 @@
       "id": 6,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 6,
-      "question_en": "How do schools encourage eco-friendly habits among students? (Based on the passage above)",
+      "question_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.\n How do schools encourage eco-friendly habits among students? (Based on the passage above)",
       "options": {
         "a": {
           "en": "By conducting regular tests"
@@ -139,7 +139,7 @@
       "id": 7,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 7,
-      "question_en": "What method helps students apply their knowledge in real-life situations? (Based on the passage above)",
+      "question_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.\n What method helps students apply their knowledge in real-life situations? (Based on the passage above)",
       "options": {
         "a": {
           "en": "Online assessments"
@@ -160,7 +160,7 @@
       "id": 8,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 8,
-      "question_en": "What role do teachers play in environmental education? (Based on the passage above)",
+      "question_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.\n What role do teachers play in environmental education? (Based on the passage above)",
       "options": {
         "a": {
           "en": "They focus on a single subject"
@@ -181,7 +181,7 @@
       "id": 9,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 9,
-      "question_en": "What challenge related to environmental education is mentioned in the passage?",
+      "question_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.\n What challenge related to environmental education is mentioned in the passage?",
       "options": {
         "a": {
           "en": "Lack of student interest"
@@ -202,7 +202,7 @@
       "id": 10,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 10,
-      "question_en": "Select the sentence that contains the homonym of the word 'bank' as highlighted in the sentence: She opened a new account at the bank.",
+      "question_en": "Select the sentence that contains the homonym of the word 'bank' as highlighted in the sentence: \nShe opened a new account at the bank.",
       "options": {
         "a": {
           "en": "I deposited my paycheck at the bank."
@@ -286,7 +286,7 @@
       "id": 14,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 14,
-      "question_en": "Choose the correct one-word substitute for: A person who is very interested in films.",
+      "question_en": "Choose the correct one-word substitute for: \nA person who is very interested in films.",
       "options": {
         "a": {
           "en": "Flask"
@@ -307,7 +307,7 @@
       "id": 15,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 15,
-      "question_en": "Select the most appropriate antonym of the word: Hazardous",
+      "question_en": "Select the most appropriate antonym of the word: <strong>Hazardous</strong>",
       "options": {
         "a": {
           "en": "Beneficial"
@@ -328,7 +328,7 @@
       "id": 16,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 16,
-      "question_en": "Select the most appropriate antonym of the word: Perilous",
+      "question_en": "Select the most appropriate antonym of the word: <strong>Perilous</strong>",
       "options": {
         "a": {
           "en": "Dangerous"
@@ -349,7 +349,7 @@
       "id": 17,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 17,
-      "question_en": "Choose the correct one-word substitute for: A person who studies birds.",
+      "question_en": "Choose the correct one-word substitute for: \nA person who studies birds.",
       "options": {
         "a": {
           "en": "Botanist"
@@ -370,7 +370,7 @@
       "id": 18,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 18,
-      "question_en": "Change the following sentence into the Active form: Let the political lies be exposed to the public before the election.",
+      "question_en": "Change the following sentence into the Active form: \nLet the political lies be exposed to the public before the election.",
       "options": {
         "a": {
           "en": "You should expose the political lies to the public before the elections."
@@ -412,7 +412,7 @@
       "id": 20,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 20,
-      "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: One must follow a balanced diet and regular exercise routine to [maintaining good health].",
+      "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: \n One must follow a balanced diet and regular exercise routine to [maintaining good health].",
       "options": {
         "a": {
           "en": "maintain health good"
@@ -454,7 +454,7 @@
       "id": 22,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 22,
-      "question_en": "Choose the correct passive voice transformation of the sentence: Citizens speak English in several parts of the world.",
+      "question_en": "Choose the correct passive voice transformation of the sentence: \n Citizens speak English in several parts of the world.",
       "options": {
         "a": {
           "en": "English was spoken by citizens in several parts of the world."
@@ -475,7 +475,7 @@
       "id": 23,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 23,
-      "question_en": "Select the option that expresses the given sentence in direct voice: The principal stated that the school had implemented new rules that year and that they were taking strict measures to ensure discipline.",
+      "question_en": "Select the option that expresses the given sentence in direct voice: \n The principal stated that the school had implemented new rules that year and that they were taking strict measures to ensure discipline.",
       "options": {
         "a": {
           "en": "The principal stated, \"The school has implemented new rules this year, and we are taking strict measures to ensure discipline.\""
@@ -538,7 +538,7 @@
       "id": 26,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 1,
-      "question_en": "Identify the part of the sentence that contains a grammatical error: A. A herd of cattle B. were grazing in C. the large field D. behind the farm.",
+      "question_en": "Identify the part of the sentence that contains a grammatical error: \nA. A herd of cattle B. were grazing in C. the large field D. behind the farm.",
       "options": {
         "a": {
           "en": "A herd of cattle"
@@ -559,7 +559,7 @@
       "id": 27,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 2,
-      "question_en": "Fill in the blank with the most appropriate preposition: The resolution was passed _____ unanimous support and confidence.",
+      "question_en": "Fill in the blank with the most appropriate preposition: \nThe resolution was passed _____ unanimous support and confidence.",
       "options": {
         "a": {
           "en": "by"
@@ -580,7 +580,7 @@
       "id": 28,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 3,
-      "question_en": "Select the most appropriate synonym of the word: Argumentation",
+      "question_en": "Select the most appropriate synonym of the word: \nArgumentation",
       "options": {
         "a": {
           "en": "Dialectic"
@@ -665,7 +665,7 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 7,
       "passage_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.",
-      "question_en": "What is one of the primary roles of AI ethics boards (AEBs) in guiding technology?",
+      "question_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.\n What is one of the primary roles of AI ethics boards (AEBs) in guiding technology?",
       "options": {
         "a": {
           "en": "To accelerate the development of biased algorithms"
@@ -686,7 +686,7 @@
       "id": 33,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 8,
-      "question_en": "How do ethics boards contribute to public trust in digital systems, as mentioned in the passage?",
+      "question_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.\n How do ethics boards contribute to public trust in digital systems, as mentioned in the passage?",
       "options": {
         "a": {
           "en": "By hiding software biases from the general public"
@@ -707,7 +707,7 @@
       "id": 34,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 9,
-      "question_en": "What is a key challenge faced by AI ethics boards, according to the passage?",
+      "question_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.\n What is a key challenge faced by AI ethics boards, according to the passage?",
       "options": {
         "a": {
           "en": "A lack of new technological developments"
@@ -728,7 +728,7 @@
       "id": 35,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 10,
-      "question_en": "According to the passage, how do these boards help promote responsible innovation?",
+      "question_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.\n According to the passage, how do these boards help promote responsible innovation?",
       "options": {
         "a": {
           "en": "By allowing corporations to ignore data rights"
@@ -749,7 +749,7 @@
       "id": 36,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 11,
-      "question_en": "What is the meaning of \"fundamental\" as used in the passage?",
+      "question_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.\n What is the meaning of \"fundamental\" as used in the passage?",
       "options": {
         "a": {
           "en": "Easily replaceable"
@@ -770,7 +770,7 @@
       "id": 37,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 12,
-      "question_en": "Choose the correct meaning of the idiom: Everyone was surprised when she announced that she had a bun in the oven.",
+      "question_en": "Choose the correct meaning of the idiom: \n Everyone was surprised when she announced that she had <strong>a bun in the oven</strong>.",
       "options": {
         "a": {
           "en": "A new employee"
@@ -791,7 +791,7 @@
       "id": 38,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 13,
-      "question_en": "Choose the correct one-word substitute for: An institution providing medical and surgical treatment and nursing care for sick or injured people.",
+      "question_en": "Choose the correct one-word substitute for: \nAn institution providing medical and surgical treatment and nursing care for sick or injured people.",
       "options": {
         "a": {
           "en": "Archives"
@@ -812,7 +812,7 @@
       "id": 39,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 14,
-      "question_en": "Select the most appropriate antonym of the word: Disturbing",
+      "question_en": "Select the most appropriate antonym of the word: \n<strong>Disturbing</strong>",
       "options": {
         "a": {
           "en": "Pleasant"
@@ -833,7 +833,7 @@
       "id": 40,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 15,
-      "question_en": "Choose the correct one-word substitute for the highlighted group of words: Ramesh asked his friend who is a poet about [a technique that creates narrative rhythm].",
+      "question_en": "Choose the correct one-word substitute for the highlighted group of words: \nRamesh asked his friend who is a poet about [a technique that creates narrative rhythm].",
       "options": {
         "a": {
           "en": "Plot"
@@ -854,7 +854,7 @@
       "id": 41,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 16,
-      "question_en": "Change the following sentence into the Active form: The last piece of cake was eaten by my brother.",
+      "question_en": "Change the following sentence into the Active form: \nThe last piece of cake was eaten by my brother.",
       "options": {
         "a": {
           "en": "My brother ate the last piece of cake."
@@ -875,7 +875,7 @@
       "id": 42,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 17,
-      "question_en": "Select the option that expresses the given sentence in indirect voice: She will tell him, \"I have already booked the tickets.\"",
+      "question_en": "Select the option that expresses the given sentence in indirect voice: \nShe will tell him, \"I have already booked the tickets.\"",
       "options": {
         "a": {
           "en": "She will tell him that she had already booked the tickets."
@@ -896,7 +896,7 @@
       "id": 43,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 18,
-      "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: Radhika, the artist and sculptor, [were displaying her art at the gallery].",
+      "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: \nRadhika, the artist and sculptor, [were displaying her art at the gallery].",
       "options": {
         "a": {
           "en": "are displaying her art at the gallery"
@@ -917,7 +917,7 @@
       "id": 44,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 19,
-      "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: It is hard to identify the timber because its grain patterns [are similar to any oak tree].",
+      "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: \nIt is hard to identify the timber because its grain patterns [are similar to any oak tree].",
       "options": {
         "a": {
           "en": "are similar to all trees"
@@ -938,7 +938,7 @@
       "id": 45,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 20,
-      "question_en": "Choose the correct passive voice transformation of the sentence: The experienced chef has prepared a delicious and healthy meal to satisfy the hungry guests.",
+      "question_en": "Choose the correct passive voice transformation of the sentence: \nThe experienced chef has prepared a delicious and healthy meal to satisfy the hungry guests.",
       "options": {
         "a": {
           "en": "A delicious and healthy meal was prepared by the experienced chef to satisfy the hungry guests."
@@ -959,7 +959,7 @@
       "id": 46,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 21,
-      "question_en": "Choose the correct passive voice transformation of the sentence: What had the authorities organized to manage the traffic flow before the festival began?",
+      "question_en": "Choose the correct passive voice transformation of the sentence: \nWhat had the authorities organized to manage the traffic flow before the festival began?",
       "options": {
         "a": {
           "en": "What was organized by the authorities to manage the traffic flow before the festival began?"
@@ -980,7 +980,7 @@
       "id": 47,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 22,
-      "question_en": "Select the option that expresses the given sentence in direct voice: The strict coach, with a loud voice, said that he had warned that lazy player many times in the past.",
+      "question_en": "Select the option that expresses the given sentence in direct voice: \nThe strict coach, with a loud voice, said that he had warned that lazy player many times in the past.",
       "options": {
         "a": {
           "en": "The strict coach said, \"I warned that lazy player many times in the past.\""
@@ -1001,7 +1001,7 @@
       "id": 48,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 23,
-      "question_en": "Select the option that expresses the given sentence in direct voice: The coach told the players that their dedication had been remarkable, but that they had to now train for the finals which was a tough battle, and he was sure that they would win it.",
+      "question_en": "Select the option that expresses the given sentence in direct voice: \nThe coach told the players that their dedication had been remarkable, but that they had to now train for the finals which was a tough battle, and he was sure that they would win it.",
       "options": {
         "a": {
           "en": "\"Your dedication was remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
