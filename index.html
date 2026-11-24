@@ -2134,13 +2134,34 @@
       return raw ?? '';
     }
 
+    function isEnglishOnlySubject(subjectId = currentSubjectId, subjectName = '') {
+      const identity = `${subjectId || ''} ${subjectName || ''}`
+        .toLowerCase()
+        .replace(/[_-]+/g, ' ')
+        .replace(/\\s+/g, ' ')
+        .trim();
+      return /(^|\\b)(english|english comprehension|language ii english)(\\b|$)/i.test(identity);
+    }
+
     function updateExamLanguageAvailability() {
       const wrap = document.getElementById('exam-language-wrap');
       const select = document.getElementById('exam-language-select');
       if (!wrap || !select) return;
-      const hasHindi = questionsList.some(q =>
-        (typeof q?.question_hi === 'string' && q.question_hi.trim()) ||
-        Object.values(q?.options || {}).some(option => option && typeof option === 'object' && typeof option.hi === 'string' && option.hi.trim())
+
+      const currentQuestion = questionsList[currentQuestionIndex] || {};
+      const englishOnly = isEnglishOnlySubject(
+        currentQuestion._subjectId || currentSubjectId,
+        currentQuestion._subjectName || ''
+      );
+
+      // SSC CGL English Comprehension is English-only; do not expose Hindi
+      // translation for this subject even if source data contains Hindi fields.
+      if (englishOnly && currentExamLanguage !== 'en') currentExamLanguage = 'en';
+
+      const hasHindi = !englishOnly && questionsList.some(q =>
+        String(q?._subjectId || '') === String(currentQuestion._subjectId || currentSubjectId || '') &&
+        ((typeof q?.question_hi === 'string' && q.question_hi.trim()) ||
+          Object.values(q?.options || {}).some(option => option && typeof option === 'object' && typeof option.hi === 'string' && option.hi.trim()))
       );
       wrap.style.display = hasHindi ? 'inline-flex' : 'none';
       select.value = currentExamLanguage;
@@ -2148,13 +2169,22 @@
 
     window.changeExamLanguage = language => {
       if (!['en', 'hi'].includes(language)) return;
+      const currentQuestion = questionsList[currentQuestionIndex] || {};
+      if (language === 'hi' && isEnglishOnlySubject(
+        currentQuestion._subjectId || currentSubjectId,
+        currentQuestion._subjectName || ''
+      )) {
+        currentExamLanguage = 'en';
+        const select = document.getElementById('exam-language-select');
+        if (select) select.value = 'en';
+        return;
+      }
       currentExamLanguage = language;
       loadQuestion(currentQuestionIndex);
     };
 
     function loadQuestion(index) {
       currentQuestionIndex = index;
-      updateExamLanguageAvailability();
       if (questionStatus[index] === 'not-visited') questionStatus[index] = 'not-answered';
 
       document.getElementById('question-counter').innerText = `Question ${index + 1} of ${questionsList.length}`;
@@ -2168,6 +2198,7 @@
 
       const qData = questionsList[index] || {};
       currentSubjectId = String(qData._subjectId || qData._subjectName || 'general');
+      updateExamLanguageAvailability();
       renderSubjectNavigation();
 
       const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
