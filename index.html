@@ -1392,8 +1392,26 @@
           if (!Array.isArray(pool)) throw new Error('Question dataset is not an array.');
           if (pool.length === 0) throw new Error('Question dataset is empty.');
 
+          // Exclude incomplete records (for example image questions without answer keys)
+          // before random selection so invalid items cannot enter a live attempt.
+          const validPool = pool.filter(q => {
+            if (!q || typeof q !== 'object') return false;
+            const questionText = [q.question, q.question_en, q.question_hi, q.q, q.text, q.questionText]
+              .some(value => typeof value === 'string' && value.trim());
+            const rawOptions = q.options ?? q.choices ?? q.answers;
+            const optionCount = Array.isArray(rawOptions) ? rawOptions.length :
+              (rawOptions && typeof rawOptions === 'object' ? Object.keys(rawOptions).length : 0);
+            const answer = q.correctOption ?? q.correct_option ?? q.correctAnswer ?? q.correct ?? q.answer ?? q.ans ?? q.a;
+            const hasAnswer = (typeof answer === 'string' && answer.trim().length > 0) ||
+              typeof answer === 'number' || (answer && typeof answer === 'object');
+            return questionText && optionCount >= 2 && hasAnswer;
+          });
+          if (validPool.length < count) {
+            throw new Error(`${subjectName} has only ${validPool.length} complete questions (${pool.length - validPool.length} incomplete records excluded), but Admin requires ${count}.`);
+          }
+
           const order = getSubjectOrder(subjectCfg);
-          let selectedPool = [...pool];
+          let selectedPool = [...validPool];
 
           if (order === 'random') {
             for (let i = selectedPool.length - 1; i > 0; i--) {
@@ -1402,9 +1420,7 @@
             }
           }
 
-          if (pool.length < count) {
-            throw new Error(`${subjectName} has only ${pool.length} questions in ${source}, but Admin requires ${count}.`);
-          }
+          // validPool count is checked above before selecting questions.
 
           selectedPool.slice(0, count).forEach((q, localIndex) => {
             combined.push({
@@ -2080,7 +2096,7 @@
           .map(key => {
             const value = raw[key];
             if (value && typeof value === 'object') {
-              return value.text ?? value.label ?? value.value ?? value.answer ?? '';
+              return value.text ?? value.label ?? value.value ?? value.answer ?? value.en ?? value.hi ?? '';
             }
             return value;
           });
@@ -2173,7 +2189,7 @@
         const content = document.createElement('span');
         content.className = 'option-content';
         const optionValue = typeof opt === 'object'
-          ? (opt.text ?? opt.label ?? opt.value ?? opt.answer ?? '')
+          ? (opt.text ?? opt.label ?? opt.value ?? opt.answer ?? opt.en ?? opt.hi ?? '')
           : opt;
         content.innerHTML = prepareRichContent(optionValue, sourceBaseUrl);
         const optionImage = Array.isArray(qData.optionImages) ? qData.optionImages[idx] : null;
