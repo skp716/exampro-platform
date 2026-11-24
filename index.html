@@ -397,6 +397,7 @@
             <div><strong class="exam-brand-name">Examination Institute</strong><span class="exam-brand-location"></span></div>
           </div>
           <div class="topbar-right">
+            <label id="exam-language-wrap" class="exam-language-wrap" style="display:none;color:#fff;font-size:.75rem;font-weight:700;gap:6px;align-items:center;text-transform:none;letter-spacing:0;margin:0;">Language <select id="exam-language-select" aria-label="Select question language" style="border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:7px 9px;background:#fff;color:#123;font-weight:700;"><option value="en">English</option><option value="hi">हिन्दी</option></select></label>
             <div class="topbar-stat"><span>Questions</span><b id="top-question-count">0 / 0</b></div>
             <div class="exam-timer"><i class="fa-regular fa-clock"></i><span id="timer-display">00:00</span></div>
             <button class="palette-toggle" id="palette-toggle" onclick="toggleMobilePalette()" aria-label="Open question palette"><i class="fa-solid fa-bars"></i></button>
@@ -558,6 +559,7 @@
     const auth = getAuth(app);
 
     let questionsList = [];
+    let currentExamLanguage = 'en';
     let currentQuestionIndex = 0;
     let selectedAnswers = {};
     let questionStatus = {};
@@ -2071,37 +2073,32 @@
       attachRichMediaFallbacks(block, baseUrl);
     }
 
-    function getQuestionOptions(qData) {
-      const raw = qData?.options ?? qData?.choices ?? qData?.answers ?? [];
-
-      if (Array.isArray(raw)) {
-        return raw.map(value => {
-          if (value && typeof value === 'object') {
-            return value.text ?? value.label ?? value.value ?? value.answer ?? value.en ?? value.hi ?? '';
-          }
-          return value;
-        });
+    function getLocalizedValue(value, language = currentExamLanguage) {
+      if (value && typeof value === 'object') {
+        const preferred = language === 'hi' ? value.hi : value.en;
+        const fallback = language === 'hi' ? value.en : value.hi;
+        return preferred ?? value.text ?? value.label ?? value.value ?? value.answer ?? fallback ?? '';
       }
+      return value ?? '';
+    }
 
-      // Supports SSC format: options: { a: "...", b: "...", c: "...", d: "..." }
+    function getQuestionText(qData, language = currentExamLanguage) {
+      const candidates = language === 'hi'
+        ? [qData?.question_hi, qData?.question, qData?.q, qData?.text, qData?.questionText, qData?.question_en]
+        : [qData?.question_en, qData?.question, qData?.q, qData?.text, qData?.questionText, qData?.question_hi];
+      return candidates.find(value => typeof value === 'string' && value.trim()) || '';
+    }
+
+    function getQuestionOptions(qData, language = currentExamLanguage) {
+      const raw = qData?.options ?? qData?.choices ?? qData?.answers ?? [];
+      const extract = value => getLocalizedValue(value, language);
+      if (Array.isArray(raw)) return raw.map(extract);
       if (raw && typeof raw === 'object') {
         const lowerKeys = ['a', 'b', 'c', 'd'];
         const upperKeys = ['A', 'B', 'C', 'D'];
-        const keys = lowerKeys.some(key =>
-          Object.prototype.hasOwnProperty.call(raw, key)
-        ) ? lowerKeys : upperKeys;
-
-        return keys
-          .filter(key => Object.prototype.hasOwnProperty.call(raw, key))
-          .map(key => {
-            const value = raw[key];
-            if (value && typeof value === 'object') {
-              return value.text ?? value.label ?? value.value ?? value.answer ?? value.en ?? value.hi ?? '';
-            }
-            return value;
-          });
+        const keys = lowerKeys.some(key => Object.prototype.hasOwnProperty.call(raw, key)) ? lowerKeys : upperKeys;
+        return keys.filter(key => Object.prototype.hasOwnProperty.call(raw, key)).map(key => extract(raw[key]));
       }
-
       return [];
     }
 
@@ -2137,8 +2134,27 @@
       return raw ?? '';
     }
 
+    function updateExamLanguageAvailability() {
+      const wrap = document.getElementById('exam-language-wrap');
+      const select = document.getElementById('exam-language-select');
+      if (!wrap || !select) return;
+      const hasHindi = questionsList.some(q =>
+        (typeof q?.question_hi === 'string' && q.question_hi.trim()) ||
+        Object.values(q?.options || {}).some(option => option && typeof option === 'object' && typeof option.hi === 'string' && option.hi.trim())
+      );
+      wrap.style.display = hasHindi ? 'inline-flex' : 'none';
+      select.value = currentExamLanguage;
+    }
+
+    window.changeExamLanguage = language => {
+      if (!['en', 'hi'].includes(language)) return;
+      currentExamLanguage = language;
+      loadQuestion(currentQuestionIndex);
+    };
+
     function loadQuestion(index) {
       currentQuestionIndex = index;
+      updateExamLanguageAvailability();
       if (questionStatus[index] === 'not-visited') questionStatus[index] = 'not-answered';
 
       document.getElementById('question-counter').innerText = `Question ${index + 1} of ${questionsList.length}`;
@@ -2155,14 +2171,13 @@
       renderSubjectNavigation();
 
       const sourceBaseUrl = qData._questionSourceUrl || window.location.href;
-      const questionCandidates = [qData.question, qData.question_en, qData.question_hi, qData.q, qData.text, qData.questionText];
-      let questionValue = questionCandidates.find(value => typeof value === 'string' && value.trim()) || '';
+      let questionValue = getQuestionText(qData);
       let passageValue = qData.passage || '';
       // The SSC source carries the full Phule passage with Q76. Since the
       // question order is randomized, attach that source passage to Q76–80.
       if(!passageValue && Number(qData.id)>=76 && Number(qData.id)<=80){
         const anchor=[...questionsList,...reserveQuestions].find(q=>Number(q.id)===76);
-        const anchorText=[anchor?.question,anchor?.question_en,anchor?.question_hi,anchor?.q].find(value=>typeof value==='string'&&value.trim())||'';
+        const anchorText=getQuestionText(anchor || {});
         const passageStart=anchorText.indexOf('\n')+1;
         const questionStart=anchorText.indexOf('\nमहात्मा फुले के अनुसार');
         if(passageStart>0&&questionStart>passageStart)passageValue=anchorText.slice(passageStart,questionStart);
@@ -2188,9 +2203,7 @@
 
         const content = document.createElement('span');
         content.className = 'option-content';
-        const optionValue = typeof opt === 'object'
-          ? (opt.text ?? opt.label ?? opt.value ?? opt.answer ?? opt.en ?? opt.hi ?? '')
-          : opt;
+        const optionValue = getLocalizedValue(opt, currentExamLanguage);
         content.innerHTML = prepareRichContent(optionValue, sourceBaseUrl);
         const optionImage = Array.isArray(qData.optionImages) ? qData.optionImages[idx] : null;
         if(optionImage){
@@ -2386,7 +2399,7 @@
     }
 
     function getCorrectOptionIndex(qData, options = getQuestionOptions(qData)) {
-      const raw = qData?.correctOption ?? qData?.correctAnswer ?? qData?.correct ?? qData?.answer ?? qData?.ans ?? qData?.a;
+      const raw = qData?.correctOption ?? qData?.correct_option ?? qData?.correctAnswer ?? qData?.correct ?? qData?.answer ?? qData?.ans ?? qData?.a;
       if (typeof raw === 'string') {
         const value = raw.trim();
         if (/^[A-D]$/i.test(value)) return value.toUpperCase().charCodeAt(0) - 65;
@@ -2398,9 +2411,7 @@
     }
 
     function getOptionDisplayText(option, index) {
-      const raw = option && typeof option === 'object'
-        ? (option.text ?? option.label ?? option.value ?? option.answer ?? '')
-        : option;
+      const raw = getLocalizedValue(option, currentExamLanguage);
       const text = String(raw ?? '').trim();
       return text || `Option ${String.fromCharCode(65 + index)}`;
     }
@@ -2454,7 +2465,7 @@
         const reviewBaseUrl = q._questionSourceUrl || window.location.href;
         reviewItem.innerHTML = `
           <h5>Q${idx + 1}. ${q._subjectName ? `<span style="color:#64748b;font-size:.75rem;">[${escapeRichText(q._subjectName)}]</span> ` : ''}</h5>
-          <div class="review-question">${prepareRichContent(q.question || q.q,reviewBaseUrl)}</div>
+          <div class="review-question">${prepareRichContent(getQuestionText(q),reviewBaseUrl)}</div>
           ${getReviewEquationHtml(q)}
           <div class="review-figure">${getReviewFigureHtml(q,reviewBaseUrl)}</div>
           ${getReviewOptionImagesHtml(q,reviewBaseUrl)}
