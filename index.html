@@ -945,6 +945,14 @@
           return true;
         }
         examConfigData = snap.data();
+        // Restore the institute branding saved in Admin Panel as soon as the
+        // student page loads. A valid Center Code can still override it below.
+        if (examConfigData.instituteName) {
+          applyCenterBranding({
+            instituteName: examConfigData.instituteName,
+            location: examConfigData.instituteLocation || ''
+          });
+        }
         const configuredTabLimit=Number(examConfigData.maxTabSwitches);
         maxTabSwitches=Number.isInteger(configuredTabLimit)&&configuredTabLimit>=1&&configuredTabLimit<=20?configuredTabLimit:2;
         populateExamCategories();
