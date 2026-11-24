@@ -951,7 +951,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q35_mirror_image.jpg"
+      ]
     },
     {
       "id": 36,
@@ -1113,7 +1116,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q41_paper_folding.jpg"
+      ]
     },
     {
       "id": 42,
@@ -1140,7 +1146,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q42_hidden_figure.jpg"
+      ]
     },
     {
       "id": 43,
@@ -1194,7 +1203,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q44_venn_diagram.jpg"
+      ]
     },
     {
       "id": 45,
@@ -1221,7 +1233,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q45_venn_diagram_options.jpg"
+      ]
     },
     {
       "id": 46,
@@ -1275,7 +1290,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q47_missing_figure.jpg"
+      ]
     },
     {
       "id": 48,
@@ -1302,7 +1320,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q48_figure_analogy.jpg"
+      ]
     },
     {
       "id": 49,
@@ -1329,7 +1350,10 @@
         }
       },
       "correct_option": null,
-      "has_image": true
+      "has_image": true,
+      "images": [
+        "../cgl image/Q49_symbol_sequence.jpg"
+      ]
     },
     {
       "id": 50,
