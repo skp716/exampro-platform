@@ -13,23 +13,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 1,
       "question_en": "Identify the part of the sentence that contains a grammatical error: A. The team, B. was confident about their strategy, C. and hoped it, D. would succeed.",
-      "question_hi": "वाक्य के उस भाग की पहचान करें जिसमें व्याकरणिक त्रुटि है: A. The team, B. was confident about their strategy, C. and hoped it, D. would succeed.",
       "options": {
         "a": {
-          "en": "The team",
-          "hi": "The team"
+          "en": "The team"
         },
         "b": {
-          "en": "was confident about their strategy",
-          "hi": "was confident about their strategy"
+          "en": "was confident about their strategy"
         },
         "c": {
-          "en": "and hoped it",
-          "hi": "and hoped it"
+          "en": "and hoped it"
         },
         "d": {
-          "en": "would succeed",
-          "hi": "would succeed"
+          "en": "would succeed"
         }
       },
       "correct_option": "b"
@@ -39,23 +34,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 2,
       "question_en": "Fill in the blank with the most appropriate phrase: All hiring decisions for the new department will be made strictly _____.",
-      "question_hi": "सबसे उपयुक्त वाक्यांश से रिक्त स्थान भरें: All hiring decisions for the new department will be made strictly _____.",
       "options": {
         "a": {
-          "en": "under the table",
-          "hi": "under the table"
+          "en": "under the table"
         },
         "b": {
-          "en": "on merit",
-          "hi": "on merit"
+          "en": "on merit"
         },
         "c": {
-          "en": "in the red",
-          "hi": "in the red"
+          "en": "in the red"
         },
         "d": {
-          "en": "on the rocks",
-          "hi": "on the rocks"
+          "en": "on the rocks"
         }
       },
       "correct_option": "b"
@@ -65,23 +55,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 3,
       "question_en": "Select the most appropriate synonym of the word: PEAK",
-      "question_hi": "शब्द का सबसे उपयुक्त पर्यायवाची (Synonym) चुनें: PEAK",
       "options": {
         "a": {
-          "en": "Abyss",
-          "hi": "Abyss (अथाह खाई)"
+          "en": "Abyss"
         },
         "b": {
-          "en": "Nadir",
-          "hi": "Nadir (निम्नतम बिंदु)"
+          "en": "Nadir"
         },
         "c": {
-          "en": "Top",
-          "hi": "Top (शीर्ष)"
+          "en": "Top"
         },
         "d": {
-          "en": "Low point",
-          "hi": "Low point (निचला बिंदु)"
+          "en": "Low point"
         }
       },
       "correct_option": "c"
@@ -91,23 +76,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 4,
       "question_en": "Fill in the blank with the most appropriate idiom: Rahul's abrupt decision to step down caught everyone _____.",
-      "question_hi": "सबसे उपयुक्त मुहावरे (Idiom) से रिक्त स्थान भरें: Rahul's abrupt decision to step down caught everyone _____.",
       "options": {
         "a": {
-          "en": "off guard",
-          "hi": "off guard"
+          "en": "off guard"
         },
         "b": {
-          "en": "red handed",
-          "hi": "red handed"
+          "en": "red handed"
         },
         "c": {
-          "en": "storm in a teacup",
-          "hi": "storm in a teacup"
+          "en": "storm in a teacup"
         },
         "d": {
-          "en": "heywire",
-          "hi": "heywire"
+          "en": "heywire"
         }
       },
       "correct_option": "a"
@@ -117,25 +97,19 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 5,
       "passage_en": "In recent years, environmental awareness has become an essential part of modern education. Schools now emphasise sustainable practices to help students understand their responsibility towards the planet. Lessons on recycling, conservation of resources, and renewable energy encourage learners to adopt eco-friendly habits in their daily lives. Project-based learning, such as tree plantation drives and waste management activities, allows students to apply theoretical knowledge in real-life situations. Teachers play a vital role by integrating environmental topics across subjects, helping students see the connection between human actions and ecological balance. Although challenges like limited resources and lack of awareness still exist, environmental education empowers young minds to contribute positively to a sustainable future.",
-      "passage_hi": "हाल के वर्षों में, पर्यावरण जागरूकता आधुनिक शिक्षा का एक अनिवार्य हिस्सा बन गई है। स्कूल अब छात्रों को ग्रह के प्रति उनकी जिम्मेदारी समझने में मदद करने के लिए टिकाऊ प्रथाओं पर जोर देते हैं। रीसाइक्लिंग, संसाधनों के संरक्षण और नवीकरणीय ऊर्जा पर पाठ शिक्षार्थियों को अपने दैनिक जीवन में पर्यावरण-अनुकूल आदतें अपनाने के लिए प्रोत्साहित करते हैं। प्रोजेक्ट-आधारित शिक्षा, जैसे वृक्षारोपण अभियान और अपशिष्ट प्रबंधन गतिविधियाँ, छात्रों को वास्तविक जीवन की स्थितियों में सैद्धांतिक ज्ञान लागू करने की अनुमति देती हैं। शिक्षक सभी विषयों में पर्यावरणीय विषयों को एकीकृत करके महत्वपूर्ण भूमिका निभाते हैं, जिससे छात्रों को मानवीय कार्यों और पारिस्थितिक संतुलन के बीच का संबंध देखने में मदद मिलती है। हालांकि सीमित संसाधनों और जागरूकता की कमी जैसी चुनौतियाँ अभी भी मौजूद हैं, पर्यावरण शिक्षा युवा मन को एक टिकाऊ भविष्य में सकारात्मक योगदान देने के लिए सशक्त बनाती है।",
       "question_en": "What is the main focus of modern education as mentioned in the passage?",
-      "question_hi": "गद्यांश में उल्लिखित आधुनिक शिक्षा का मुख्य फोकस क्या है?",
       "options": {
         "a": {
-          "en": "Competitive examinations",
-          "hi": "प्रतियोगी परीक्षाएं"
+          "en": "Competitive examinations"
         },
         "b": {
-          "en": "Environmental awareness",
-          "hi": "पर्यावरण जागरूकता"
+          "en": "Environmental awareness"
         },
         "c": {
-          "en": "Technological advancement",
-          "hi": "तकनीकी प्रगति"
+          "en": "Technological advancement"
         },
         "d": {
-          "en": "Career-oriented training",
-          "hi": "करियर-उन्मुख प्रशिक्षण"
+          "en": "Career-oriented training"
         }
       },
       "correct_option": "b"
@@ -145,23 +119,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 6,
       "question_en": "How do schools encourage eco-friendly habits among students? (Based on the passage above)",
-      "question_hi": "स्कूल छात्रों के बीच पर्यावरण-अनुकूल आदतों को कैसे प्रोत्साहित करते हैं? (उपरोक्त गद्यांश के आधार पर)",
       "options": {
         "a": {
-          "en": "By conducting regular tests",
-          "hi": "नियमित परीक्षाएं आयोजित करके"
+          "en": "By conducting regular tests"
         },
         "b": {
-          "en": "By teaching only theoretical concepts",
-          "hi": "केवल सैद्धांतिक अवधारणाएं पढ़ाकर"
+          "en": "By teaching only theoretical concepts"
         },
         "c": {
-          "en": "By emphasising recycling and conservation",
-          "hi": "रीसाइक्लिंग और संरक्षण पर जोर देकर"
+          "en": "By emphasising recycling and conservation"
         },
         "d": {
-          "en": "By reducing classroom activities",
-          "hi": "कक्षा की गतिविधियों को कम करके"
+          "en": "By reducing classroom activities"
         }
       },
       "correct_option": "c"
@@ -171,23 +140,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 7,
       "question_en": "What method helps students apply their knowledge in real-life situations? (Based on the passage above)",
-      "question_hi": "कौन सी विधि छात्रों को वास्तविक जीवन की स्थितियों में अपने ज्ञान को लागू करने में मदद करती है? (उपरोक्त गद्यांश के आधार पर)",
       "options": {
         "a": {
-          "en": "Online assessments",
-          "hi": "ऑनलाइन मूल्यांकन"
+          "en": "Online assessments"
         },
         "b": {
-          "en": "Project-based learning",
-          "hi": "प्रोजेक्ट-आधारित शिक्षा"
+          "en": "Project-based learning"
         },
         "c": {
-          "en": "Lecture-based teaching",
-          "hi": "व्याख्यान-आधारित शिक्षण"
+          "en": "Lecture-based teaching"
         },
         "d": {
-          "en": "Memorisation techniques",
-          "hi": "रटने की तकनीक"
+          "en": "Memorisation techniques"
         }
       },
       "correct_option": "b"
@@ -197,23 +161,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 8,
       "question_en": "What role do teachers play in environmental education? (Based on the passage above)",
-      "question_hi": "पर्यावरण शिक्षा में शिक्षक क्या भूमिका निभाते हैं? (उपरोक्त गद्यांश के आधार पर)",
       "options": {
         "a": {
-          "en": "They focus on a single subject",
-          "hi": "वे एक ही विषय पर ध्यान केंद्रित करते हैं"
+          "en": "They focus on a single subject"
         },
         "b": {
-          "en": "They avoid practical activities",
-          "hi": "वे व्यावहारिक गतिविधियों से बचते हैं"
+          "en": "They avoid practical activities"
         },
         "c": {
-          "en": "They integrate environmental topics across subjects",
-          "hi": "वे सभी विषयों में पर्यावरणीय विषयों को एकीकृत करते हैं"
+          "en": "They integrate environmental topics across subjects"
         },
         "d": {
-          "en": "They limit student participation",
-          "hi": "वे छात्रों की भागीदारी को सीमित करते हैं"
+          "en": "They limit student participation"
         }
       },
       "correct_option": "c"
@@ -223,23 +182,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 9,
       "question_en": "What challenge related to environmental education is mentioned in the passage?",
-      "question_hi": "गद्यांश में पर्यावरण शिक्षा से संबंधित किस चुनौती का उल्लेख किया गया है?",
       "options": {
         "a": {
-          "en": "Lack of student interest",
-          "hi": "छात्रों की रुचि की कमी"
+          "en": "Lack of student interest"
         },
         "b": {
-          "en": "Overloaded curriculum",
-          "hi": "अत्यधिक पाठ्यक्रम"
+          "en": "Overloaded curriculum"
         },
         "c": {
-          "en": "Limited resources and awareness",
-          "hi": "सीमित संसाधन और जागरूकता"
+          "en": "Limited resources and awareness"
         },
         "d": {
-          "en": "Absence of government support",
-          "hi": "सरकारी समर्थन का अभाव"
+          "en": "Absence of government support"
         }
       },
       "correct_option": "c"
@@ -249,23 +203,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 10,
       "question_en": "Select the sentence that contains the homonym of the word 'bank' as highlighted in the sentence: She opened a new account at the bank.",
-      "question_hi": "उस वाक्य का चयन करें जिसमें 'bank' शब्द का होमोनिम (समान उच्चारण/वर्तनी लेकिन भिन्न अर्थ) है जैसा कि वाक्य में हाइलाइट किया गया है: She opened a new account at the bank.",
       "options": {
         "a": {
-          "en": "I deposited my paycheck at the bank.",
-          "hi": "I deposited my paycheck at the bank."
+          "en": "I deposited my paycheck at the bank."
         },
         "b": {
-          "en": "The bank is located on the corner.",
-          "hi": "The bank is located on the corner."
+          "en": "The bank is located on the corner."
         },
         "c": {
-          "en": "The fisherman stood quietly on the grassy bank.",
-          "hi": "The fisherman stood quietly on the grassy bank."
+          "en": "The fisherman stood quietly on the grassy bank."
         },
         "d": {
-          "en": "My bank offers a great interest rate.",
-          "hi": "My bank offers a great interest rate."
+          "en": "My bank offers a great interest rate."
         }
       },
       "correct_option": "c"
@@ -275,23 +224,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 11,
       "question_en": "Choose the incorrectly spelt word:",
-      "question_hi": "गलत वर्तनी वाला शब्द चुनें:",
       "options": {
         "a": {
-          "en": "Documentary",
-          "hi": "Documentary"
+          "en": "Documentary"
         },
         "b": {
-          "en": "Sanitary",
-          "hi": "Sanitary"
+          "en": "Sanitary"
         },
         "c": {
-          "en": "Optional",
-          "hi": "Optional"
+          "en": "Optional"
         },
         "d": {
-          "en": "Voluntry",
-          "hi": "Voluntry"
+          "en": "Voluntry"
         }
       },
       "correct_option": "d"
@@ -301,23 +245,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 12,
       "question_en": "Choose the incorrectly spelt word:",
-      "question_hi": "गलत वर्तनी वाला शब्द चुनें:",
       "options": {
         "a": {
-          "en": "Legume",
-          "hi": "Legume"
+          "en": "Legume"
         },
         "b": {
-          "en": "Broken",
-          "hi": "Broken"
+          "en": "Broken"
         },
         "c": {
-          "en": "Vaccume",
-          "hi": "Vaccume"
+          "en": "Vaccume"
         },
         "d": {
-          "en": "Sustained",
-          "hi": "Sustained"
+          "en": "Sustained"
         }
       },
       "correct_option": "c"
@@ -327,23 +266,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 13,
       "question_en": "Choose the correct meaning of the highlighted idiom: The job is perfect, and the short commute is icing on the cake.",
-      "question_hi": "हाइलाइट किए गए मुहावरे ('icing on the cake') का सही अर्थ चुनें: The job is perfect, and the short commute is icing on the cake.",
       "options": {
         "a": {
-          "en": "Something that makes a good situation even better",
-          "hi": "कुछ ऐसा जो अच्छी स्थिति को और भी बेहतर बना दे"
+          "en": "Something that makes a good situation even better"
         },
         "b": {
-          "en": "A difficult problem that ruins a good plan",
-          "hi": "एक कठिन समस्या जो अच्छी योजना को बर्बाद कर दे"
+          "en": "A difficult problem that ruins a good plan"
         },
         "c": {
-          "en": "An unnecessary and useless addition",
-          "hi": "एक अनावश्यक और बेकार जोड़"
+          "en": "An unnecessary and useless addition"
         },
         "d": {
-          "en": "A sweet dish served at celebrations",
-          "hi": "समारोहों में परोसा जाने वाला एक मीठा व्यंजन"
+          "en": "A sweet dish served at celebrations"
         }
       },
       "correct_option": "a"
@@ -353,23 +287,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 14,
       "question_en": "Choose the correct one-word substitute for: A person who is very interested in films.",
-      "question_hi": "वाक्यांश के लिए सही एक-शब्द विकल्प (One-word substitute) चुनें: A person who is very interested in films (वह व्यक्ति जिसे फिल्मों में बहुत रुचि हो)।",
       "options": {
         "a": {
-          "en": "Flask",
-          "hi": "Flask"
+          "en": "Flask"
         },
         "b": {
-          "en": "Cinephile",
-          "hi": "Cinephile"
+          "en": "Cinephile"
         },
         "c": {
-          "en": "Seer",
-          "hi": "Seer"
+          "en": "Seer"
         },
         "d": {
-          "en": "Contrast",
-          "hi": "Contrast"
+          "en": "Contrast"
         }
       },
       "correct_option": "b"
@@ -379,23 +308,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 15,
       "question_en": "Select the most appropriate antonym of the word: Hazardous",
-      "question_hi": "शब्द का सबसे उपयुक्त विलोम (Antonym) चुनें: Hazardous (खतरनाक)",
       "options": {
         "a": {
-          "en": "Beneficial",
-          "hi": "Beneficial (लाभदायक)"
+          "en": "Beneficial"
         },
         "b": {
-          "en": "Lethal",
-          "hi": "Lethal (घातक)"
+          "en": "Lethal"
         },
         "c": {
-          "en": "Deadly",
-          "hi": "Deadly (जानलेवा)"
+          "en": "Deadly"
         },
         "d": {
-          "en": "Noxious",
-          "hi": "Noxious (हानिकारक)"
+          "en": "Noxious"
         }
       },
       "correct_option": "a"
@@ -405,23 +329,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 16,
       "question_en": "Select the most appropriate antonym of the word: Perilous",
-      "question_hi": "शब्द का सबसे उपयुक्त विलोम (Antonym) चुनें: Perilous (जोखिम भरा)",
       "options": {
         "a": {
-          "en": "Dangerous",
-          "hi": "Dangerous (खतरनाक)"
+          "en": "Dangerous"
         },
         "b": {
-          "en": "Beneficial",
-          "hi": "Beneficial (लाभदायक)"
+          "en": "Beneficial"
         },
         "c": {
-          "en": "Pernicious",
-          "hi": "Pernicious (हानिकारक)"
+          "en": "Pernicious"
         },
         "d": {
-          "en": "Hazardous",
-          "hi": "Hazardous (खतरनाक)"
+          "en": "Hazardous"
         }
       },
       "correct_option": "b"
@@ -431,23 +350,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 17,
       "question_en": "Choose the correct one-word substitute for: A person who studies birds.",
-      "question_hi": "वाक्यांश के लिए सही एक-शब्द विकल्प चुनें: A person who studies birds (वह व्यक्ति जो पक्षियों का अध्ययन करता है)।",
       "options": {
         "a": {
-          "en": "Botanist",
-          "hi": "Botanist (वनस्पतिशास्त्री)"
+          "en": "Botanist"
         },
         "b": {
-          "en": "Lepidopterist",
-          "hi": "Lepidopterist (तितली विशेषज्ञ)"
+          "en": "Lepidopterist"
         },
         "c": {
-          "en": "Ornithologist",
-          "hi": "Ornithologist (पक्षीविज्ञानी)"
+          "en": "Ornithologist"
         },
         "d": {
-          "en": "Zoologist",
-          "hi": "Zoologist (प्राणीशास्त्री)"
+          "en": "Zoologist"
         }
       },
       "correct_option": "c"
@@ -457,23 +371,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 18,
       "question_en": "Change the following sentence into the Active form: Let the political lies be exposed to the public before the election.",
-      "question_hi": "निम्नलिखित वाक्य को Active voice में बदलें: Let the political lies be exposed to the public before the election.",
       "options": {
         "a": {
-          "en": "You should expose the political lies to the public before the elections.",
-          "hi": "You should expose the political lies to the public before the elections."
+          "en": "You should expose the political lies to the public before the elections."
         },
         "b": {
-          "en": "Expose the political lies to the public before the elections.",
-          "hi": "Expose the political lies to the public before the elections."
+          "en": "Expose the political lies to the public before the elections."
         },
         "c": {
-          "en": "The political lies must be exposed to the public before the elections.",
-          "hi": "The political lies must be exposed to the public before the elections."
+          "en": "The political lies must be exposed to the public before the elections."
         },
         "d": {
-          "en": "Let the public expose the political lies before the elections.",
-          "hi": "Let the public expose the political lies before the elections."
+          "en": "Let the public expose the political lies before the elections."
         }
       },
       "correct_option": "b"
@@ -483,23 +392,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 19,
       "question_en": "Select the option that expresses the given sentence in indirect voice: The athlete said, \"I have been training rigorously for the tournament for weeks, but I am still anxious because my opponents are highly experienced.\"",
-      "question_hi": "उस विकल्प का चयन करें जो दिए गए वाक्य को Indirect speech में व्यक्त करता है: The athlete said, \"I have been training rigorously for the tournament for weeks, but I am still anxious because my opponents are highly experienced.\"",
       "options": {
         "a": {
-          "en": "The athlete said that he has been training rigorously for the tournament for weeks, but he is still anxious because his opponents are highly experienced.",
-          "hi": "The athlete said that he has been training rigorously for the tournament for weeks, but he is still anxious because his opponents are highly experienced."
+          "en": "The athlete said that he has been training rigorously for the tournament for weeks, but he is still anxious because his opponents are highly experienced."
         },
         "b": {
-          "en": "The athlete said that he had been training rigorously for the tournament for weeks, but he was still anxious because his opponents were highly experienced.",
-          "hi": "The athlete said that he had been training rigorously for the tournament for weeks, but he was still anxious because his opponents were highly experienced."
+          "en": "The athlete said that he had been training rigorously for the tournament for weeks, but he was still anxious because his opponents were highly experienced."
         },
         "c": {
-          "en": "The athlete said that he had been training rigorously for the tournament for weeks, but he is still anxious because his opponents are highly experienced.",
-          "hi": "The athlete said that he had been training rigorously for the tournament for weeks, but he is still anxious because his opponents are highly experienced."
+          "en": "The athlete said that he had been training rigorously for the tournament for weeks, but he is still anxious because his opponents are highly experienced."
         },
         "d": {
-          "en": "The athlete said that he was training rigorously for the tournament for weeks, but he was still anxious because his opponents were highly experienced.",
-          "hi": "The athlete said that he was training rigorously for the tournament for weeks, but he was still anxious because his opponents were highly experienced."
+          "en": "The athlete said that he was training rigorously for the tournament for weeks, but he was still anxious because his opponents were highly experienced."
         }
       },
       "correct_option": "b"
@@ -509,23 +413,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 20,
       "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: One must follow a balanced diet and regular exercise routine to [maintaining good health].",
-      "question_hi": "वाक्य के हाइलाइट किए गए भाग को बदलने के लिए सबसे उपयुक्त विकल्प चुनें: One must follow a balanced diet and regular exercise routine to [maintaining good health].",
       "options": {
         "a": {
-          "en": "maintain health good",
-          "hi": "maintain health good"
+          "en": "maintain health good"
         },
         "b": {
-          "en": "maintaining good health",
-          "hi": "maintaining good health"
+          "en": "maintaining good health"
         },
         "c": {
-          "en": "maintain good health",
-          "hi": "maintain good health"
+          "en": "maintain good health"
         },
         "d": {
-          "en": "maintained healthy",
-          "hi": "maintained healthy"
+          "en": "maintained healthy"
         }
       },
       "correct_option": "c"
@@ -535,23 +434,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 21,
       "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: He is [a FBI] agent.",
-      "question_hi": "वाक्य के हाइलाइट किए गए भाग को बदलने के लिए सबसे उपयुक्त विकल्प चुनें: He is [a FBI] agent.",
       "options": {
         "a": {
-          "en": "FBI",
-          "hi": "FBI"
+          "en": "FBI"
         },
         "b": {
-          "en": "an FBI",
-          "hi": "an FBI"
+          "en": "an FBI"
         },
         "c": {
-          "en": "never FBI",
-          "hi": "never FBI"
+          "en": "never FBI"
         },
         "d": {
-          "en": "neither FBI",
-          "hi": "neither FBI"
+          "en": "neither FBI"
         }
       },
       "correct_option": "b"
@@ -561,23 +455,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 22,
       "question_en": "Choose the correct passive voice transformation of the sentence: Citizens speak English in several parts of the world.",
-      "question_hi": "वाक्य का सही Passive voice रूपांतरण चुनें: Citizens speak English in several parts of the world.",
       "options": {
         "a": {
-          "en": "English was spoken by citizens in several parts of the world.",
-          "hi": "English was spoken by citizens in several parts of the world."
+          "en": "English was spoken by citizens in several parts of the world."
         },
         "b": {
-          "en": "English is spoken by citizens in several parts of the world.",
-          "hi": "English is spoken by citizens in several parts of the world."
+          "en": "English is spoken by citizens in several parts of the world."
         },
         "c": {
-          "en": "English has spoken by citizens in several parts of the world.",
-          "hi": "English has spoken by citizens in several parts of the world."
+          "en": "English has spoken by citizens in several parts of the world."
         },
         "d": {
-          "en": "English has been spoke in several parts of the world.",
-          "hi": "English has been spoke in several parts of the world."
+          "en": "English has been spoke in several parts of the world."
         }
       },
       "correct_option": "b"
@@ -587,23 +476,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 23,
       "question_en": "Select the option that expresses the given sentence in direct voice: The principal stated that the school had implemented new rules that year and that they were taking strict measures to ensure discipline.",
-      "question_hi": "उस विकल्प का चयन करें जो दिए गए वाक्य को Direct speech में व्यक्त करता है: The principal stated that the school had implemented new rules that year and that they were taking strict measures to ensure discipline.",
       "options": {
         "a": {
-          "en": "The principal stated, \"The school has implemented new rules this year, and we are taking strict measures to ensure discipline.\"",
-          "hi": "The principal stated, \"The school has implemented new rules this year, and we are taking strict measures to ensure discipline.\""
+          "en": "The principal stated, \"The school has implemented new rules this year, and we are taking strict measures to ensure discipline.\""
         },
         "b": {
-          "en": "The principal stated, \"The school had implemented new rules this year, and we were taking strict measures to ensure discipline.\"",
-          "hi": "The principal stated, \"The school had implemented new rules this year, and we were taking strict measures to ensure discipline.\""
+          "en": "The principal stated, \"The school had implemented new rules this year, and we were taking strict measures to ensure discipline.\""
         },
         "c": {
-          "en": "The principal stated, \"The school implements new rules that year, and we are taking strict measures to ensure discipline.\"",
-          "hi": "The principal stated, \"The school implements new rules that year, and we are taking strict measures to ensure discipline.\""
+          "en": "The principal stated, \"The school implements new rules that year, and we are taking strict measures to ensure discipline.\""
         },
         "d": {
-          "en": "The principal stated, \"The school implemented new rules the previous year, and we were taking strict measures to ensure discipline.\"",
-          "hi": "The principal stated, \"The school implemented new rules the previous year, and we were taking strict measures to ensure discipline.\""
+          "en": "The principal stated, \"The school implemented new rules the previous year, and we were taking strict measures to ensure discipline.\""
         }
       },
       "correct_option": "a"
@@ -613,23 +497,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 24,
       "question_en": "Rearrange the following sentences to form a meaningful and grammatically correct paragraph:\nP. She tested the cobs by pressing a fingernail into the kernels to check their firmness.\nQ. The maize plants stood tall, their leaves dry and slightly curled under the sun.\nR. She twisted each ripe cob downward and pulled it free from the stalk.\nS. She knew the crop was ready and would soon be gathered for storage.",
-      "question_hi": "एक सार्थक और व्याकरणिक रूप से सही अनुच्छेद बनाने के लिए निम्नलिखित वाक्यों को पुनर्व्यवस्थित करें:\nP. She tested the cobs by pressing a fingernail into the kernels to check their firmness.\nQ. The maize plants stood tall, their leaves dry and slightly curled under the sun.\nR. She twisted each ripe cob downward and pulled it free from the stalk.\nS. She knew the crop was ready and would soon be gathered for storage.",
       "options": {
         "a": {
-          "en": "Q, P, R, S",
-          "hi": "Q, P, R, S"
+          "en": "Q, P, R, S"
         },
         "b": {
-          "en": "P, Q, R, S",
-          "hi": "P, Q, R, S"
+          "en": "P, Q, R, S"
         },
         "c": {
-          "en": "Q, R, P, S",
-          "hi": "Q, R, P, S"
+          "en": "Q, R, P, S"
         },
         "d": {
-          "en": "P, R, Q, S",
-          "hi": "P, R, Q, S"
+          "en": "P, R, Q, S"
         }
       },
       "correct_option": "a"
@@ -639,23 +518,18 @@
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 25,
       "question_en": "Rearrange the following sentence parts to form a meaningful and grammatically correct paragraph:\nP. It guides individuals to distinguish between right and wrong in their actions.\nQ. Moral philosophy examines the principles that govern human conduct.\nR. These principles influence personal choices as well as social responsibilities.\nS. Through ethical reflection, societies aim to promote justice and fairness.",
-      "question_hi": "एक सार्थक और व्याकरणिक रूप से सही अनुच्छेद बनाने के लिए निम्नलिखित वाक्य भागों को पुनर्व्यवस्थित करें:\nP. It guides individuals to distinguish between right and wrong in their actions.\nQ. Moral philosophy examines the principles that govern human conduct.\nR. These principles influence personal choices as well as social responsibilities.\nS. Through ethical reflection, societies aim to promote justice and fairness.",
       "options": {
         "a": {
-          "en": "R, Q, P, S",
-          "hi": "R, Q, P, S"
+          "en": "R, Q, P, S"
         },
         "b": {
-          "en": "P, R, Q, S",
-          "hi": "P, R, Q, S"
+          "en": "P, R, Q, S"
         },
         "c": {
-          "en": "Q, R, P, S",
-          "hi": "Q, R, P, S"
+          "en": "Q, R, P, S"
         },
         "d": {
-          "en": "Q, P, R, S",
-          "hi": "Q, P, R, S"
+          "en": "Q, P, R, S"
         }
       },
       "correct_option": "d"
@@ -665,23 +539,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 1,
       "question_en": "Identify the part of the sentence that contains a grammatical error: A. A herd of cattle B. were grazing in C. the large field D. behind the farm.",
-      "question_hi": "वाक्य के उस भाग की पहचान करें जिसमें व्याकरणिक त्रुटि है: A. A herd of cattle B. were grazing in C. the large field D. behind the farm.",
       "options": {
         "a": {
-          "en": "A herd of cattle",
-          "hi": "A herd of cattle"
+          "en": "A herd of cattle"
         },
         "b": {
-          "en": "were grazing in",
-          "hi": "were grazing in"
+          "en": "were grazing in"
         },
         "c": {
-          "en": "the large field",
-          "hi": "the large field"
+          "en": "the large field"
         },
         "d": {
-          "en": "behind the farm.",
-          "hi": "behind the farm."
+          "en": "behind the farm."
         }
       },
       "correct_option": "b"
@@ -691,23 +560,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 2,
       "question_en": "Fill in the blank with the most appropriate preposition: The resolution was passed _____ unanimous support and confidence.",
-      "question_hi": "सबसे उपयुक्त प्रीपोजिशन से रिक्त स्थान भरें: The resolution was passed _____ unanimous support and confidence.",
       "options": {
         "a": {
-          "en": "by",
-          "hi": "by"
+          "en": "by"
         },
         "b": {
-          "en": "over",
-          "hi": "over"
+          "en": "over"
         },
         "c": {
-          "en": "under",
-          "hi": "under"
+          "en": "under"
         },
         "d": {
-          "en": "with",
-          "hi": "with"
+          "en": "with"
         }
       },
       "correct_option": "d"
@@ -717,23 +581,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 3,
       "question_en": "Select the most appropriate synonym of the word: Argumentation",
-      "question_hi": "शब्द का सबसे उपयुक्त पर्यायवाची (Synonym) चुनें: Argumentation (तर्क-वितर्क)",
       "options": {
         "a": {
-          "en": "Dialectic",
-          "hi": "Dialectic (द्वंद्वात्मक तर्क)"
+          "en": "Dialectic"
         },
         "b": {
-          "en": "Conversation",
-          "hi": "Conversation (बातचीत)"
+          "en": "Conversation"
         },
         "c": {
-          "en": "Logic",
-          "hi": "Logic (तर्क)"
+          "en": "Logic"
         },
         "d": {
-          "en": "Imagination",
-          "hi": "Imagination (कल्पना)"
+          "en": "Imagination"
         }
       },
       "correct_option": "a"
@@ -743,23 +602,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 4,
       "question_en": "Choose the incorrectly spelt word:",
-      "question_hi": "गलत वर्तनी वाला शब्द चुनें:",
       "options": {
         "a": {
-          "en": "Introvert",
-          "hi": "Introvert"
+          "en": "Introvert"
         },
         "b": {
-          "en": "Amicable",
-          "hi": "Amicable"
+          "en": "Amicable"
         },
         "c": {
-          "en": "Recluse",
-          "hi": "Recluse"
+          "en": "Recluse"
         },
         "d": {
-          "en": "Gregarios",
-          "hi": "Gregarios"
+          "en": "Gregarios"
         }
       },
       "correct_option": "d"
@@ -769,23 +623,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 5,
       "question_en": "Which of the following sentences uses the word \"park\" with the same meaning as in the following sentence? You should park the truck near the entrance.",
-      "question_hi": "निम्नलिखित में से किस वाक्य में \"park\" शब्द का उसी अर्थ में प्रयोग किया गया है जैसा इस वाक्य में है: You should park the truck near the entrance.",
       "options": {
         "a": {
-          "en": "We decided to have a picnic at the national park.",
-          "hi": "We decided to have a picnic at the national park."
+          "en": "We decided to have a picnic at the national park."
         },
         "b": {
-          "en": "Please park your car in the designated driveway.",
-          "hi": "Please park your car in the designated driveway."
+          "en": "Please park your car in the designated driveway."
         },
         "c": {
-          "en": "We can park this project until next month.",
-          "hi": "We can park this project until next month."
+          "en": "We can park this project until next month."
         },
         "d": {
-          "en": "The batsman hit the ball out of the park.",
-          "hi": "The batsman hit the ball out of the park."
+          "en": "The batsman hit the ball out of the park."
         }
       },
       "correct_option": "b"
@@ -795,23 +644,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 6,
       "question_en": "Choose the incorrectly spelt word:",
-      "question_hi": "गलत वर्तनी वाला शब्द चुनें:",
       "options": {
         "a": {
-          "en": "Procure",
-          "hi": "Procure"
+          "en": "Procure"
         },
         "b": {
-          "en": "Recieve",
-          "hi": "Recieve"
+          "en": "Recieve"
         },
         "c": {
-          "en": "Achieve",
-          "hi": "Achieve"
+          "en": "Achieve"
         },
         "d": {
-          "en": "Obtain",
-          "hi": "Obtain"
+          "en": "Obtain"
         }
       },
       "correct_option": "b"
@@ -821,25 +665,19 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 7,
       "passage_en": "Artificial intelligence ethics boards (AEBs) have a significant and varied function in guiding technological advancement, operating as vital forums for oversight, regulation, and ethical alignment. Developers can discuss risks, establish guidelines, and ensure algorithmic fairness within inclusive environments provided by international consortia, academic institutions, and tech watchdogs. To secure public trust in digital systems, AEBs regularly conduct impact assessments to monitor biases, protect privacy, and assist in transparent software deployment. They also work to uphold ethical principles and data rights, making corporations answerable for their software's impact and fostering a culture of responsible innovation. Although their influence is limited by commercial interests, lack of enforcement power, and rapid technological shifts, AEBs are fundamental for organizing ethical responses to digital threats, gathering expert consensus to prevent misuse, and building the framework for trustworthy technology in an automated society.",
-      "passage_hi": "आर्टिफिशियल इंटेलिजेंस एथिक्स बोर्ड (AEBs) तकनीकी प्रगति के मार्गदर्शन में एक महत्वपूर्ण और विविध भूमिका निभाते हैं, जो निगरानी, विनियमन और नैतिक संरेखण के लिए महत्वपूर्ण मंचों के रूप में कार्य करते हैं। डेवलपर्स अंतर्राष्ट्रीय संघों, शैक्षणिक संस्थानों और टेक वॉचडॉग्स द्वारा प्रदान किए गए समावेशी वातावरण में जोखिमों पर चर्चा कर सकते हैं, दिशानिर्देश स्थापित कर सकते हैं और एल्गोरिदमिक निष्पक्षता सुनिश्चित कर सकते हैं। डिजिटल सिस्टम में जनता का विश्वास हासिल करने के लिए, AEB नियमित रूप से पूर्वाग्रहों की निगरानी करने, गोपनीयता की रक्षा करने और पारदर्शी सॉफ्टवेयर परिनियोजन में सहायता करने के लिए प्रभाव आकलन करते हैं। वे नैतिक सिद्धांतों और डेटा अधिकारों को बनाए रखने के लिए भी काम करते हैं, निगमों को उनके सॉफ्टवेयर के प्रभाव के लिए जवाबदेह बनाते हैं और जिम्मेदार नवाचार की संस्कृति को बढ़ावा देते हैं। हालांकि उनका प्रभाव वाणिज्यिक हितों, प्रवर्तन शक्ति की कमी और तेजी से तकनीकी बदलावों से सीमित है, फिर भी AEB डिजिटल खतरों के प्रति नैतिक प्रतिक्रियाओं को व्यवस्थित करने, दुरुपयोग को रोकने के लिए विशेषज्ञ सहमति जुटाने और एक स्वचालित समाज में भरोसेमंद तकनीक के लिए ढांचा बनाने के लिए मौलिक हैं।",
       "question_en": "What is one of the primary roles of AI ethics boards (AEBs) in guiding technology?",
-      "question_hi": "प्रौद्योगिकी के मार्गदर्शन में AI एथिक्स बोर्ड (AEBs) की प्राथमिक भूमिकाओं में से एक क्या है?",
       "options": {
         "a": {
-          "en": "To accelerate the development of biased algorithms",
-          "hi": "पक्षपाती एल्गोरिदम के विकास में तेजी लाना"
+          "en": "To accelerate the development of biased algorithms"
         },
         "b": {
-          "en": "To operate as vital forums for oversight, regulation, and ethical alignment",
-          "hi": "निगरानी, विनियमन और नैतिक संरेखण के लिए महत्वपूर्ण मंचों के रूप में कार्य करना"
+          "en": "To operate as vital forums for oversight, regulation, and ethical alignment"
         },
         "c": {
-          "en": "To prevent developers from discussing potential risks",
-          "hi": "डेवलपर्स को संभावित जोखिमों पर चर्चा करने से रोकना"
+          "en": "To prevent developers from discussing potential risks"
         },
         "d": {
-          "en": "To eliminate the need for public trust in software",
-          "hi": "सॉफ्टवेयर में जनता के विश्वास की आवश्यकता को समाप्त करना"
+          "en": "To eliminate the need for public trust in software"
         }
       },
       "correct_option": "b"
@@ -849,23 +687,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 8,
       "question_en": "How do ethics boards contribute to public trust in digital systems, as mentioned in the passage?",
-      "question_hi": "गद्यांश में उल्लिखित अनुसार, एथिक्स बोर्ड डिजिटल सिस्टम में जनता के विश्वास में कैसे योगदान करते हैं?",
       "options": {
         "a": {
-          "en": "By hiding software biases from the general public",
-          "hi": "आम जनता से सॉफ्टवेयर पूर्वाग्रहों को छिपाकर"
+          "en": "By hiding software biases from the general public"
         },
         "b": {
-          "en": "By conducting impact assessments to monitor biases and protect privacy",
-          "hi": "पूर्वाग्रहों की निगरानी और गोपनीयता की रक्षा के लिए प्रभाव आकलन करके"
+          "en": "By conducting impact assessments to monitor biases and protect privacy"
         },
         "c": {
-          "en": "By promoting unregulated data collection practices",
-          "hi": "अनियंत्रित डेटा संग्रह प्रथाओं को बढ़ावा देकर"
+          "en": "By promoting unregulated data collection practices"
         },
         "d": {
-          "en": "By discouraging transparency in software deployment",
-          "hi": "सॉफ्टवेयर परिनियोजन में पारदर्शिता को हतोत्साहित करके"
+          "en": "By discouraging transparency in software deployment"
         }
       },
       "correct_option": "b"
@@ -875,23 +708,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 9,
       "question_en": "What is a key challenge faced by AI ethics boards, according to the passage?",
-      "question_hi": "गद्यांश के अनुसार, AI एथिक्स बोर्ड के सामने एक प्रमुख चुनौती क्या है?",
       "options": {
         "a": {
-          "en": "A lack of new technological developments",
-          "hi": "नए तकनीकी विकास की कमी"
+          "en": "A lack of new technological developments"
         },
         "b": {
-          "en": "Commercial interests, lack of enforcement power, and rapid technological shifts",
-          "hi": "वाणिज्यिक हित, प्रवर्तन शक्ति की कमी और तेजी से तकनीकी बदलाव"
+          "en": "Commercial interests, lack of enforcement power, and rapid technological shifts"
         },
         "c": {
-          "en": "Total cooperation from all global corporations",
-          "hi": "सभी वैश्विक निगमों से पूर्ण सहयोग"
+          "en": "Total cooperation from all global corporations"
         },
         "d": {
-          "en": "Decreasing complexity in digital threats",
-          "hi": "डिजिटल खतरों में घटती जटिलता"
+          "en": "Decreasing complexity in digital threats"
         }
       },
       "correct_option": "b"
@@ -901,23 +729,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 10,
       "question_en": "According to the passage, how do these boards help promote responsible innovation?",
-      "question_hi": "गद्यांश के अनुसार, ये बोर्ड जिम्मेदार नवाचार को बढ़ावा देने में कैसे मदद करते हैं?",
       "options": {
         "a": {
-          "en": "By allowing corporations to ignore data rights",
-          "hi": "निगमों को डेटा अधिकारों की अनदेखी करने की अनुमति देकर"
+          "en": "By allowing corporations to ignore data rights"
         },
         "b": {
-          "en": "By making corporations answerable for their software's impact",
-          "hi": "निगमों को उनके सॉफ्टवेयर के प्रभाव के लिए जवाबदेह बनाकर"
+          "en": "By making corporations answerable for their software's impact"
         },
         "c": {
-          "en": "By restricting the flow of information to academic institutions",
-          "hi": "शैक्षणिक संस्थानों में सूचना के प्रवाह को प्रतिबंधित करके"
+          "en": "By restricting the flow of information to academic institutions"
         },
         "d": {
-          "en": "By focusing only on the profitability of new tech",
-          "hi": "केवल नई तकनीक की लाभप्रदता पर ध्यान केंद्रित करके"
+          "en": "By focusing only on the profitability of new tech"
         }
       },
       "correct_option": "b"
@@ -927,23 +750,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 11,
       "question_en": "What is the meaning of \"fundamental\" as used in the passage?",
-      "question_hi": "गद्यांश में प्रयुक्त शब्द \"fundamental\" का अर्थ क्या है?",
       "options": {
         "a": {
-          "en": "Easily replaceable",
-          "hi": "आसानी से बदलने योग्य"
+          "en": "Easily replaceable"
         },
         "b": {
-          "en": "Essential or absolutely necessary",
-          "hi": "आवश्यक या नितांत जरूरी"
+          "en": "Essential or absolutely necessary"
         },
         "c": {
-          "en": "Optional but useful",
-          "hi": "वैकल्पिक लेकिन उपयोगी"
+          "en": "Optional but useful"
         },
         "d": {
-          "en": "Unlikely to succeed",
-          "hi": "सफल होने की संभावना कम"
+          "en": "Unlikely to succeed"
         }
       },
       "correct_option": "b"
@@ -953,23 +771,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 12,
       "question_en": "Choose the correct meaning of the idiom: Everyone was surprised when she announced that she had a bun in the oven.",
-      "question_hi": "मुहावरे ('a bun in the oven') का सही अर्थ चुनें: Everyone was surprised when she announced that she had a bun in the oven.",
       "options": {
         "a": {
-          "en": "A new employee",
-          "hi": "एक नया कर्मचारी"
+          "en": "A new employee"
         },
         "b": {
-          "en": "An unfit person",
-          "hi": "एक अयोग्य व्यक्ति"
+          "en": "An unfit person"
         },
         "c": {
-          "en": "A pregnancy",
-          "hi": "गर्भावस्था"
+          "en": "A pregnancy"
         },
         "d": {
-          "en": "A mischief",
-          "hi": "एक शरारत"
+          "en": "A mischief"
         }
       },
       "correct_option": "c"
@@ -979,23 +792,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 13,
       "question_en": "Choose the correct one-word substitute for: An institution providing medical and surgical treatment and nursing care for sick or injured people.",
-      "question_hi": "वाक्यांश के लिए सही एक-शब्द विकल्प चुनें: बीमार या घायल लोगों को चिकित्सा, शल्य चिकित्सा और नर्सिंग देखभाल प्रदान करने वाला संस्थान।",
       "options": {
         "a": {
-          "en": "Archives",
-          "hi": "Archives (अभिलेखागार)"
+          "en": "Archives"
         },
         "b": {
-          "en": "Hospital",
-          "hi": "Hospital (अस्पताल)"
+          "en": "Hospital"
         },
         "c": {
-          "en": "Pharmacy",
-          "hi": "Pharmacy (दवाखाना)"
+          "en": "Pharmacy"
         },
         "d": {
-          "en": "Pantry",
-          "hi": "Pantry (भंडार कक्ष)"
+          "en": "Pantry"
         }
       },
       "correct_option": "b"
@@ -1005,23 +813,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 14,
       "question_en": "Select the most appropriate antonym of the word: Disturbing",
-      "question_hi": "शब्द का सबसे उपयुक्त विलोम (Antonym) चुनें: Disturbing (परेशान करने वाला)",
       "options": {
         "a": {
-          "en": "Pleasant",
-          "hi": "Pleasant (सुखद)"
+          "en": "Pleasant"
         },
         "b": {
-          "en": "Tedious",
-          "hi": "Tedious (उबाऊ)"
+          "en": "Tedious"
         },
         "c": {
-          "en": "Bothersome",
-          "hi": "Bothersome (कष्टदायक)"
+          "en": "Bothersome"
         },
         "d": {
-          "en": "Vexatious",
-          "hi": "Vexatious (चिड़चिड़ाहट पैदा करने वाला)"
+          "en": "Vexatious"
         }
       },
       "correct_option": "a"
@@ -1031,23 +834,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 15,
       "question_en": "Choose the correct one-word substitute for the highlighted group of words: Ramesh asked his friend who is a poet about [a technique that creates narrative rhythm].",
-      "question_hi": "हाइलाइट किए गए शब्द-समूह के लिए सही एक-शब्द विकल्प चुनें: Ramesh asked his friend who is a poet about [a technique that creates narrative rhythm].",
       "options": {
         "a": {
-          "en": "Plot",
-          "hi": "Plot (कथानक)"
+          "en": "Plot"
         },
         "b": {
-          "en": "Repetition",
-          "hi": "Repetition (पुनरावृत्ति)"
+          "en": "Repetition"
         },
         "c": {
-          "en": "Personification",
-          "hi": "Personification (मानवीकरण)"
+          "en": "Personification"
         },
         "d": {
-          "en": "Humour",
-          "hi": "Humour (हास्य)"
+          "en": "Humour"
         }
       },
       "correct_option": "b"
@@ -1057,23 +855,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 16,
       "question_en": "Change the following sentence into the Active form: The last piece of cake was eaten by my brother.",
-      "question_hi": "निम्नलिखित वाक्य को Active voice में बदलें: The last piece of cake was eaten by my brother.",
       "options": {
         "a": {
-          "en": "My brother ate the last piece of cake.",
-          "hi": "My brother ate the last piece of cake."
+          "en": "My brother ate the last piece of cake."
         },
         "b": {
-          "en": "The last piece of cake was eating my brother.",
-          "hi": "The last piece of cake was eating my brother."
+          "en": "The last piece of cake was eating my brother."
         },
         "c": {
-          "en": "My brother eats the last piece of cake.",
-          "hi": "My brother eats the last piece of cake."
+          "en": "My brother eats the last piece of cake."
         },
         "d": {
-          "en": "The last piece of cake had been eaten by my brother.",
-          "hi": "The last piece of cake had been eaten by my brother."
+          "en": "The last piece of cake had been eaten by my brother."
         }
       },
       "correct_option": "a"
@@ -1083,23 +876,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 17,
       "question_en": "Select the option that expresses the given sentence in indirect voice: She will tell him, \"I have already booked the tickets.\"",
-      "question_hi": "उस विकल्प का चयन करें जो दिए गए वाक्य को Indirect speech में व्यक्त करता है: She will tell him, \"I have already booked the tickets.\"",
       "options": {
         "a": {
-          "en": "She will tell him that she had already booked the tickets.",
-          "hi": "She will tell him that she had already booked the tickets."
+          "en": "She will tell him that she had already booked the tickets."
         },
         "b": {
-          "en": "She will tell him that she has already booked the tickets.",
-          "hi": "She will tell him that she has already booked the tickets."
+          "en": "She will tell him that she has already booked the tickets."
         },
         "c": {
-          "en": "She will tell him that she already booked the tickets.",
-          "hi": "She will tell him that she already booked the tickets."
+          "en": "She will tell him that she already booked the tickets."
         },
         "d": {
-          "en": "She will tell him that she would have booked the tickets.",
-          "hi": "She will tell him that she would have booked the tickets."
+          "en": "She will tell him that she would have booked the tickets."
         }
       },
       "correct_option": "b"
@@ -1109,23 +897,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 18,
       "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: Radhika, the artist and sculptor, [were displaying her art at the gallery].",
-      "question_hi": "वाक्य के हाइलाइट किए गए भाग को बदलने के लिए सबसे उपयुक्त विकल्प चुनें: Radhika, the artist and sculptor, [were displaying her art at the gallery].",
       "options": {
         "a": {
-          "en": "are displaying her art at the gallery",
-          "hi": "are displaying her art at the gallery"
+          "en": "are displaying her art at the gallery"
         },
         "b": {
-          "en": "where displaying her art at the gallery",
-          "hi": "where displaying her art at the gallery"
+          "en": "where displaying her art at the gallery"
         },
         "c": {
-          "en": "is displaying her art at the gallery",
-          "hi": "is displaying her art at the gallery"
+          "en": "is displaying her art at the gallery"
         },
         "d": {
-          "en": "displays her art at the gallery",
-          "hi": "displays her art at the gallery"
+          "en": "displays her art at the gallery"
         }
       },
       "correct_option": "c"
@@ -1135,23 +918,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 19,
       "question_en": "Choose the most suitable option to replace the highlighted part of the sentence: It is hard to identify the timber because its grain patterns [are similar to any oak tree].",
-      "question_hi": "वाक्य के हाइलाइट किए गए भाग को बदलने के लिए सबसे उपयुक्त विकल्प चुनें: It is hard to identify the timber because its grain patterns [are similar to any oak tree].",
       "options": {
         "a": {
-          "en": "are similar to all trees",
-          "hi": "are similar to all trees"
+          "en": "are similar to all trees"
         },
         "b": {
-          "en": "are similar to those of any oak tree",
-          "hi": "are similar to those of any oak tree"
+          "en": "are similar to those of any oak tree"
         },
         "c": {
-          "en": "is similar to those of any other oak tree",
-          "hi": "is similar to those of any other oak tree"
+          "en": "is similar to those of any other oak tree"
         },
         "d": {
-          "en": "is similar to those of any oak trees",
-          "hi": "is similar to those of any oak trees"
+          "en": "is similar to those of any oak trees"
         }
       },
       "correct_option": "b"
@@ -1161,23 +939,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 20,
       "question_en": "Choose the correct passive voice transformation of the sentence: The experienced chef has prepared a delicious and healthy meal to satisfy the hungry guests.",
-      "question_hi": "वाक्य का सही Passive voice रूपांतरण चुनें: The experienced chef has prepared a delicious and healthy meal to satisfy the hungry guests.",
       "options": {
         "a": {
-          "en": "A delicious and healthy meal was prepared by the experienced chef to satisfy the hungry guests.",
-          "hi": "A delicious and healthy meal was prepared by the experienced chef to satisfy the hungry guests."
+          "en": "A delicious and healthy meal was prepared by the experienced chef to satisfy the hungry guests."
         },
         "b": {
-          "en": "A delicious and healthy meal has been prepared by the experienced chef to satisfy the hungry guests.",
-          "hi": "A delicious and healthy meal has been prepared by the experienced chef to satisfy the hungry guests."
+          "en": "A delicious and healthy meal has been prepared by the experienced chef to satisfy the hungry guests."
         },
         "c": {
-          "en": "A delicious and healthy meal has been being prepared by the experienced chef to satisfy the hungry guests.",
-          "hi": "A delicious and healthy meal has been being prepared by the experienced chef to satisfy the hungry guests."
+          "en": "A delicious and healthy meal has been being prepared by the experienced chef to satisfy the hungry guests."
         },
         "d": {
-          "en": "A delicious and healthy meal is prepared by the experienced chef to satisfy the hungry guests.",
-          "hi": "A delicious and healthy meal is prepared by the experienced chef to satisfy the hungry guests."
+          "en": "A delicious and healthy meal is prepared by the experienced chef to satisfy the hungry guests."
         }
       },
       "correct_option": "b"
@@ -1187,23 +960,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 21,
       "question_en": "Choose the correct passive voice transformation of the sentence: What had the authorities organized to manage the traffic flow before the festival began?",
-      "question_hi": "वाक्य का सही Passive voice रूपांतरण चुनें: What had the authorities organized to manage the traffic flow before the festival began?",
       "options": {
         "a": {
-          "en": "What was organized by the authorities to manage the traffic flow before the festival began?",
-          "hi": "What was organized by the authorities to manage the traffic flow before the festival began?"
+          "en": "What was organized by the authorities to manage the traffic flow before the festival began?"
         },
         "b": {
-          "en": "What had been organized by the authorities to manage the traffic flow before the festival began?",
-          "hi": "What had been organized by the authorities to manage the traffic flow before the festival began?"
+          "en": "What had been organized by the authorities to manage the traffic flow before the festival began?"
         },
         "c": {
-          "en": "What has been organized by the authorities to manage the traffic flow before the festival began?",
-          "hi": "What has been organized by the authorities to manage the traffic flow before the festival began?"
+          "en": "What has been organized by the authorities to manage the traffic flow before the festival began?"
         },
         "d": {
-          "en": "What had been organizing by the authorities to manage the traffic flow before the festival began?",
-          "hi": "What had been organizing by the authorities to manage the traffic flow before the festival began?"
+          "en": "What had been organizing by the authorities to manage the traffic flow before the festival began?"
         }
       },
       "correct_option": "b"
@@ -1213,23 +981,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 22,
       "question_en": "Select the option that expresses the given sentence in direct voice: The strict coach, with a loud voice, said that he had warned that lazy player many times in the past.",
-      "question_hi": "उस विकल्प का चयन करें जो दिए गए वाक्य को Direct speech में व्यक्त करता है: The strict coach, with a loud voice, said that he had warned that lazy player many times in the past.",
       "options": {
         "a": {
-          "en": "The strict coach said, \"I warned that lazy player many times in the past.\"",
-          "hi": "The strict coach said, \"I warned that lazy player many times in the past.\""
+          "en": "The strict coach said, \"I warned that lazy player many times in the past.\""
         },
         "b": {
-          "en": "The strict coach said, \"He had warned that lazy player many times in the past.\"",
-          "hi": "The strict coach said, \"He had warned that lazy player many times in the past.\""
+          "en": "The strict coach said, \"He had warned that lazy player many times in the past.\""
         },
         "c": {
-          "en": "The strict coach said, \"I have warned this lazy player many times in the past.\"",
-          "hi": "The strict coach said, \"I have warned this lazy player many times in the past.\""
+          "en": "The strict coach said, \"I have warned this lazy player many times in the past.\""
         },
         "d": {
-          "en": "The strict coach said, \"I had warned this lazy player many times in the past.\"",
-          "hi": "The strict coach said, \"I had warned this lazy player many times in the past.\""
+          "en": "The strict coach said, \"I had warned this lazy player many times in the past.\""
         }
       },
       "correct_option": "c"
@@ -1239,23 +1002,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 23,
       "question_en": "Select the option that expresses the given sentence in direct voice: The coach told the players that their dedication had been remarkable, but that they had to now train for the finals which was a tough battle, and he was sure that they would win it.",
-      "question_hi": "उस विकल्प का चयन करें जो दिए गए वाक्य को Direct speech में व्यक्त करता है: The coach told the players that their dedication had been remarkable, but that they had to now train for the finals which was a tough battle, and he was sure that they would win it.",
       "options": {
         "a": {
-          "en": "\"Your dedication was remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players.",
-          "hi": "\"Your dedication was remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
+          "en": "\"Your dedication was remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
         },
         "b": {
-          "en": "\"Your dedication has been remarkable, but you have to now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players.",
-          "hi": "\"Your dedication has been remarkable, but you have to now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
+          "en": "\"Your dedication has been remarkable, but you have to now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
         },
         "c": {
-          "en": "\"Your dedication has been remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players.",
-          "hi": "\"Your dedication has been remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
+          "en": "\"Your dedication has been remarkable, but you must now train for the finals which is a tough battle, and I am sure that you will win it,\" the coach said to the players."
         },
         "d": {
-          "en": "\"Their dedication was remarkable, but they had to now train for the finals which was a tough battle, and he was sure that they would win it,\" the coach said to the players.",
-          "hi": "\"Their dedication was remarkable, but they had to now train for the finals which was a tough battle, and he was sure that they would win it,\" the coach said to the players."
+          "en": "\"Their dedication was remarkable, but they had to now train for the finals which was a tough battle, and he was sure that they would win it,\" the coach said to the players."
         }
       },
       "correct_option": "b"
@@ -1265,23 +1023,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 24,
       "question_en": "Rearrange the following sentence parts to form a meaningful and grammatically correct paragraph:\nP. She carefully measured the dry ingredients and sifted them into a large mixing bowl.\nQ. She whisked in the eggs and melted butter until the batter was smooth and creamy.\nR. She poured the mixture into a tin and baked it in the oven until it was golden brown.\nS. The cake was finally ready to be served and looked absolutely delicious for the party.",
-      "question_hi": "एक सार्थक और व्याकरणिक रूप से सही अनुच्छेद बनाने के लिए निम्नलिखित वाक्य भागों को पुनर्व्यवस्थित करें:\nP. She carefully measured the dry ingredients and sifted them into a large mixing bowl.\nQ. She whisked in the eggs and melted butter until the batter was smooth and creamy.\nR. She poured the mixture into a tin and baked it in the oven until it was golden brown.\nS. The cake was finally ready to be served and looked absolutely delicious for the party.",
       "options": {
         "a": {
-          "en": "Q, R, P, S",
-          "hi": "Q, R, P, S"
+          "en": "Q, R, P, S"
         },
         "b": {
-          "en": "S, Q, R, P",
-          "hi": "S, Q, R, P"
+          "en": "S, Q, R, P"
         },
         "c": {
-          "en": "P, Q, R, S",
-          "hi": "P, Q, R, S"
+          "en": "P, Q, R, S"
         },
         "d": {
-          "en": "P, S, R, Q",
-          "hi": "P, S, R, Q"
+          "en": "P, S, R, Q"
         }
       },
       "correct_option": "c"
@@ -1291,23 +1044,18 @@
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 25,
       "question_en": "Rearrange the following sentence parts to form a meaningful and grammatically correct paragraph:\nP. The problem highlights how excessive brightness can disrupt natural ecosystems and human biological rhythms.\nQ. In many urban environments, citizens are increasingly exposed to high levels of artificial light during the night.\nR. This environmental issue is formally identified by scientists as \"light pollution.\"\nS. It suggests that while we require illumination for safety, an excess of it can be biologically harmful.",
-      "question_hi": "एक सार्थक और व्याकरणिक रूप से सही अनुच्छेद बनाने के लिए निम्नलिखित वाक्य भागों को पुनर्व्यवस्थित करें:\nP. The problem highlights how excessive brightness can disrupt natural ecosystems and human biological rhythms.\nQ. In many urban environments, citizens are increasingly exposed to high levels of artificial light during the night.\nR. This environmental issue is formally identified by scientists as \"light pollution.\"\nS. It suggests that while we require illumination for safety, an excess of it can be biologically harmful.",
       "options": {
         "a": {
-          "en": "S, R, P, Q",
-          "hi": "S, R, P, Q"
+          "en": "S, R, P, Q"
         },
         "b": {
-          "en": "P, R, Q, S",
-          "hi": "P, R, Q, S"
+          "en": "P, R, Q, S"
         },
         "c": {
-          "en": "R, S, P, Q",
-          "hi": "R, S, P, Q"
+          "en": "R, S, P, Q"
         },
         "d": {
-          "en": "Q, R, P, S",
-          "hi": "Q, R, P, S"
+          "en": "Q, R, P, S"
         }
       },
       "correct_option": "d"
