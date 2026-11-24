@@ -147,8 +147,8 @@
       "id": 6,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 31,
-      "question_en": "If '@' means '+', '%' means '-', '$' means '×', find the value of: 12 % 14 $ 8 % 6 = ? (Note: Some symbol definitions were partially faded in the source PDF).",
-      "question_hi": "यदि '@' का अर्थ '+', '%' का अर्थ '-', '$' का अर्थ '×' है, तो मान ज्ञात कीजिए: 12 % 14 $ 8 % 6 = ? (नोट: मूल PDF में कुछ चिह्न आंशिक रूप से अस्पष्ट हैं)।",
+      "question_en": "If '@' means '+', '%' means '-', '$' means '×', find the value of: 12 % 14 $ 8 % 6 = ?",
+      "question_hi": "यदि '@' का अर्थ '+', '%' का अर्थ '-', '$' का अर्थ '×' है, तो मान ज्ञात कीजिए: 12 % 14 $ 8 % 6 = ?",
       "options": {
         "a": {
           "en": "-104",
