@@ -12,8 +12,8 @@
       "id": 1,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 51,
-      "question_en": "If A + B + C = 0 and A^2 + B^2 + C^2 = 64, then find the value of AB + BC + CA.",
-      "question_hi": "यदि A + B + C = 0 और A^2 + B^2 + C^2 = 64, तो AB + BC + CA का मान ज्ञात कीजिए।",
+      "question_en": "If \\(A+B+C=0\\) and \\(A^2+B^2+C^2=64\\), then find the value of \\(AB+BC+CA\\).",
+      "question_hi": "यदि \\(A+B+C=0\\) और \\(A^2+B^2+C^2=64\\), तो \\(AB+BC+CA\\) का मान ज्ञात कीजिए।",
       "options": {
         "a": {
           "en": "-32",
@@ -64,8 +64,8 @@
       "id": 3,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 53,
-      "question_en": "If sin A = 15/17 and cos B = 8/17, then find the value of cos A cos B + sin A sin B.",
-      "question_hi": "यदि sin A = 15/17 और cos B = 8/17, तो cos A cos B + sin A sin B का मान ज्ञात कीजिए।",
+      "question_en": "If \\(\\sin A=\\frac{15}{17}\\) and \\(\\cos B=\\frac{8}{17}\\), then find the value of \\(\\cos A\\cos B+\\sin A\\sin B\\).",
+      "question_hi": "यदि \\(\\sin A=\\frac{15}{17}\\) और \\(\\cos B=\\frac{8}{17}\\), तो \\(\\cos A\\cos B+\\sin A\\sin B\\) का मान ज्ञात कीजिए।",
       "options": {
         "a": {
           "en": "120/289",
@@ -116,8 +116,8 @@
       "id": 5,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 55,
-      "question_en": "P and Q together have Rs. 12,000. If 5/11 of P's amount is equal to 4/7 of Q's amount, how much amount does P have?",
-      "question_hi": "P और Q के पास कुल मिलाकर ₹12,000 हैं। यदि P की राशि का 5/11, Q की राशि के 4/7 के बराबर है, तो P के पास कितनी राशि है?",
+      "question_en": "P and Q together have Rs. 12,000. If \\(\\frac{5}{11}\\) of P's amount is equal to \\(\\frac{4}{7}\\) of Q's amount, how much amount does P have?",
+      "question_hi": "P और Q के पास कुल मिलाकर ₹12,000 हैं। यदि P की राशि का \\(\\frac{5}{11}\\), Q की राशि के \\(\\frac{4}{7}\\) के बराबर है, तो P के पास कितनी राशि है?",
       "options": {
         "a": {
           "en": "Rs. 6683.5",
@@ -350,8 +350,8 @@
       "id": 14,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 64,
-      "question_en": "Find the value of sqrt(15 + sqrt(15 + sqrt(15 + ...))). (Note: Exact expression from PDF; if intended as product sqrt(15 * sqrt(15 * ...)), answer is 15).",
-      "question_hi": "sqrt(15 + sqrt(15 + sqrt(15 + ...))) का मान ज्ञात कीजिए। (नोट: PDF में यही व्यंजक दिया गया है; यदि यह गुणनफल रूप में होता तो मान 15 होता)।",
+      "question_en": "Find the value of \\(\\sqrt{15+\\sqrt{15+\\sqrt{15+\\cdots}}}\\). (Note: This is the expression shown in the source PDF; if the intended expression uses multiplication instead of addition, the answer would be 15.)",
+      "question_hi": "\\(\\sqrt{15+\\sqrt{15+\\sqrt{15+\\cdots}}}\\) का मान ज्ञात कीजिए। (नोट: स्रोत PDF में यही व्यंजक दिया गया है; यदि इसमें जोड़ के स्थान पर गुणा होता, तो उत्तर 15 होता।)",
       "options": {
         "a": {
           "en": "5",
@@ -458,20 +458,20 @@
       "question_hi": "एक ठोस गोलाकार ब्लॉक को पिघलाकर उसी त्रिज्या का एक बेलन बनाया जाता है। बेलन की ऊँचाई गोले की त्रिज्या का कितना भाग है?",
       "options": {
         "a": {
-          "en": "4/3",
-          "hi": "4/3"
+          "en": "\\(\\frac{4}{3}\\)",
+          "hi": "\\(\\frac{4}{3}\\)"
         },
         "b": {
-          "en": "3/4",
-          "hi": "3/4"
+          "en": "\\(\\frac{3}{4}\\)",
+          "hi": "\\(\\frac{3}{4}\\)"
         },
         "c": {
-          "en": "5/4",
-          "hi": "5/4"
+          "en": "\\(\\frac{5}{4}\\)",
+          "hi": "\\(\\frac{5}{4}\\)"
         },
         "d": {
-          "en": "3/5",
-          "hi": "3/5"
+          "en": "\\(\\frac{3}{5}\\)",
+          "hi": "\\(\\frac{3}{5}\\)"
         }
       },
       "correct_option": "a"
@@ -480,8 +480,8 @@
       "id": 19,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 69,
-      "question_en": "What is the value of (4.5)^2 + sqrt(2.25) - (6.5 ÷ 1.3)?",
-      "question_hi": "(4.5)^2 + sqrt(2.25) - (6.5 ÷ 1.3) का मान क्या है?",
+      "question_en": "What is the value of \\((4.5)^2+\\sqrt{2.25}-(6.5\\div1.3)\\)?",
+      "question_hi": "\\((4.5)^2+\\sqrt{2.25}-(6.5\\div1.3)\\) का मान क्या है?",
       "options": {
         "a": {
           "en": "20.45",
@@ -506,24 +506,24 @@
       "id": 20,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 70,
-      "question_en": "Simplify: 1/(sqrt(7) - sqrt(6)) + 1/(sqrt(7) + sqrt(6))",
-      "question_hi": "सरल कीजिए: 1/(sqrt(7) - sqrt(6)) + 1/(sqrt(7) + sqrt(6))",
+      "question_en": "Simplify: \\(\\frac{1}{\\sqrt{7}-\\sqrt{6}}+\\frac{1}{\\sqrt{7}+\\sqrt{6}}\\).",
+      "question_hi": "सरल कीजिए: \\(\\frac{1}{\\sqrt{7}-\\sqrt{6}}+\\frac{1}{\\sqrt{7}+\\sqrt{6}}\\).",
       "options": {
         "a": {
-          "en": "2sqrt(7)",
-          "hi": "2sqrt(7)"
+          "en": "\\(2\\sqrt{7}\\)",
+          "hi": "\\(2\\sqrt{7}\\)"
         },
         "b": {
-          "en": "sqrt(6)",
-          "hi": "sqrt(6)"
+          "en": "\\(\\sqrt{6}\\)",
+          "hi": "\\(\\sqrt{6}\\)"
         },
         "c": {
-          "en": "sqrt(7)",
-          "hi": "sqrt(7)"
+          "en": "\\(\\sqrt{7}\\)",
+          "hi": "\\(\\sqrt{7}\\)"
         },
         "d": {
-          "en": "2sqrt(6)",
-          "hi": "2sqrt(6)"
+          "en": "\\(2\\sqrt{6}\\)",
+          "hi": "\\(2\\sqrt{6}\\)"
         }
       },
       "correct_option": "a"
@@ -532,24 +532,24 @@
       "id": 21,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 71,
-      "question_en": "A line passes through the point (6, 8) and has a slope of -3. What is the equation of the line?",
-      "question_hi": "एक रेखा बिंदु (6, 8) से होकर गुजरती है और इसका ढलान -3 है। रेखा का समीकरण क्या है?",
+      "question_en": "A line passes through the point \\((6,8)\\) and has a slope of \\(-3\\). What is the equation of the line?",
+      "question_hi": "एक रेखा बिंदु \\((6,8)\\) से होकर गुजरती है और इसका ढलान \\(-3\\) है। रेखा का समीकरण क्या है?",
       "options": {
         "a": {
-          "en": "y = -3x + 26",
-          "hi": "y = -3x + 26"
+          "en": "\\(y=-3x+26\\)",
+          "hi": "\\(y=-3x+26\\)"
         },
         "b": {
-          "en": "y = -3x + 24",
-          "hi": "y = -3x + 24"
+          "en": "\\(y=-3x+24\\)",
+          "hi": "\\(y=-3x+24\\)"
         },
         "c": {
-          "en": "y = -3x - 26",
-          "hi": "y = -3x - 26"
+          "en": "\\(y=-3x-26\\)",
+          "hi": "\\(y=-3x-26\\)"
         },
         "d": {
-          "en": "y = -x + 26",
-          "hi": "y = -x + 26"
+          "en": "\\(y=-x+26\\)",
+          "hi": "\\(y=-x+26\\)"
         }
       },
       "correct_option": "a"
@@ -558,24 +558,24 @@
       "id": 22,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 72,
-      "question_en": "Find the value of k for which the quadratic equation y^2 + ky + 36 = 0 has real and distinct roots.",
-      "question_hi": "k का वह मान ज्ञात कीजिए जिससे द्विघात समीकरण y^2 + ky + 36 = 0 के वास्तविक और भिन्न मूल हों।",
+      "question_en": "Find the value of \\(k\\) for which the quadratic equation \\(y^2+ky+36=0\\) has real and distinct roots.",
+      "question_hi": "\\(k\\) का वह मान ज्ञात कीजिए जिससे द्विघात समीकरण \\(y^2+ky+36=0\\) के वास्तविक और भिन्न मूल हों।",
       "options": {
         "a": {
-          "en": "k > 12",
-          "hi": "k > 12"
+          "en": "\\(k>12\\)",
+          "hi": "\\(k>12\\)"
         },
         "b": {
-          "en": "k > 10",
-          "hi": "k > 10"
+          "en": "\\(k>10\\)",
+          "hi": "\\(k>10\\)"
         },
         "c": {
-          "en": "k < -15",
-          "hi": "k < -15"
+          "en": "\\(k<-15\\)",
+          "hi": "\\(k<-15\\)"
         },
         "d": {
-          "en": "k < -11",
-          "hi": "k < -11"
+          "en": "\\(k<-11\\)",
+          "hi": "\\(k<-11\\)"
         }
       },
       "correct_option": "a"
@@ -584,24 +584,24 @@
       "id": 23,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 73,
-      "question_en": "Simplify: [(1 + cot^2(x)) / (1 + tan^2(x))] × [(cosec(x) - cot(x)) / (cosec(x) + cot(x))]",
-      "question_hi": "सरलीकरण कीजिए: [(1 + cot^2(x)) / (1 + tan^2(x))] × [(cosec(x) - cot(x)) / (cosec(x) + cot(x))]",
+      "question_en": "Simplify: \\(\\frac{1+\\cot^2 x}{1+\\tan^2 x}\\times\\frac{\\cosec x-\\cot x}{\\cosec x+\\cot x}\\).",
+      "question_hi": "सरलीकरण कीजिए: \\(\\frac{1+\\cot^2 x}{1+\\tan^2 x}\\times\\frac{\\cosec x-\\cot x}{\\cosec x+\\cot x}\\).",
       "options": {
         "a": {
-          "en": "1 / (1 + cos(x))",
-          "hi": "1 / (1 + cos(x))"
+          "en": "\\(\\frac{1}{1+\\cos x}\\)",
+          "hi": "\\(\\frac{1}{1+\\cos x}\\)"
         },
         "b": {
-          "en": "cot^2(x) / (1 + cos(x))",
-          "hi": "cot^2(x) / (1 + cos(x))"
+          "en": "\\(\\frac{\\cot^2 x}{1+\\cos x}\\)",
+          "hi": "\\(\\frac{\\cot^2 x}{1+\\cos x}\\)"
         },
         "c": {
-          "en": "(1 - cos(x)) / (1 + cos(x))",
-          "hi": "(1 - cos(x)) / (1 + cos(x))"
+          "en": "\\(\\frac{1-\\cos x}{1+\\cos x}\\)",
+          "hi": "\\(\\frac{1-\\cos x}{1+\\cos x}\\)"
         },
         "d": {
-          "en": "cot^2(x) * (1 - cos(x)) / (1 + cos(x))",
-          "hi": "cot^2(x) * (1 - cos(x)) / (1 + cos(x))"
+          "en": "\\(\\frac{\\cot^2 x(1-\\cos x)}{1+\\cos x}\\)",
+          "hi": "\\(\\frac{\\cot^2 x(1-\\cos x)}{1+\\cos x}\\)"
         }
       },
       "correct_option": "d"
@@ -610,24 +610,24 @@
       "id": 24,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 74,
-      "question_en": "If cos(θ) = 8/27, then find the value of sin^2(θ).",
-      "question_hi": "यदि cos(θ) = 8/27, तो sin^2(θ) का मान ज्ञात कीजिए।",
+      "question_en": "If \\(\\cos\\theta=\\frac{8}{27}\\), then find the value of \\(\\sin^2\\theta\\).",
+      "question_hi": "यदि \\(\\cos\\theta=\\frac{8}{27}\\), तो \\(\\sin^2\\theta\\) का मान ज्ञात कीजिए।",
       "options": {
         "a": {
-          "en": "665/729",
-          "hi": "665/729"
+          "en": "\\(\\frac{665}{729}\\)",
+          "hi": "\\(\\frac{665}{729}\\)"
         },
         "b": {
-          "en": "793/729",
-          "hi": "793/729"
+          "en": "\\(\\frac{793}{729}\\)",
+          "hi": "\\(\\frac{793}{729}\\)"
         },
         "c": {
-          "en": "625/729",
-          "hi": "625/729"
+          "en": "\\(\\frac{625}{729}\\)",
+          "hi": "\\(\\frac{625}{729}\\)"
         },
         "d": {
-          "en": "650/729",
-          "hi": "650/729"
+          "en": "\\(\\frac{650}{729}\\)",
+          "hi": "\\(\\frac{650}{729}\\)"
         }
       },
       "correct_option": "a"
@@ -636,8 +636,8 @@
       "id": 25,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 75,
-      "question_en": "In a right-angled triangle ABC, if cot B = 1, then what is the value of 2 sin B cos B?",
-      "question_hi": "एक समकोण त्रिभुज ABC में, यदि cot B = 1 है, तो 2 sin B cos B का मान क्या है?",
+      "question_en": "In a right-angled triangle \\(ABC\\), if \\(\\cot B=1\\), then what is the value of \\(2\\sin B\\cos B\\)?",
+      "question_hi": "एक समकोण त्रिभुज \\(ABC\\) में, यदि \\(\\cot B=1\\) है, तो \\(2\\sin B\\cos B\\) का मान क्या है?",
       "options": {
         "a": {
           "en": "3",
@@ -688,24 +688,24 @@
       "id": 27,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 52,
-      "question_en": "Simplify the expression: cosec^2(x) - cot^2(x) - cos^2(x)",
-      "question_hi": "व्यंजक को सरल करें: cosec^2(x) - cot^2(x) - cos^2(x)",
+      "question_en": "Simplify the expression: \\(\\cosec^2 x-\\cot^2 x-\\cos^2 x\\).",
+      "question_hi": "व्यंजक को सरल करें: \\(\\cosec^2 x-\\cot^2 x-\\cos^2 x\\).",
       "options": {
         "a": {
-          "en": "2",
-          "hi": "2"
+          "en": "\\(2\\)",
+          "hi": "\\(2\\)"
         },
         "b": {
-          "en": "tan^2(x)",
-          "hi": "tan^2(x)"
+          "en": "\\(\\tan^2 x\\)",
+          "hi": "\\(\\tan^2 x\\)"
         },
         "c": {
-          "en": "sin^2(x)",
-          "hi": "sin^2(x)"
+          "en": "\\(\\sin^2 x\\)",
+          "hi": "\\(\\sin^2 x\\)"
         },
         "d": {
-          "en": "1",
-          "hi": "1"
+          "en": "\\(1\\)",
+          "hi": "\\(1\\)"
         }
       },
       "correct_option": "c"
@@ -948,24 +948,24 @@
       "id": 37,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 62,
-      "question_en": "In a trapezium PQRS where PQ || RS, diagonals PR and QS intersect each other at O. Area of ΔROS = 16 cm^2. If PQ = 2RS, what will be the area of ΔPOQ?",
-      "question_hi": "एक समलम्ब PQRS में जहाँ PQ || RS, विकर्ण PR और QS, O पर एक दूसरे को काटते हैं। ΔROS का क्षेत्रफल = 16 वर्ग सेमी है। यदि PQ = 2RS, तो ΔPOQ का क्षेत्रफल क्या होगा?",
+      "question_en": "In a trapezium \\(PQRS\\), where \\(PQ\\parallel RS\\), diagonals \\(PR\\) and \\(QS\\) intersect at \\(O\\). The area of \\(\\triangle ROS\\) is \\(16\\text{ cm}^2\\). If \\(PQ=2RS\\), what will be the area of \\(\\triangle POQ\\)?",
+      "question_hi": "एक समलम्ब \\(PQRS\\) में, जहाँ \\(PQ\\parallel RS\\), विकर्ण \\(PR\\) और \\(QS\\), \\(O\\) पर एक-दूसरे को काटते हैं। \\(\\triangle ROS\\) का क्षेत्रफल \\(16\\text{ cm}^2\\) है। यदि \\(PQ=2RS\\), तो \\(\\triangle POQ\\) का क्षेत्रफल क्या होगा?",
       "options": {
         "a": {
-          "en": "64 cm^2",
-          "hi": "64 वर्ग सेमी"
+          "en": "\\(64\\text{ cm}^2\\)",
+          "hi": "\\(64\\text{ cm}^2\\)"
         },
         "b": {
-          "en": "80 cm^2",
-          "hi": "80 वर्ग सेमी"
+          "en": "\\(80\\text{ cm}^2\\)",
+          "hi": "\\(80\\text{ cm}^2\\)"
         },
         "c": {
-          "en": "96 cm^2",
-          "hi": "96 वर्ग सेमी"
+          "en": "\\(96\\text{ cm}^2\\)",
+          "hi": "\\(96\\text{ cm}^2\\)"
         },
         "d": {
-          "en": "72 cm^2",
-          "hi": "72 वर्ग सेमी"
+          "en": "\\(72\\text{ cm}^2\\)",
+          "hi": "\\(72\\text{ cm}^2\\)"
         }
       },
       "correct_option": "a"
@@ -1000,24 +1000,24 @@
       "id": 39,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 64,
-      "question_en": "The simple interest on Rs. 2500 is Rs. 500 and the time period is 3 years. What is the rate of interest?",
-      "question_hi": "2500 रुपये पर साधारण ब्याज 500 रुपये है और ब्याज अवधि 3 वर्ष है। ब्याज दर क्या है?",
+      "question_en": "The simple interest on Rs. 2,500 is Rs. 500 and the time period is 3 years. What is the rate of interest?",
+      "question_hi": "₹2,500 पर साधारण ब्याज ₹500 है और ब्याज अवधि 3 वर्ष है। ब्याज दर क्या है?",
       "options": {
         "a": {
-          "en": "10/3 %",
-          "hi": "10/3 %"
+          "en": "\\(\\frac{10}{3}\\%\\)",
+          "hi": "\\(\\frac{10}{3}\\%\\)"
         },
         "b": {
-          "en": "20/3 %",
-          "hi": "20/3 %"
+          "en": "\\(\\frac{20}{3}\\%\\)",
+          "hi": "\\(\\frac{20}{3}\\%\\)"
         },
         "c": {
-          "en": "40 %",
-          "hi": "40 %"
+          "en": "\\(40\\%\\)",
+          "hi": "\\(40\\%\\)"
         },
         "d": {
-          "en": "50/3 %",
-          "hi": "50/3 %"
+          "en": "\\(\\frac{50}{3}\\%\\)",
+          "hi": "\\(\\frac{50}{3}\\%\\)"
         }
       },
       "correct_option": "b"
@@ -1026,24 +1026,24 @@
       "id": 40,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 65,
-      "question_en": "A rectangular sheet of paper measuring 88 cm × 20 cm is rolled into a right circular cylinder whose height is the 20 cm side. What is the approximate volume of the cylinder?",
-      "question_hi": "88 सेमी × 20 सेमी माप वाली एक आयताकार कागज़ की शीट को एक लंबवृत्तीय बेलन के आकार में मोड़ा गया है, जिसकी 20 सेमी भुजा बेलन की ऊँचाई है। बेलन का लगभग आयतन क्या है?",
+      "question_en": "A rectangular sheet of paper measuring \\(88\\text{ cm}\\times20\\text{ cm}\\) is rolled into a right circular cylinder whose height is the 20 cm side. What is the approximate volume of the cylinder?",
+      "question_hi": "\\(88\\text{ cm}\\times20\\text{ cm}\\) माप वाली एक आयताकार कागज़ की शीट को एक लंबवृत्तीय बेलन के आकार में मोड़ा गया है, जिसकी 20 सेमी भुजा बेलन की ऊँचाई है। बेलन का लगभग आयतन क्या है?",
       "options": {
         "a": {
-          "en": "13220 cubic cm",
-          "hi": "13220 घन सेमी"
+          "en": "\\(13220\\text{ cm}^3\\)",
+          "hi": "\\(13220\\text{ cm}^3\\)"
         },
         "b": {
-          "en": "12330 cubic cm",
-          "hi": "12330 घन सेमी"
+          "en": "\\(12330\\text{ cm}^3\\)",
+          "hi": "\\(12330\\text{ cm}^3\\)"
         },
         "c": {
-          "en": "12230 cubic cm",
-          "hi": "12230 घन सेमी"
+          "en": "\\(12230\\text{ cm}^3\\)",
+          "hi": "\\(12230\\text{ cm}^3\\)"
         },
         "d": {
-          "en": "12320 cubic cm",
-          "hi": "12320 घन सेमी"
+          "en": "\\(12320\\text{ cm}^3\\)",
+          "hi": "\\(12320\\text{ cm}^3\\)"
         }
       },
       "correct_option": "d"
@@ -1052,24 +1052,24 @@
       "id": 41,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 66,
-      "question_en": "The value of 12^2 + 65^2 is equal to which of the following?",
-      "question_hi": "12^2 + 65^2 का मान निम्नलिखित में से किसके समान है?",
+      "question_en": "The value of \\(12^2+65^2\\) is equal to which of the following?",
+      "question_hi": "\\(12^2+65^2\\) का मान निम्नलिखित में से किसके समान है?",
       "options": {
         "a": {
-          "en": "15^2 + 42^2",
-          "hi": "15^2 + 42^2"
+          "en": "\\(15^2+42^2\\)",
+          "hi": "\\(15^2+42^2\\)"
         },
         "b": {
-          "en": "20^2 + 63^2",
-          "hi": "20^2 + 63^2"
+          "en": "\\(20^2+63^2\\)",
+          "hi": "\\(20^2+63^2\\)"
         },
         "c": {
-          "en": "18^2 + 45^2",
-          "hi": "18^2 + 45^2"
+          "en": "\\(18^2+45^2\\)",
+          "hi": "\\(18^2+45^2\\)"
         },
         "d": {
-          "en": "82^2 + 72^2",
-          "hi": "82^2 + 72^2"
+          "en": "\\(82^2+72^2\\)",
+          "hi": "\\(82^2+72^2\\)"
         }
       },
       "correct_option": "b"
@@ -1108,20 +1108,20 @@
       "question_hi": "एक अर्धगोलाकार खोल की आंतरिक त्रिज्या 9 सेमी और बाहरी त्रिज्या 11 सेमी है। खोल बनाने वाले पदार्थ का आयतन ज्ञात कीजिए।",
       "options": {
         "a": {
-          "en": "(1250π / 3) cm^3",
-          "hi": "(1250π / 3) घन सेमी"
+          "en": "\\(\\frac{1250\\pi}{3}\\text{ cm}^3\\)",
+          "hi": "\\(\\frac{1250\\pi}{3}\\text{ cm}^3\\)"
         },
         "b": {
-          "en": "(1204π / 3) cm^3",
-          "hi": "(1204π / 3) घन सेमी"
+          "en": "\\(\\frac{1204\\pi}{3}\\text{ cm}^3\\)",
+          "hi": "\\(\\frac{1204\\pi}{3}\\text{ cm}^3\\)"
         },
         "c": {
-          "en": "(1150π / 3) cm^3",
-          "hi": "(1150π / 3) घन सेमी"
+          "en": "\\(\\frac{1150\\pi}{3}\\text{ cm}^3\\)",
+          "hi": "\\(\\frac{1150\\pi}{3}\\text{ cm}^3\\)"
         },
         "d": {
-          "en": "(1210π / 3) cm^3",
-          "hi": "(1210π / 3) घन सेमी"
+          "en": "\\(\\frac{1210\\pi}{3}\\text{ cm}^3\\)",
+          "hi": "\\(\\frac{1210\\pi}{3}\\text{ cm}^3\\)"
         }
       },
       "correct_option": "b"
@@ -1130,8 +1130,8 @@
       "id": 44,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 69,
-      "question_en": "A tank is 2/5 full of water. If 30 litres of water is added to it, it becomes 3/5 full. What is the full capacity of the tank?",
-      "question_hi": "एक टैंक 2/5 पानी से भरा है। यदि इसमें 30 लीटर पानी और मिला दिया जाए, तो यह 3/5 भर जाता है। टैंक की पूरी क्षमता क्या है?",
+      "question_en": "A tank is \\(\\frac{2}{5}\\) full of water. If 30 litres of water is added to it, it becomes \\(\\frac{3}{5}\\) full. What is the full capacity of the tank?",
+      "question_hi": "एक टैंक \\(\\frac{2}{5}\\) पानी से भरा है। यदि इसमें 30 लीटर पानी और मिला दिया जाए, तो यह \\(\\frac{3}{5}\\) भर जाता है। टैंक की पूरी क्षमता क्या है?",
       "options": {
         "a": {
           "en": "180 litres",
@@ -1156,24 +1156,24 @@
       "id": 45,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 70,
-      "question_en": "The centroid of a triangle is its centre of mass. If the coordinates of the vertices are A(4, 7), B(6, 8), and C(8, 6), what is the centroid of the triangle?",
-      "question_hi": "किसी त्रिभुज का केन्द्रक द्रव्यमान का केंद्र होता है। यदि शीर्षों के निर्देशांक A(4, 7), B(6, 8) और C(8, 6) हैं, तो त्रिभुज का केन्द्रक क्या है?",
+      "question_en": "The centroid of a triangle is its centre of mass. If the coordinates of the vertices are \\(A(4,7)\\), \\(B(6,8)\\), and \\(C(8,6)\\), what is the centroid of the triangle?",
+      "question_hi": "किसी त्रिभुज का केन्द्रक द्रव्यमान का केंद्र होता है। यदि शीर्षों के निर्देशांक \\(A(4,7)\\), \\(B(6,8)\\) और \\(C(8,6)\\) हैं, तो त्रिभुज का केन्द्रक क्या है?",
       "options": {
         "a": {
-          "en": "(7, 5)",
-          "hi": "(7, 5)"
+          "en": "\\((7,5)\\)",
+          "hi": "\\((7,5)\\)"
         },
         "b": {
-          "en": "(7, 6)",
-          "hi": "(7, 6)"
+          "en": "\\((7,6)\\)",
+          "hi": "\\((7,6)\\)"
         },
         "c": {
-          "en": "(6, 7)",
-          "hi": "(6, 7)"
+          "en": "\\((6,7)\\)",
+          "hi": "\\((6,7)\\)"
         },
         "d": {
-          "en": "(6, 5)",
-          "hi": "(6, 5)"
+          "en": "\\((6,5)\\)",
+          "hi": "\\((6,5)\\)"
         }
       },
       "correct_option": "c"
@@ -1182,24 +1182,24 @@
       "id": 46,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 71,
-      "question_en": "If the ratio of the heights of two similar triangles is p : q, what will be the ratio of their areas?",
-      "question_hi": "यदि दो समरूप त्रिभुजों की ऊँचाइयों का अनुपात p : q है, तो उनके क्षेत्रफलों का अनुपात क्या होगा?",
+      "question_en": "If the ratio of the heights of two similar triangles is \\(p:q\\), what will be the ratio of their areas?",
+      "question_hi": "यदि दो समरूप त्रिभुजों की ऊँचाइयों का अनुपात \\(p:q\\) है, तो उनके क्षेत्रफलों का अनुपात क्या होगा?",
       "options": {
         "a": {
-          "en": "sqrt(p) : sqrt(q)",
-          "hi": "sqrt(p) : sqrt(q)"
+          "en": "\\(\\sqrt p:\\sqrt q\\)",
+          "hi": "\\(\\sqrt p:\\sqrt q\\)"
         },
         "b": {
-          "en": "p^2 : q^2",
-          "hi": "p^2 : q^2"
+          "en": "\\(p^2:q^2\\)",
+          "hi": "\\(p^2:q^2\\)"
         },
         "c": {
-          "en": "p : q",
-          "hi": "p : q"
+          "en": "\\(p:q\\)",
+          "hi": "\\(p:q\\)"
         },
         "d": {
-          "en": "p : q^2",
-          "hi": "p : q^2"
+          "en": "\\(p:q^2\\)",
+          "hi": "\\(p:q^2\\)"
         }
       },
       "correct_option": "b"
@@ -1208,24 +1208,24 @@
       "id": 47,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 72,
-      "question_en": "Rationalize the denominator: 8 / (sqrt(5) + sqrt(3))",
-      "question_hi": "हर का परिमेयकरण (Rationalize) करें: 8 / (sqrt(5) + sqrt(3))",
+      "question_en": "Rationalize the denominator: \\(\\frac{8}{\\sqrt{5}+\\sqrt{3}}\\).",
+      "question_hi": "हर का परिमेयकरण (Rationalize) करें: \\(\\frac{8}{\\sqrt{5}+\\sqrt{3}}\\).",
       "options": {
         "a": {
-          "en": "4(sqrt(5) + sqrt(3))",
-          "hi": "4(sqrt(5) + sqrt(3))"
+          "en": "\\(4(\\sqrt5+\\sqrt3)\\)",
+          "hi": "\\(4(\\sqrt5+\\sqrt3)\\)"
         },
         "b": {
-          "en": "4(sqrt(5) - sqrt(3))",
-          "hi": "4(sqrt(5) - sqrt(3))"
+          "en": "\\(4(\\sqrt5-\\sqrt3)\\)",
+          "hi": "\\(4(\\sqrt5-\\sqrt3)\\)"
         },
         "c": {
-          "en": "2(sqrt(5) - sqrt(3))",
-          "hi": "2(sqrt(5) - sqrt(3))"
+          "en": "\\(2(\\sqrt5-\\sqrt3)\\)",
+          "hi": "\\(2(\\sqrt5-\\sqrt3)\\)"
         },
         "d": {
-          "en": "2(sqrt(5) + sqrt(3))",
-          "hi": "2(sqrt(5) + sqrt(3))"
+          "en": "\\(2(\\sqrt5+\\sqrt3)\\)",
+          "hi": "\\(2(\\sqrt5+\\sqrt3)\\)"
         }
       },
       "correct_option": "b"
@@ -1234,8 +1234,8 @@
       "id": 48,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 73,
-      "question_en": "If (a^3 + b^3 + c^3 - 3abc) = 405 and (a + b + c) = 15, then find the value of (a - b)^2 + (b - c)^2 + (c - a)^2.",
-      "question_hi": "यदि (a^3 + b^3 + c^3 - 3abc) = 405 और (a + b + c) = 15 है, तो (a - b)^2 + (b - c)^2 + (c - a)^2 का मान ज्ञात कीजिए।",
+      "question_en": "If \\(a^3+b^3+c^3-3abc=405\\) and \\(a+b+c=15\\), then find the value of \\((a-b)^2+(b-c)^2+(c-a)^2\\).",
+      "question_hi": "यदि \\(a^3+b^3+c^3-3abc=405\\) और \\(a+b+c=15\\) है, तो \\((a-b)^2+(b-c)^2+(c-a)^2\\) का मान ज्ञात कीजिए।",
       "options": {
         "a": {
           "en": "27",
@@ -1260,24 +1260,24 @@
       "id": 49,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 74,
-      "question_en": "Evaluate: [(1 + cos θ)^2 + sin^2 θ] / [(cosec^2 θ - 1) sin^2 θ] = ?",
-      "question_hi": "मान ज्ञात कीजिए: [(1 + cos θ)^2 + sin^2 θ] / [(cosec^2 θ - 1) sin^2 θ] = ?",
+      "question_en": "Evaluate: \\(\\frac{(1+\\cos\\theta)^2+\\sin^2\\theta}{(\\cosec^2\\theta-1)\\sin^2\\theta}=?\\)",
+      "question_hi": "मान ज्ञात कीजिए: \\(\\frac{(1+\\cos\\theta)^2+\\sin^2\\theta}{(\\cosec^2\\theta-1)\\sin^2\\theta}=?\\)",
       "options": {
         "a": {
-          "en": "cos θ(1 + sin θ)",
-          "hi": "cos θ(1 + sin θ)"
+          "en": "\\(\\cos\\theta(1+\\sin\\theta)\\)",
+          "hi": "\\(\\cos\\theta(1+\\sin\\theta)\\)"
         },
         "b": {
-          "en": "2 cos θ(1 + sec θ)",
-          "hi": "2 cos θ(1 + sec θ)"
+          "en": "\\(2\\cos\\theta(1+\\sec\\theta)\\)",
+          "hi": "\\(2\\cos\\theta(1+\\sec\\theta)\\)"
         },
         "c": {
-          "en": "sec θ(1 + sin θ)",
-          "hi": "sec θ(1 + sin θ)"
+          "en": "\\(\\sec\\theta(1+\\sin\\theta)\\)",
+          "hi": "\\(\\sec\\theta(1+\\sin\\theta)\\)"
         },
         "d": {
-          "en": "2 sec θ(1 + sec θ)",
-          "hi": "2 sec θ(1 + sec θ)"
+          "en": "\\(2\\sec\\theta(1+\\sec\\theta)\\)",
+          "hi": "\\(2\\sec\\theta(1+\\sec\\theta)\\)"
         }
       },
       "correct_option": "d"
@@ -1286,24 +1286,24 @@
       "id": 50,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 75,
-      "question_en": "A line passes through the points (3, 5) and (2, 7). Find the equation of the line.",
-      "question_hi": "एक रेखा बिंदुओं (3, 5) और (2, 7) से होकर जाती है। रेखा का समीकरण ज्ञात कीजिए।",
+      "question_en": "A line passes through the points \\((3,5)\\) and \\((2,7)\\). Find the equation of the line.",
+      "question_hi": "एक रेखा बिंदुओं \\((3,5)\\) और \\((2,7)\\) से होकर जाती है। रेखा का समीकरण ज्ञात कीजिए।",
       "options": {
         "a": {
-          "en": "2x - y = 11",
-          "hi": "2x - y = 11"
+          "en": "\\(2x-y=11\\)",
+          "hi": "\\(2x-y=11\\)"
         },
         "b": {
-          "en": "x + 2y = 11",
-          "hi": "x + 2y = 11"
+          "en": "\\(x+2y=11\\)",
+          "hi": "\\(x+2y=11\\)"
         },
         "c": {
-          "en": "x - 2y = 11",
-          "hi": "x - 2y = 11"
+          "en": "\\(x-2y=11\\)",
+          "hi": "\\(x-2y=11\\)"
         },
         "d": {
-          "en": "2x + y = 11",
-          "hi": "2x + y = 11"
+          "en": "\\(2x+y=11\\)",
+          "hi": "\\(2x+y=11\\)"
         }
       },
       "correct_option": "d"
