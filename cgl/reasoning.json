@@ -930,8 +930,8 @@
       "id": 35,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 35,
-      "question_en": "A mirror is placed on the line AB. Which of the option figures will be the correct mirror image of the question figure? (Image-based question from PDF)",
-      "question_hi": "एक दर्पण को रेखा AB पर रखा गया है। विकल्प आकृतियों में से कौन सी आकृति प्रश्न आकृति की सही प्रतिबिंब होगी? (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "A mirror is placed on the line AB. Which of the option figures will be the correct mirror image of the question figure? rom )",
+      "question_hi": "एक दर्पण को रेखा AB पर रखा गया है। विकल्प आकृतियों में से कौन सी आकृति प्रश्न आकृति की सही प्रतिबिंब होगी? ",
       "options": {
         "a": {
           "en": "Figure (a)",
@@ -1095,8 +1095,8 @@
       "id": 41,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 41,
-      "question_en": "A piece of paper is folded and punched as shown in the question figures. From the given options, indicate how it will appear when opened. (Image-based question from PDF)",
-      "question_hi": "एक कागज़ के टुकड़े को प्रश्न आकृतियों में दर्शाए अनुसार मोड़ा गया है तथा छिद्रित किया गया है। दिए गए विकल्पों में से बताइए कि खोलने पर यह कैसा दिखाई देगा। (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "A piece of paper is folded and punched as shown in the question figures. From the given options, indicate how it will appear when opened. ",
+      "question_hi": "एक कागज़ के टुकड़े को प्रश्न आकृतियों में दर्शाए अनुसार मोड़ा गया है तथा छिद्रित किया गया है। दिए गए विकल्पों में से बताइए कि खोलने पर यह कैसा दिखाई देगा। ",
       "options": {
         "a": {
           "en": "Figure (a)",
@@ -1125,8 +1125,8 @@
       "id": 42,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 42,
-      "question_en": "Select the option in which the question figure is embedded/hidden (rotation is not allowed). (Image-based question from PDF)",
-      "question_hi": "दिए गए विकल्पों में से उस विकल्प का चयन कीजिए जिसमें प्रश्न आकृति छिपी हुई/अंतर्निहित है। (घुमाने की अनुमति नहीं है) (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "Select the option in which the question figure is embedded/hidden (rotation is not allowed).",
+      "question_hi": "दिए गए विकल्पों में से उस विकल्प का चयन कीजिए जिसमें प्रश्न आकृति छिपी हुई/अंतर्निहित है। (घुमाने की अनुमति नहीं है",
       "options": {
         "a": {
           "en": "Figure (a)",
@@ -1182,8 +1182,8 @@
       "id": 44,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 44,
-      "question_en": "In the figure given below, the circle represents lions, the rectangle represents deer, and the triangle represents rabbits. How many rabbits are neither lions nor deer? (Image-based Venn diagram from PDF)",
-      "question_hi": "नीचे दिए गए चित्र में वृत्त शेरों को, आयत हिरणों को और त्रिभुज खरगोशों को दर्शाता है। कितने खरगोश न तो शेर हैं और न ही हिरण? (PDF से वेन आरेख प्रश्न)",
+      "question_en": "In the figure given below, the circle represents lions, the rectangle represents deer, and the triangle represents rabbits. How many rabbits are neither lions nor deer? ",
+      "question_hi": "नीचे दिए गए चित्र में वृत्त शेरों को, आयत हिरणों को और त्रिभुज खरगोशों को दर्शाता है। कितने खरगोश न तो शेर हैं और न ही हिरण? ",
       "options": {
         "a": {
           "en": "5",
@@ -1212,8 +1212,8 @@
       "id": 45,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 45,
-      "question_en": "Select the Venn diagram that best represents the relationship between the following classes: Omnivores, Bear, Cattle. (Image-based question from PDF)",
-      "question_hi": "वह आरेख चुनिए जो नीचे दिए गए वर्गों के बीच के संबंध का सही निरूपण करता है: सर्वभक्षी, भालू, मवेशी। (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "Select the Venn diagram that best represents the relationship between the following classes: Omnivores, Bear, Cattle. ",
+      "question_hi": "वह आरेख चुनिए जो नीचे दिए गए वर्गों के बीच के संबंध का सही निरूपण करता है: सर्वभक्षी, भालू, मवेशी। ",
       "options": {
         "a": {
           "en": "Diagram (a)",
@@ -1269,8 +1269,8 @@
       "id": 47,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 47,
-      "question_en": "Which answer figure will complete the pattern in the question figure? (Rotation is not allowed) (Image-based question from PDF)",
-      "question_hi": "कौन सी उत्तर आकृति प्रश्न आकृति के प्रतिरूप को पूरा करेगी? (घुमाने की अनुमति नहीं है) (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "Which answer figure will complete the pattern in the question figure? (Rotation is not allowed) ",
+      "question_hi": "कौन सी उत्तर आकृति प्रश्न आकृति के प्रतिरूप को पूरा करेगी? (घुमाने की अनुमति नहीं है) ",
       "options": {
         "a": {
           "en": "Figure (a)",
@@ -1299,8 +1299,8 @@
       "id": 48,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 48,
-      "question_en": "Select the option that is related to the third figure in the same way as the second figure is related to the first figure. (Image-based question from PDF)",
-      "question_hi": "उस विकल्प का चयन करें जो तीसरे चित्र से उसी प्रकार संबंधित हो जिस प्रकार दूसरा चित्र पहले चित्र से संबंधित है। (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "Select the option that is related to the third figure in the same way as the second figure is related to the first figure. ",
+      "question_hi": "उस विकल्प का चयन करें जो तीसरे चित्र से उसी प्रकार संबंधित हो जिस प्रकार दूसरा चित्र पहले चित्र से संबंधित है। ",
       "options": {
         "a": {
           "en": "Figure (a)",
@@ -1329,8 +1329,8 @@
       "id": 49,
       "shift": "12/11/2025 (3rd Shift)",
       "original_q_no": 49,
-      "question_en": "Select the figure from the given options that can replace the question mark (?) in the following figure series. (Image-based question from PDF)",
-      "question_hi": "निम्नलिखित आकृति श्रृंखला में, दिए गए विकल्पों में से उस आकृति का चयन कीजिए जिसे प्रश्नवाचक चिन्ह (?) के स्थान पर रखा जा सकता है। (PDF से आकृति-आधारित प्रश्न)",
+      "question_en": "Select the figure from the given options that can replace the question mark (?) in the following figure series. ",
+      "question_hi": "निम्नलिखित आकृति श्रृंखला में, दिए गए विकल्पों में से उस आकृति का चयन कीजिए जिसे प्रश्नवाचक चिन्ह (?) के स्थान पर रखा जा सकता है। ",
       "options": {
         "a": {
           "en": "Figure (a)",
