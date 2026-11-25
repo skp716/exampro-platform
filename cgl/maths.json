@@ -350,8 +350,8 @@
       "id": 14,
       "shift": "12/11/2025 (2nd Shift)",
       "original_q_no": 64,
-      "question_en": "Find the value of \\(\\sqrt{15+\\sqrt{15+\\sqrt{15+\\cdots}}}\\). (Note: This is the expression shown in the source PDF; if the intended expression uses multiplication instead of addition, the answer would be 15.)",
-      "question_hi": "\\(\\sqrt{15+\\sqrt{15+\\sqrt{15+\\cdots}}}\\) का मान ज्ञात कीजिए। (नोट: स्रोत PDF में यही व्यंजक दिया गया है; यदि इसमें जोड़ के स्थान पर गुणा होता, तो उत्तर 15 होता।)",
+      "question_en": "Find the value of \\(\\sqrt{15+\\sqrt{15+\\sqrt{15+\\cdots}}}\\).",
+      "question_hi": "\\(\\sqrt{15+\\sqrt{15+\\sqrt{15+\\cdots}}}\\) का मान ज्ञात कीजिए।",
       "options": {
         "a": {
           "en": "5",
