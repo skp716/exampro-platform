@@ -1730,11 +1730,13 @@
     function renderAdminReport(data){
       const {session,snapshots,metrics}=data;
       const status=session.status||'unknown';
-      const title=metrics?metrics.evaluated?'Evaluated Performance Report':'Saved Answers — Answer Key Unavailable':'Attempt Data — No Question Snapshot';
+      const title=status==='admin_saved_no_answers'?'Admin Saved — No Answers':metrics?metrics.evaluated?'Evaluated Performance Report':'Saved Answers — Answer Key Unavailable':'Attempt Data — No Question Snapshot';
       let html=`<h3>${escapeHTML(title)}</h3><p><strong>${escapeHTML(session.name||'Student')}</strong> • ${escapeHTML(session.email||'')}</p>
         <p>Exam: ${escapeHTML(session.examName||session.examId||'N/A')} • Centre: ${escapeHTML(session.centerName||'N/A')} • Batch: ${escapeHTML(session.batch||'N/A')}</p>
         <p>Status: <strong>${escapeHTML(status)}</strong> • Login: ${escapeHTML(dateLabel(session.loginAt))} • Last activity: ${escapeHTML(dateLabel(session.lastSeen))}</p>`;
-      if(metrics){
+      if(status==='admin_saved_no_answers'){
+        html+='<p>This student logged in, but the examination was not started and no answers were saved. This is an administrative login record only; no score or completed attempt has been created.</p>';
+      }else if(metrics){
         html+=`<p>Started: ${escapeHTML(dateLabel(session.examStartTime))} • Recorded duration: ${escapeHTML(session.timeTakenText||'Not recorded')}</p>`;
         if(metrics.missingQuestionSnapshots>0)html+=`<p style="color:#92400e;background:#fef3c7;padding:10px;border-radius:8px;">${metrics.missingQuestionSnapshots} question snapshot(s) are missing. The report will not claim a complete evaluation.</p>`;
         html+=`<div class="stats-grid">
@@ -1801,10 +1803,10 @@
           name:session.name||'Student',email:session.email||'',ownerUid:session.ownerUid||'',
           attemptId,examId:session.examId||'',examName:session.examName||'Unknown Exam',
           subjects:[...new Set(snapshots.map(s=>s.subjectName).filter(Boolean))],
-          score:metrics?.evaluated?`${metrics.score}/${metrics.total}`:'Not evaluated',
-          correct:metrics?.correct||0,wrong:metrics?.wrong||0,attempted:metrics?.attempted||0,
-          unanswered:metrics?.unanswered??null,questionSnapshots:snapshots.length,
-          performanceMetrics:metrics?{correct:metrics.correct,wrong:metrics.wrong,unanswered:metrics.unanswered,attempted:metrics.attempted,score:metrics.score,total:metrics.total,percentage:metrics.percentage,accuracy:metrics.accuracy,penaltyApplied:metrics.penaltyApplied,evaluated:metrics.evaluated,subjectBreakdown:metrics.subjectBreakdown}:null,
+          score:!loginOnly&&metrics?.evaluated?`${metrics.score}/${metrics.total}`:'Not evaluated',
+          correct:loginOnly?0:(metrics?.correct||0),wrong:loginOnly?0:(metrics?.wrong||0),attempted:loginOnly?0:(metrics?.attempted||0),
+          unanswered:loginOnly?null:(metrics?.unanswered??null),questionSnapshots:snapshots.length,
+          performanceMetrics:!loginOnly&&metrics?{correct:metrics.correct,wrong:metrics.wrong,unanswered:metrics.unanswered,attempted:metrics.attempted,score:metrics.score,total:metrics.total,percentage:metrics.percentage,accuracy:metrics.accuracy,penaltyApplied:metrics.penaltyApplied,evaluated:metrics.evaluated,subjectBreakdown:metrics.subjectBreakdown}:null,
           selectedAnswers:session.selectedAnswers||{},
           tabSwitches:Number(session.tabSwitches)||0,copiesAttempted:Number(session.copiesAttempted)||0,
           penaltiesApplied:Number(session.penaltiesApplied)||0,feedback:session.feedback||'None',doubt:session.doubt||'None',
