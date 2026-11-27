@@ -2028,12 +2028,12 @@
     function renderQuestionEquation(qData) {
       const el = document.getElementById('question-equation');
       if (!el) return;
-      const value = normalizeRichText(
+      const value = normalizeInlineLatexDelimiters(normalizeRichText(
         qData?.equation ??
         qData?.formula ??
         qData?.math ??
         ''
-      ).trim();
+      )).trim();
       el.innerHTML = '';
       if (!value) return;
       const alreadyDelimited = /\\\(|\\\)|\\\[|\\\]|\$\$/.test(value);
