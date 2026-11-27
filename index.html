@@ -586,6 +586,7 @@
     let examStartTime = 0;
     let examEndTime = 0;
     let progressSaveTimer = null;
+    let progressSaveChain = Promise.resolve();
     let heartbeatTimer = null;
     let reserveQuestions = [];
     let securityEvents = [];
@@ -830,13 +831,16 @@
       if(!currentAttemptId||!auth.currentUser)return;
       const payload={
         status:isExamActive?'in_progress':(currentSession?.status||'logged_in'),lastSeen:new Date(),
-        currentQuestionIndex,selectedAnswers,questionStatus,examStartTime,examEndTime,
+        currentQuestionIndex,selectedAnswers:{...selectedAnswers},questionStatus:{...questionStatus},examStartTime,examEndTime,
         questionOrder:questionsList.map(q=>q._questionKey),reserveOrder:reserveQuestions.map(q=>q._questionKey),
         tabSwitches,copiesAttempted,penaltiesApplied,securityViolations:securityEvents.length,
         securityEvents:securityEvents.slice(-50),...extra
       };
-      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
-      catch(err){console.error('Progress save failed:',err);}
+      try{
+        progressSaveChain=progressSaveChain.catch(()=>{}).then(()=>setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true}));
+        await progressSaveChain;
+        currentSession={...(currentSession||{}),...payload};
+      }catch(err){console.error('Progress save failed:',err);}
     }
 
 
