@@ -105,10 +105,31 @@ service cloud.firestore {
         ))
       );
       allow delete: if isAdmin();
+
+      // Immutable per-question snapshot for a specific student attempt.
+      // Students may create their own snapshots; only admins can read them
+      // later for recovery and historical performance reports.
+      match /question_snapshots/{questionId} {
+        function ownsParentAttempt() {
+          return signedIn()
+            && exists(/databases/$(database)/documents/exam_sessions/$(sessionId))
+            && get(/databases/$(database)/documents/exam_sessions/$(sessionId)).data.ownerUid == request.auth.uid;
+        }
+        // Snapshots include correct answers: students may create their own,
+        // but only authorized admins may read them.
+        allow get, list: if isAdmin();
+        allow create: if ownsParentAttempt()
+          && request.resource.data.ownerUid == request.auth.uid
+          && request.resource.data.attemptId == sessionId
+          && request.resource.data.questionIndex is int
+          && request.resource.data.questionIndex >= 0;
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
     }
 
     match /results/{resultId} {
-      allow create: if validResultIdentity(resultId)
+      allow create: if isAdmin() || (validResultIdentity(resultId)
         && request.resource.data.status == 'draft'
         && request.resource.data.completed == false
         && request.resource.data.keys().hasOnly([
@@ -116,7 +137,7 @@ service cloud.firestore {
           'subjects', 'score', 'correct', 'wrong', 'tabSwitches',
           'copiesAttempted', 'penaltiesApplied', 'feedback', 'doubt',
           'rating', 'status', 'completed', 'submittedAt', 'updatedAt'
-        ]);
+        ]));
 
       allow get: if signedIn()
         && (resource.data.ownerUid == request.auth.uid || isAdmin());
@@ -130,6 +151,7 @@ service cloud.firestore {
         && resource.data.attemptId == request.resource.data.attemptId
         && resource.data.email == request.resource.data.email
         && resource.data.examId == request.resource.data.examId
+        && resource.data.status == 'draft'
         && resource.data.completed == false
         && request.resource.data.completed == true
         && request.resource.data.status == 'completed'

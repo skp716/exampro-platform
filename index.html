@@ -539,7 +539,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, setDoc, writeBatch, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -586,6 +586,8 @@
     let examStartTime = 0;
     let examEndTime = 0;
     let progressSaveTimer = null;
+    let progressSaveChain = Promise.resolve();
+    let questionSnapshotSaveChain = Promise.resolve(true);
     let heartbeatTimer = null;
     let reserveQuestions = [];
     let securityEvents = [];
@@ -786,7 +788,7 @@
       const data=await runTransaction(db,async transaction=>{
         const sessionSnap=await transaction.get(sessionRef);
         if(sessionSnap.exists()&&sessionSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
-        if(sessionSnap.exists()&&sessionSnap.data()?.status==='final_submitted') throw new Error('attempt-already-used');
+        if(sessionSnap.exists()&&['final_submitted','admin_saved_no_answers'].includes(sessionSnap.data()?.status)) throw new Error('attempt-already-used');
         if(!sessionSnap.exists()){
           transaction.set(sessionRef,{
             sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,
@@ -830,13 +832,73 @@
       if(!currentAttemptId||!auth.currentUser)return;
       const payload={
         status:isExamActive?'in_progress':(currentSession?.status||'logged_in'),lastSeen:new Date(),
-        currentQuestionIndex,selectedAnswers,questionStatus,examStartTime,examEndTime,
+        currentQuestionIndex,selectedAnswers:{...selectedAnswers},questionStatus:{...questionStatus},examStartTime,examEndTime,
         questionOrder:questionsList.map(q=>q._questionKey),reserveOrder:reserveQuestions.map(q=>q._questionKey),
         tabSwitches,copiesAttempted,penaltiesApplied,securityViolations:securityEvents.length,
         securityEvents:securityEvents.slice(-50),...extra
       };
-      try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
-      catch(err){console.error('Progress save failed:',err);}
+      try{
+        progressSaveChain=progressSaveChain.catch(()=>{}).then(()=>setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true}));
+        await progressSaveChain;
+        currentSession={...(currentSession||{}),...payload};
+      }catch(err){console.error('Progress save failed:',err);}
+    }
+
+
+    // Store the exact question content used in this attempt. Each question is
+    // a separate Firestore document to avoid the 1 MiB document-size limit.
+    // Existing snapshots are never overwritten, preserving historical reports.
+    function persistQuestionSnapshots(onlyIndexes=null){
+      const operation=async()=>{
+        if(!currentAttemptId||!auth.currentUser||!questionsList.length)return false;
+        // On resume, an already complete immutable snapshot needs no student
+        // read access. A replacement explicitly passes its question index.
+        if(!Array.isArray(onlyIndexes)&&currentSession?.questionSnapshotStatus==='ready'&&currentSession?.status!=='logged_in')return true;
+        try{
+          const snapshotRef=collection(db,'exam_sessions',currentAttemptId,'question_snapshots');
+          const indexes=Array.isArray(onlyIndexes)?[...new Set(onlyIndexes)]:questionsList.map((_,index)=>index);
+          let batch=writeBatch(db),pending=0;
+          for(const index of indexes){
+            const q=questionsList[index]||{};
+            const questionKey=String(q._questionKey||`${selectedExamId}|question|${index}`);
+            const questionData=JSON.parse(JSON.stringify(q));
+            // Auto IDs permit create-only rules: students never need read access
+            // to snapshots containing the correct answer key.
+            const ref=doc(snapshotRef);
+            batch.set(ref,{
+              ownerUid:auth.currentUser.uid,attemptId:currentAttemptId,
+              examId:selectedExamId,examName:selectedExamName,
+              questionIndex:index,questionKey,
+              subjectId:String(q._subjectId||''),subjectName:String(q._subjectName||''),
+              questionData,createdAt:new Date(),snapshotSource:'attempt_loaded'
+            });
+            pending++;
+            if(pending>=400){await batch.commit();batch=writeBatch(db);pending=0;}
+          }
+          if(pending)await batch.commit();
+          const snapshotMeta={
+            questionSnapshotVersion:1,questionSnapshotCount:questionsList.length,
+            questionSnapshotStatus:'ready',questionSnapshotAt:new Date(),
+            questionOrder:questionsList.map(q=>q._questionKey),
+            reserveOrder:reserveQuestions.map(q=>q._questionKey),
+            selectedAnswers:{...selectedAnswers},questionStatus:{...questionStatus},
+            currentQuestionIndex,tabSwitches,copiesAttempted,penaltiesApplied,
+            securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50)
+          };
+          await setDoc(doc(db,'exam_sessions',currentAttemptId),snapshotMeta,{merge:true});
+          currentSession={...(currentSession||{}),...snapshotMeta};
+          return true;
+        }catch(error){
+          console.error('Question snapshot save failed:',error);
+          await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+            questionSnapshotStatus:'failed',questionSnapshotError:String(error?.code||error?.message||'unknown').slice(0,120)
+          },{merge:true}).catch(()=>{});
+          currentSession={...(currentSession||{}),questionSnapshotStatus:'failed'};
+          return false;
+        }
+      };
+      questionSnapshotSaveChain=questionSnapshotSaveChain.catch(()=>false).then(operation);
+      return questionSnapshotSaveChain;
     }
 
     function replaceViolatedQuestion(){
@@ -851,6 +913,11 @@
       delete selectedAnswers[currentQuestionIndex];
       questionStatus[currentQuestionIndex]='not-answered';
       loadQuestion(currentQuestionIndex);
+      // Record the replacement as a new immutable snapshot version.
+      persistQuestionSnapshots([currentQuestionIndex]).then(saved=>{
+        if(saved)queueProgressSave(true);
+        else console.error('Replacement question snapshot could not be saved.');
+      });
       return true;
     }
 
@@ -1750,6 +1817,10 @@
         if (!questionsList.length) {
           throw new Error('No questions are configured for the selected exam in the Admin Panel.');
         }
+        // Capture the exact question set before the student starts answering.
+        // On legacy resumed attempts, only missing snapshot records are added.
+        const snapshotsSaved=await persistQuestionSnapshots();
+        if(!snapshotsSaved)throw new Error('Secure question backup could not be saved. Please check the internet connection and start the exam again.');
         sessionStorage.setItem('tabSwitches', String(tabSwitches));
         sessionStorage.setItem('copiesAttempted', String(copiesAttempted));
         sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
@@ -2385,14 +2456,14 @@
       document.getElementById('question-status').innerText =
         questionStatus[qIdx] === 'review' ? 'Marked for Review' : 'Answered';
       renderQuestionPalette();
-      queueProgressSave();
+      queueProgressSave(true);
     };
 
     window.clearResponse = () => {
       delete selectedAnswers[currentQuestionIndex];
       questionStatus[currentQuestionIndex] = 'not-answered';
       loadQuestion(currentQuestionIndex);
-      queueProgressSave();
+      queueProgressSave(true);
     };
 
     window.toggleMarkReview = () => {
@@ -2511,6 +2582,10 @@
     async function calculateAndShowResults() {
       clearInterval(timerInterval);
       clearInterval(heartbeatTimer);
+      // Persist the final question order (including any security replacement)
+      // and latest selected answers before calculating the final result.
+      await persistQuestionSnapshots();
+      await saveExamProgress({status:'in_progress'});
       isExamActive = false;
       disarmExamHistoryGuard();
       await releaseExamWakeLock();

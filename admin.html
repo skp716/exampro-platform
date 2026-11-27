@@ -756,6 +756,29 @@
       class="admin-slide-content"
     >
 
+      <div class="admin-card" id="recovery-admin-card">
+        <h3><i class="fa-solid fa-cloud-arrow-up"></i> Pending / Incomplete Attempts</h3>
+        <p class="subtitle">Review logged-in and unfinished attempts. Force Save uses only data already saved in this examination's Firestore session.</p>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>Student</th><th>Exam / Centre</th><th>Status</th><th>Last Activity</th><th>Saved Answers</th><th>Action</th></tr></thead>
+            <tbody id="recovery-table-body"><tr><td colspan="6" style="text-align:center;">Loading attempts...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-card" id="performance-report-card" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <h3><i class="fa-solid fa-chart-column"></i> Detailed Student Performance Report</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-refresh" onclick="printAdminPerformanceReport()"><i class="fa-solid fa-print"></i> Print / PDF</button>
+            <button type="button" class="btn btn-accent" onclick="downloadAdminPerformanceJSON()"><i class="fa-solid fa-file-code"></i> Download JSON</button>
+            <button type="button" class="btn btn-danger" onclick="closeAdminPerformanceReport()"><i class="fa-solid fa-xmark"></i> Close</button>
+          </div>
+        </div>
+        <div id="admin-performance-report-content"></div>
+      </div>
+
       <div class="admin-card">
 
         <h3>
@@ -878,7 +901,9 @@
       collection,
       getDocs,
       deleteDoc,
-      onSnapshot
+      onSnapshot,
+      runTransaction,
+      writeBatch
     } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     import {
@@ -1579,6 +1604,258 @@
       const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Bookesh_Security_Analysis_${new Date().toISOString().slice(0,10)}.xlsx`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
     };
 
+
+    let currentAdminPerformanceReport=null;
+
+    function asDate(value){
+      if(!value)return null;
+      if(typeof value.toDate==='function')return value.toDate();
+      const date=new Date(value);return Number.isNaN(date.getTime())?null:date;
+    }
+    function dateLabel(value){
+      const d=asDate(value);return d?d.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'N/A';
+    }
+    function getSavedAnswerCount(session){
+      const answers=session?.selectedAnswers||{};
+      return Object.values(answers).filter(v=>v!==undefined&&v!==null&&v!=='').length;
+    }
+    function renderRecoveryRows(){
+      const body=document.getElementById('recovery-table-body');if(!body)return;
+      const pending=currentAnalyticsResults.filter(r=>['logged_in','in_progress','result_pending_feedback','admin_saved_no_answers'].includes(r.status));
+      if(!pending.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;">No pending or incomplete attempts.</td></tr>';return;}
+      body.innerHTML=pending.map(r=>{
+        const label=r.status==='logged_in'?'Logged In — Not Started':r.status==='in_progress'?'Test In Progress':r.status==='admin_saved_no_answers'?'Admin Saved — No Answers':'Result Ready — Feedback Pending';
+        const forceAction=r.status==='admin_saved_no_answers'
+          ? '<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" disabled><i class="fa-solid fa-check"></i> Saved</button>'
+          : `<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" onclick="forceSaveStudentAttempt('${r.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Force Save</button>`;
+        return `<tr>
+          <td><strong>${escapeHTML(r.name)}</strong><br><small>${escapeHTML(r.email)}</small></td>
+          <td>${escapeHTML(r.examName)}<br><small>${escapeHTML(r.centerName)} • ${escapeHTML(r.batch||'')}</small></td>
+          <td><span class="status-badge status-${escapeHTML(r.status)}">${label}</span></td>
+          <td>${escapeHTML(r.lastSeenStr||r.loginAtStr)}</td>
+          <td>${r.savedAnswerCount} answer(s)<br><small>${r.snapshotStatus==='ready'?'Question snapshot ready':r.snapshotStatus==='failed'?'Snapshot save failed':'Snapshot status unknown'}</small></td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="btn btn-refresh" style="padding:.45rem .65rem;font-size:.78rem;" onclick="viewAdminPerformanceReport('${r.id}')"><i class="fa-solid fa-eye"></i> Report</button>
+            ${forceAction}
+          </td></tr>`;
+      }).join('');
+    }
+
+    function getCorrectIndexForAdmin(question,options){
+      const raw=question?.correctOption??question?.correct_option??question?.correctAnswer??question?.correct_answer??question?.correct??question?.answer??question?.ans??question?.a;
+      if(typeof raw==='number'&&Number.isInteger(raw)&&raw>=0&&raw<options.length)return raw;
+      if(typeof raw==='string'){
+        const v=raw.trim();
+        if(/^[A-D]$/i.test(v))return v.toUpperCase().charCodeAt(0)-65;
+        const found=options.findIndex(o=>String(o?.text??o?.label??o?.value??o??'').trim()===v);
+        if(found>=0)return found;
+      }
+      return -1;
+    }
+    function getQuestionTextForAdmin(q){
+      return String(q?.question_en??q?.question??q?.q??q?.text??q?.questionText??q?.question_hi??'');
+    }
+    function getQuestionOptionsForAdmin(q){
+      const raw=q?.options??q?.choices??q?.answers??[];
+      const val=x=>x&&typeof x==='object'?(x.en??x.text??x.label??x.value??x.hi??''):String(x??'');
+      if(Array.isArray(raw))return raw.map(val);
+      if(raw&&typeof raw==='object'){
+        const keys=['a','b','c','d'].some(k=>Object.prototype.hasOwnProperty.call(raw,k))?['a','b','c','d']:['A','B','C','D'];
+        return keys.filter(k=>Object.prototype.hasOwnProperty.call(raw,k)).map(k=>val(raw[k]));
+      }
+      return [];
+    }
+    function calculateAdminAttempt(session,snapshots){
+      const answers=session.selectedAnswers||{},settings=session.markingSettings||{};
+      const marks=Number(settings.marksPerCorrect)>0?Number(settings.marksPerCorrect):1;
+      const negEnabled=typeof settings.negativeMarkingEnabled==='boolean'?settings.negativeMarkingEnabled:true;
+      const neg=Number(settings.negativeMarksPerWrong)>=0?Number(settings.negativeMarksPerWrong):0.25;
+      const securityPenalty=Number(session.penaltiesApplied)||0;
+      let correct=0,wrong=0,unanswered=0,earned=0,possible=0;
+      const details=snapshots.map((snapshot,index)=>{
+        const q=snapshot.questionData||snapshot;
+        const questionIndex=Number.isInteger(Number(snapshot.questionIndex))?Number(snapshot.questionIndex):index;
+        const options=getQuestionOptionsForAdmin(q);
+        const selectedRaw=answers[questionIndex]??answers[String(questionIndex)];
+        const attempted=selectedRaw!==undefined&&selectedRaw!==null&&selectedRaw!=='';
+        const correctIndex=getCorrectIndexForAdmin(q,options);
+        const validKey=correctIndex>=0;
+        const isCorrect=attempted&&validKey&&Number(selectedRaw)===correctIndex;
+        if(attempted){if(isCorrect)correct++;else wrong++;}else unanswered++;
+        if(validKey)possible+=marks;
+        const awarded=attempted&&validKey?(isCorrect?marks:(negEnabled?-neg:0)):0;
+        earned+=awarded;
+        return {index:questionIndex+1,questionKey:snapshot.questionKey||q._questionKey||'',subject:snapshot.subjectName||q._subjectName||'Not recorded',
+          question:getQuestionTextForAdmin(q),options,studentAnswer:attempted?Number(selectedRaw):-1,correctAnswer:correctIndex,
+          attempted,isCorrect,answerStatus:!attempted?'Unanswered':!validKey?'Answer key unavailable':isCorrect?'Correct':'Wrong',
+          marksAwarded:Number(awarded.toFixed(2)),questionData:q};
+      });
+      const penaltyApplied=Math.max(0,securityPenalty);
+      const score=Math.max(0,Number((earned-penaltyApplied).toFixed(2)));
+      const total=possible;
+      const attempted=correct+wrong;
+      const subjectMap={};
+      details.forEach(q=>{
+        const key=q.subject||'Not recorded';
+        if(!subjectMap[key])subjectMap[key]={subject:key,total:0,correct:0,wrong:0,unanswered:0,score:0};
+        const s=subjectMap[key];s.total++;
+        if(!q.attempted)s.unanswered++;else if(q.isCorrect)s.correct++;else s.wrong++;
+        s.score+=q.marksAwarded;
+      });
+      const expectedCount=Array.isArray(session.questionOrder)?session.questionOrder.length:details.length;
+      const missingQuestionSnapshots=Math.max(0,expectedCount-details.length);
+      return {details,correct,wrong,unanswered,attempted,score,total,percentage:total?Number((score/total*100).toFixed(2)):0,
+        accuracy:attempted?Number((correct/attempted*100).toFixed(2)):0,penaltyApplied,missingQuestionSnapshots,
+        subjectBreakdown:Object.values(subjectMap),evaluated:details.length>0&&missingQuestionSnapshots===0&&details.every(q=>q.correctAnswer>=0)};
+    }
+    async function getAttemptReportData(attemptId){
+      const sessionSnap=await getDoc(doc(db,'exam_sessions',attemptId));
+      if(!sessionSnap.exists())throw new Error('Attempt session was not found.');
+      const session=sessionSnap.data();
+      const snapshotSnap=await getDocs(collection(db,'exam_sessions',attemptId,'question_snapshots'));
+      const allSnapshots=snapshotSnap.docs.map(d=>d.data());
+      // Several immutable versions may exist for a question after a security
+      // replacement or a retried snapshot write. Keep the latest per key.
+      const latestByKey=new Map();
+      allSnapshots.forEach(snapshot=>{
+        const key=String(snapshot.questionKey||'');
+        const previous=latestByKey.get(key);
+        if(!previous||((asDate(snapshot.createdAt)?.getTime()||0)>=(asDate(previous.createdAt)?.getTime()||0)))latestByKey.set(key,snapshot);
+      });
+      const latestSnapshots=[...latestByKey.values()];
+      const snapshots=Array.isArray(session.questionOrder)&&session.questionOrder.length
+        ? session.questionOrder.map(key=>latestByKey.get(String(key))).filter(Boolean)
+        : latestSnapshots.sort((a,b)=>Number(a.questionIndex)-Number(b.questionIndex));
+      return {session,snapshots,metrics:snapshots.length?calculateAdminAttempt(session,snapshots):null};
+    }
+    function renderAdminReport(data){
+      const {session,snapshots,metrics}=data;
+      const status=session.status||'unknown';
+      const title=status==='admin_saved_no_answers'?'Admin Saved — No Answers':metrics?metrics.evaluated?'Evaluated Performance Report':'Saved Answers — Answer Key Unavailable':'Attempt Data — No Question Snapshot';
+      let html=`<h3>${escapeHTML(title)}</h3><p><strong>${escapeHTML(session.name||'Student')}</strong> • ${escapeHTML(session.email||'')}</p>
+        <p>Exam: ${escapeHTML(session.examName||session.examId||'N/A')} • Centre: ${escapeHTML(session.centerName||'N/A')} • Batch: ${escapeHTML(session.batch||'N/A')}</p>
+        <p>Status: <strong>${escapeHTML(status)}</strong> • Login: ${escapeHTML(dateLabel(session.loginAt))} • Last activity: ${escapeHTML(dateLabel(session.lastSeen))}</p>`;
+      if(status==='admin_saved_no_answers'){
+        html+='<p>This student logged in, but the examination was not started and no answers were saved. This is an administrative login record only; no score or completed attempt has been created.</p>';
+      }else if(metrics){
+        html+=`<p>Started: ${escapeHTML(dateLabel(session.examStartTime))} • Recorded duration: ${escapeHTML(session.timeTakenText||'Not recorded')}</p>`;
+        if(metrics.missingQuestionSnapshots>0)html+=`<p style="color:#92400e;background:#fef3c7;padding:10px;border-radius:8px;">${metrics.missingQuestionSnapshots} question snapshot(s) are missing. The report will not claim a complete evaluation.</p>`;
+        html+=`<div class="stats-grid">
+          <div class="stat-box"><div class="stat-label">Score / Percentage</div><div class="stat-value">${metrics.evaluated?metrics.score+'/'+metrics.total+' ('+metrics.percentage+'%)':'Not evaluated'}</div></div>
+          <div class="stat-box"><div class="stat-label">Correct / Wrong</div><div class="stat-value">${metrics.correct} / ${metrics.wrong}</div></div>
+          <div class="stat-box"><div class="stat-label">Attempted / Unanswered</div><div class="stat-value">${metrics.attempted} / ${metrics.unanswered}</div></div>
+          <div class="stat-box"><div class="stat-label">Accuracy</div><div class="stat-value">${metrics.evaluated?metrics.accuracy+'%':'N/A'}</div></div>
+        </div>
+        <p>Security: Tab switches ${Number(session.tabSwitches)||0} • Copy/Paste ${Number(session.copiesAttempted)||0} • Violations ${Number(session.securityViolations)||0} • Penalty ${Number(session.penaltiesApplied)||0}</p>
+        <details style="margin:10px 0;"><summary>Security event details (${Array.isArray(session.securityEvents)?session.securityEvents.length:0})</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere;background:#f8fafc;padding:10px;border-radius:8px;">${escapeHTML(JSON.stringify(session.securityEvents||[],null,2))}</pre></details>
+        <h3>Subject-wise Performance</h3><div class="table-responsive"><table><thead><tr><th>Subject</th><th>Total</th><th>Correct</th><th>Wrong</th><th>Unanswered</th><th>Marks</th></tr></thead><tbody>
+        ${metrics.subjectBreakdown.map(s=>`<tr><td>${escapeHTML(s.subject)}</td><td>${s.total}</td><td>${s.correct}</td><td>${s.wrong}</td><td>${s.unanswered}</td><td>${s.score.toFixed(2)}</td></tr>`).join('')}</tbody></table></div>
+        <h3>Question-wise Evaluation</h3><div class="table-responsive"><table><thead><tr><th>Q</th><th>Subject</th><th>Question</th><th>Student Answer</th><th>Correct Answer</th><th>Status</th><th>Marks</th></tr></thead><tbody>
+        ${metrics.details.map(q=>`<tr><td>${q.index}</td><td>${escapeHTML(q.subject)}</td><td>${escapeHTML(q.question)}</td><td>${q.studentAnswer<0?'Not Attempted':escapeHTML(q.options[q.studentAnswer]??'Saved option '+(q.studentAnswer+1))}</td><td>${q.correctAnswer<0?'Unavailable':escapeHTML(q.options[q.correctAnswer]??'Option '+(q.correctAnswer+1))}</td><td>${escapeHTML(q.answerStatus)}</td><td>${q.marksAwarded.toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`;
+      }else{
+        const saved=Object.entries(session.selectedAnswers||{}).sort((a,b)=>Number(a[0])-Number(b[0]));
+        html+=`<p><strong>Saved responses:</strong> ${saved.length}. No question snapshot is available for this older attempt. The saved option indexes are shown below; score and correct/wrong status are not fabricated.</p>
+        <div class="table-responsive"><table><thead><tr><th>Question Index</th><th>Saved Option Index</th></tr></thead><tbody>${saved.map(([i,v])=>`<tr><td>${Number(i)+1}</td><td>${Number(v)+1}</td></tr>`).join('')||'<tr><td colspan="2">No answers saved</td></tr>'}</tbody></table></div>`;
+      }
+      document.getElementById('admin-performance-report-content').innerHTML=html;
+      document.getElementById('performance-report-card').style.display='block';
+      document.getElementById('performance-report-card').scrollIntoView({behavior:'smooth',block:'start'});
+      currentAdminPerformanceReport={session,snapshots,metrics};
+    }
+    window.viewAdminPerformanceReport=async attemptId=>{
+      try{renderAdminReport(await getAttemptReportData(attemptId));}
+      catch(error){console.error(error);alert('Could not load report: '+error.message);}
+    };
+    window.closeAdminPerformanceReport=()=>{
+      document.getElementById('performance-report-card').style.display='none';
+      currentAdminPerformanceReport=null;
+    };
+    window.printAdminPerformanceReport=()=>{
+      const content=document.getElementById('admin-performance-report-content');
+      if(!content?.innerHTML){alert('Open a student report first.');return;}
+      const win=window.open('','_blank');
+      if(!win){alert('Please allow pop-ups to print the report.');return;}
+      win.document.write('<!doctype html><html><head><title>Student Performance Report</title><style>body{font-family:Inter,Arial,sans-serif;color:#1e293b;padding:24px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #cbd5e1;padding:8px;text-align:left}th{background:#f1f5f9}h3{color:#1e3a8a;margin-top:24px}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat-box{border:1px solid #ddd;padding:10px}.stat-value{font-size:20px;font-weight:bold}@media print{button{display:none}}</style></head><body>'+content.innerHTML+'</body></html>');
+      win.document.close();win.focus();win.print();
+    };
+    window.downloadAdminPerformanceJSON=()=>{
+      if(!currentAdminPerformanceReport){alert('Open a student report first.');return;}
+      const blob=new Blob([JSON.stringify(currentAdminPerformanceReport,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='Student_Performance_Report_'+(currentAdminPerformanceReport.session.email||'attempt').replace(/[^a-z0-9_-]/gi,'_')+'.json';
+      document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    };
+    window.forceSaveStudentAttempt=async attemptId=>{
+      if(!confirm('Force Save this student attempt? Already saved responses will be finalized. Unsaved answers that never reached Firestore cannot be recovered.'))return;
+      try{
+        const data=await getAttemptReportData(attemptId);
+        const {session,snapshots,metrics}=data;
+        if(session.status==='final_submitted'||session.status==='admin_saved_no_answers'){
+          alert('This attempt is already finalized. No duplicate result was created.');return;
+        }
+        const now=new Date(),adminUid=auth.currentUser?.uid||'';
+        const hasAnswers=getSavedAnswerCount(session)>0;
+        const hasQuestionSnapshots=snapshots.length>0;
+        if(hasAnswers&&!hasQuestionSnapshots){
+          if(!confirm('This older attempt has saved answers but no question snapshot. The answers will be preserved, but a reliable score cannot be calculated. Continue?'))return;
+        }
+        const loginOnly=session.status==='logged_in'&&!hasAnswers;
+        const resultPayload={
+          name:session.name||'Student',email:session.email||'',ownerUid:session.ownerUid||'',
+          attemptId,examId:session.examId||'',examName:session.examName||'Unknown Exam',
+          subjects:[...new Set(snapshots.map(s=>s.subjectName).filter(Boolean))],
+          score:!loginOnly&&metrics?.evaluated?`${metrics.score}/${metrics.total}`:'Not evaluated',
+          correct:loginOnly?0:(metrics?.correct||0),wrong:loginOnly?0:(metrics?.wrong||0),attempted:loginOnly?0:(metrics?.attempted||0),
+          unanswered:loginOnly?null:(metrics?.unanswered??null),questionSnapshots:snapshots.length,
+          performanceMetrics:!loginOnly&&metrics?{correct:metrics.correct,wrong:metrics.wrong,unanswered:metrics.unanswered,attempted:metrics.attempted,score:metrics.score,total:metrics.total,percentage:metrics.percentage,accuracy:metrics.accuracy,penaltyApplied:metrics.penaltyApplied,evaluated:metrics.evaluated,subjectBreakdown:metrics.subjectBreakdown}:null,
+          selectedAnswers:session.selectedAnswers||{},
+          tabSwitches:Number(session.tabSwitches)||0,copiesAttempted:Number(session.copiesAttempted)||0,
+          penaltiesApplied:Number(session.penaltiesApplied)||0,feedback:session.feedback||'None',doubt:session.doubt||'None',
+          status:loginOnly?'admin_saved_no_answers':'completed',completed:!loginOnly,
+          adminForced:true,forcedBy:adminUid,forcedAt:now,submittedAt:now,updatedAt:now
+        };
+        const sessionRef=doc(db,'exam_sessions',attemptId);
+        const resultRef=doc(db,'results',attemptId);
+        const committed=await runTransaction(db,async transaction=>{
+          const liveSession=await transaction.get(sessionRef);
+          const existingResult=await transaction.get(resultRef);
+          if(!liveSession.exists())throw new Error('Attempt session no longer exists.');
+          const latest=liveSession.data();
+          if(['final_submitted','admin_saved_no_answers'].includes(latest.status) ||
+             (existingResult.exists()&&existingResult.data()?.completed===true)){
+            return false;
+          }
+          const latestAnswerCount=getSavedAnswerCount(latest);
+          if(latestAnswerCount!==getSavedAnswerCount(session) ||
+             JSON.stringify(latest.selectedAnswers||{})!==JSON.stringify(session.selectedAnswers||{}) ||
+             JSON.stringify(latest.questionOrder||[])!==JSON.stringify(session.questionOrder||[]) ||
+             Number(latest.penaltiesApplied||0)!==Number(session.penaltiesApplied||0) ||
+             Number(latest.tabSwitches||0)!==Number(session.tabSwitches||0) ||
+             Number(latest.copiesAttempted||0)!==Number(session.copiesAttempted||0) ||
+             JSON.stringify(latest.securityEvents||[])!==JSON.stringify(session.securityEvents||[])){
+            throw new Error('Student progress changed during Force Save. Refresh the list and try again.');
+          }
+          const previous=existingResult.exists()?existingResult.data():{};
+          const finalizedResult={...previous,...resultPayload,
+            feedback:previous.feedback??resultPayload.feedback,
+            doubt:previous.doubt??resultPayload.doubt};
+          if(previous.rating!==undefined&&previous.rating!==null)finalizedResult.rating=previous.rating;
+          else delete finalizedResult.rating;
+          transaction.set(resultRef,finalizedResult,{merge:false});
+          transaction.set(sessionRef,{
+            status:loginOnly?'admin_saved_no_answers':'final_submitted',
+            score:resultPayload.score,correct:resultPayload.correct,wrong:resultPayload.wrong,
+            attempted:resultPayload.attempted,unanswered:resultPayload.unanswered,
+            adminForced:true,forcedBy:adminUid,forcedAt:now,submittedAt:now,lastSeen:now
+          },{merge:true});
+          return true;
+        });
+        if(!committed){alert('This attempt has already been finalized. No duplicate result was created.');return;}
+        alert(loginOnly?'Login record saved. No exam answers or completed result were recorded.':'Saved responses have been force-submitted and finalized.');
+        await viewAdminPerformanceReport(attemptId);
+      }catch(error){console.error('Admin force save failed:',error);alert('Force Save failed: '+error.message);}
+    };
+
     function renderLeaderboardRows() {
       const body = document.getElementById('leaderboard-table-body');
 
@@ -1613,11 +1890,12 @@
           <td><span class="score-main">${escapeHTML(String(r.scoreText))}</span>${pct !== null ? `<span class="score-percent">${pct.toFixed(1)}%</span>` : ''}</td>
           <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
           <td>${escapeHTML(String(r.feedback))}</td>
-          <td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="btn btn-refresh" style="padding:0.45rem 0.65rem;font-size:0.78rem;" onclick="viewAdminPerformanceReport('${r.id}')"><i class="fa-solid fa-eye"></i> Report</button>
             <button
               type="button"
               class="btn btn-danger"
-              style="padding:0.5rem 0.75rem;font-size:0.8rem;"
+              style="padding:0.45rem 0.65rem;font-size:0.78rem;"
               onclick="deleteSingleResult('${r.id}')"
               title="Delete this student's result"
             >
@@ -1668,7 +1946,10 @@
             examId: normalizeExamId(r),
             subjects: normalizeSubjects(r),
             centerName:r.centerName||'Not recorded',centerLocation:r.centerLocation||'',centerAddress:r.centerAddress||'',batch:r.batch||'',
-            status,statusLabel:status==='final_submitted'?'Final Submitted':status==='result_pending_feedback'?'Result Ready — Feedback Pending':status==='in_progress'?'Test In Progress':'Logged In',
+            status,statusLabel:status==='final_submitted'?'Final Submitted':status==='result_pending_feedback'?'Result Ready — Feedback Pending':status==='in_progress'?'Test In Progress':status==='admin_saved_no_answers'?'Admin Saved — No Answers':'Logged In',
+            selectedAnswers:r.selectedAnswers||{},
+            savedAnswerCount:getSavedAnswerCount(r),snapshotStatus:r.questionSnapshotStatus||'unknown',
+            lastSeenStr:dateLabel(r.lastSeen),
             loginAtStr:loginObj.getTime()>0?loginObj.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'N/A',
             tabSwitches: Number(r.tabSwitches ?? r.tab_switches ?? 0) || 0,
             copiesAttempted: Number(r.copiesAttempted ?? r.copy_paste ?? 0) || 0,
@@ -1684,6 +1965,7 @@
         populateLeaderboardFilters(currentAnalyticsResults);
         renderAnalyticsRows();
         renderLeaderboardRows();
+        renderRecoveryRows();
         const examFilter=document.getElementById('leaderboard-exam-filter');
         const sortFilter=document.getElementById('leaderboard-sort-filter');
         if(examFilter)examFilter.onchange=renderLeaderboardRows;
@@ -1768,6 +2050,15 @@
        DELETE ONE STUDENT RESULT
        ============================================================ */
 
+    async function deleteAttemptQuestionSnapshots(attemptId){
+      const snapshot=await getDocs(collection(db,'exam_sessions',attemptId,'question_snapshots'));
+      for(let offset=0;offset<snapshot.docs.length;offset+=400){
+        const batch=writeBatch(db);
+        snapshot.docs.slice(offset,offset+400).forEach(item=>batch.delete(item.ref));
+        await batch.commit();
+      }
+    }
+
     window.deleteSingleResult = async (resultId) => {
       if (!resultId) {
         alert('Invalid result selected.');
@@ -1785,6 +2076,7 @@
       if (!confirmed) return;
 
       try {
+        await deleteAttemptQuestionSnapshots(resultId);
         await Promise.all([
           deleteDoc(doc(db, 'results', resultId)),
           deleteDoc(doc(db, 'attempt_locks', resultId)),
@@ -1834,6 +2126,11 @@
 
         const lockSnap = await getDocs(collection(db, "attempt_locks"));
         const sessionSnap = await getDocs(collection(db, "exam_sessions"));
+        // Delete immutable question snapshots before removing their parent
+        // sessions; Firestore does not cascade-delete subcollections.
+        for(const sessionDoc of sessionSnap.docs){
+          await deleteAttemptQuestionSnapshots(sessionDoc.id);
+        }
         const deletes = [
           ...snap.docs.map(d => () => deleteDoc(doc(db, "results", d.id))),
           ...lockSnap.docs.map(d => () => deleteDoc(doc(db, "attempt_locks", d.id))),
