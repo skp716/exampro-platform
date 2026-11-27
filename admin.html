@@ -1741,7 +1741,7 @@
         html+=`<p>Started: ${escapeHTML(dateLabel(session.examStartTime))} • Recorded duration: ${escapeHTML(session.timeTakenText||'Not recorded')}</p>`;
         if(metrics.missingQuestionSnapshots>0)html+=`<p style="color:#92400e;background:#fef3c7;padding:10px;border-radius:8px;">${metrics.missingQuestionSnapshots} question snapshot(s) are missing. The report will not claim a complete evaluation.</p>`;
         html+=`<div class="stats-grid">
-          <div class="stat-box"><div class="stat-label">Score</div><div class="stat-value">${metrics.evaluated?metrics.score+'/'+metrics.total:'Not evaluated'}</div></div>
+          <div class="stat-box"><div class="stat-label">Score / Percentage</div><div class="stat-value">${metrics.evaluated?metrics.score+'/'+metrics.total+' ('+metrics.percentage+'%)':'Not evaluated'}</div></div>
           <div class="stat-box"><div class="stat-label">Correct / Wrong</div><div class="stat-value">${metrics.correct} / ${metrics.wrong}</div></div>
           <div class="stat-box"><div class="stat-label">Attempted / Unanswered</div><div class="stat-value">${metrics.attempted} / ${metrics.unanswered}</div></div>
           <div class="stat-box"><div class="stat-label">Accuracy</div><div class="stat-value">${metrics.evaluated?metrics.accuracy+'%':'N/A'}</div></div>
