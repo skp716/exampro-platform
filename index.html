@@ -874,7 +874,12 @@
         if(pending)await batch.commit();
         await setDoc(doc(db,'exam_sessions',currentAttemptId),{
           questionSnapshotVersion:1,questionSnapshotCount:savedCount,
-          questionSnapshotStatus:'ready',questionSnapshotAt:new Date()
+          questionSnapshotStatus:'ready',questionSnapshotAt:new Date(),
+          questionOrder:questionsList.map(q=>q._questionKey),
+          reserveOrder:reserveQuestions.map(q=>q._questionKey),
+          selectedAnswers:{...selectedAnswers},questionStatus:{...questionStatus},
+          currentQuestionIndex,tabSwitches,copiesAttempted,penaltiesApplied,
+          securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50)
         },{merge:true});
         return true;
       }catch(error){
