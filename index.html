@@ -852,21 +852,23 @@
       try{
         const snapshotRef=collection(db,'exam_sessions',currentAttemptId,'question_snapshots');
         const existing=await getDocs(snapshotRef);
-        const savedIndexes=new Set(existing.docs.map(d=>Number(d.id)));
-        let batch=writeBatch(db),pending=0,savedCount=savedIndexes.size;
+        const savedKeys=new Set(existing.docs.map(d=>String(d.data()?.questionKey||'')).filter(Boolean));
+        let batch=writeBatch(db),pending=0,savedCount=savedKeys.size;
         for(let index=0;index<questionsList.length;index++){
-          if(savedIndexes.has(index))continue;
           const q=questionsList[index]||{};
+          const questionKey=String(q._questionKey||`${selectedExamId}|question|${index}`);
+          if(savedKeys.has(questionKey))continue;
           const questionData=JSON.parse(JSON.stringify(q));
-          const ref=doc(snapshotRef,String(index).padStart(5,'0'));
+          const snapshotId=`${String(index).padStart(5,'0')}_${await sha256(questionKey)}`;
+          const ref=doc(snapshotRef,snapshotId);
           batch.set(ref,{
             ownerUid:auth.currentUser.uid,attemptId:currentAttemptId,
             examId:selectedExamId,examName:selectedExamName,
-            questionIndex:index,questionKey:String(q._questionKey||''),
+            questionIndex:index,questionKey,
             subjectId:String(q._subjectId||''),subjectName:String(q._subjectName||''),
             questionData,createdAt:new Date(),snapshotSource:'attempt_loaded'
           });
-          pending++;savedCount++;
+          savedKeys.add(questionKey);pending++;savedCount++;
           if(pending>=400){await batch.commit();batch=writeBatch(db);pending=0;}
         }
         if(pending)await batch.commit();
@@ -896,6 +898,11 @@
       delete selectedAnswers[currentQuestionIndex];
       questionStatus[currentQuestionIndex]='not-answered';
       loadQuestion(currentQuestionIndex);
+      // Record the replacement as a new immutable snapshot version.
+      persistQuestionSnapshots().then(saved=>{
+        if(saved)queueProgressSave(true);
+        else console.error('Replacement question snapshot could not be saved.');
+      });
       return true;
     }
 
@@ -2556,6 +2563,10 @@
     async function calculateAndShowResults() {
       clearInterval(timerInterval);
       clearInterval(heartbeatTimer);
+      // Persist the final question order (including any security replacement)
+      // and latest selected answers before calculating the final result.
+      await persistQuestionSnapshots();
+      await saveExamProgress({status:'in_progress'});
       isExamActive = false;
       disarmExamHistoryGuard();
       await releaseExamWakeLock();
