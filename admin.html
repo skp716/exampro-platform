@@ -1761,7 +1761,7 @@
     window.printAdminPerformanceReport=()=>{
       const content=document.getElementById('admin-performance-report-content');
       if(!content?.innerHTML){alert('Open a student report first.');return;}
-      const win=window.open('','_blank','noopener');
+      const win=window.open('','_blank');
       if(!win){alert('Please allow pop-ups to print the report.');return;}
       win.document.write('<!doctype html><html><head><title>Student Performance Report</title><style>body{font-family:Inter,Arial,sans-serif;color:#1e293b;padding:24px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #cbd5e1;padding:8px;text-align:left}th{background:#f1f5f9}h3{color:#1e3a8a;margin-top:24px}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat-box{border:1px solid #ddd;padding:10px}.stat-value{font-size:20px;font-weight:bold}@media print{button{display:none}}</style></head><body>'+content.innerHTML+'</body></html>');
       win.document.close();win.focus();win.print();
@@ -1787,7 +1787,7 @@
         if(hasAnswers&&!hasQuestionSnapshots){
           if(!confirm('This older attempt has saved answers but no question snapshot. The answers will be preserved, but a reliable score cannot be calculated. Continue?'))return;
         }
-        const loginOnly=!hasAnswers&&!hasQuestionSnapshots;
+        const loginOnly=session.status==='logged_in'&&!hasAnswers;
         const resultPayload={
           name:session.name||'Student',email:session.email||'',ownerUid:session.ownerUid||'',
           attemptId,examId:session.examId||'',examName:session.examName||'Unknown Exam',
@@ -1815,8 +1815,12 @@
           }
           const latestAnswerCount=getSavedAnswerCount(latest);
           if(latestAnswerCount!==getSavedAnswerCount(session) ||
-             JSON.stringify(latest.selectedAnswers||{})!==JSON.stringify(session.selectedAnswers||{})){
-            throw new Error('Student answers changed during Force Save. Refresh the list and try again.');
+             JSON.stringify(latest.selectedAnswers||{})!==JSON.stringify(session.selectedAnswers||{}) ||
+             JSON.stringify(latest.questionOrder||[])!==JSON.stringify(session.questionOrder||[]) ||
+             Number(latest.penaltiesApplied||0)!==Number(session.penaltiesApplied||0) ||
+             Number(latest.tabSwitches||0)!==Number(session.tabSwitches||0) ||
+             Number(latest.copiesAttempted||0)!==Number(session.copiesAttempted||0)){
+            throw new Error('Student progress changed during Force Save. Refresh the list and try again.');
           }
           const previous=existingResult.exists()?existingResult.data():{};
           transaction.set(resultRef,{...previous,...resultPayload,feedback:previous.feedback??resultPayload.feedback,
