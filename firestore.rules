@@ -107,8 +107,8 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       // Immutable per-question snapshot for a specific student attempt.
-      // Students may create/read their own snapshots; only admins can read
-      // them later for recovery and historical performance reports.
+      // Students may create their own snapshots; only admins can read them
+      // later for recovery and historical performance reports.
       match /question_snapshots/{questionId} {
         function ownsParentAttempt() {
           return signedIn()
@@ -123,7 +123,8 @@ service cloud.firestore {
           && request.resource.data.attemptId == sessionId
           && request.resource.data.questionIndex is int
           && request.resource.data.questionIndex >= 0;
-        allow update, delete: if false;
+        allow update: if false;
+        allow delete: if isAdmin();
       }
     }
 
