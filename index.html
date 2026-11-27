@@ -796,11 +796,11 @@
             markingSettings:getConfiguredGlobalMarkingSettings(),
             loginAt:now,lastSeen:now,securityViolations:0,tabSwitches:0,copiesAttempted:0,penaltiesApplied:0
           });
-          return {status:'logged_in'};
+          return {status:'logged_in',markingSettings:getConfiguredGlobalMarkingSettings()};
         }
         const existing=sessionSnap.data();
         transaction.set(sessionRef,{lastSeen:now,name:currentStudentName,...(!existing.markingSettings?{markingSettings:getConfiguredGlobalMarkingSettings()}:{})},{merge:true});
-        return existing;
+        return {...existing,markingSettings:existing.markingSettings||getConfiguredGlobalMarkingSettings()};
       });
       currentAttemptId=attemptId;draftResultId=attemptId;attemptClaimed=true;currentSession=data;
       sessionStorage.setItem('currentAttemptId',attemptId);sessionStorage.setItem('draftResultId',attemptId);
