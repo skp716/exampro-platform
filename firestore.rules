@@ -69,8 +69,15 @@ service cloud.firestore {
     // a lock exactly once; only an admin can remove it to grant a retake.
     match /attempt_locks/{attemptId} {
       allow create: if validAttemptLock();
+      // A signed-in student may check whether this deterministic lock
+      // document exists. If it exists, only its owner or an admin can read it.
+      // This supports the create-then-read login flow without exposing lock data.
       allow get: if signedIn()
-        && (resource.data.ownerUid == request.auth.uid || isAdmin());
+        && (
+          !exists(/databases/$(database)/documents/attempt_locks/$(attemptId))
+          || resource.data.ownerUid == request.auth.uid
+          || isAdmin()
+        );
       allow list: if isAdmin();
       allow update: if false;
       allow delete: if isAdmin();
@@ -79,8 +86,15 @@ service cloud.firestore {
     // One live row per student/exam. It starts as logged_in, becomes
     // in_progress, and is finalized in-place so the admin sees live status.
     match /exam_sessions/{sessionId} {
+      // Login uses a transaction to check for an existing session. Permit
+      // authenticated users to observe that their deterministic session ID
+      // has no document yet; existing session data remains owner/admin-only.
       allow get: if signedIn()
-        && (resource.data.ownerUid == request.auth.uid || isAdmin());
+        && (
+          !exists(/databases/$(database)/documents/exam_sessions/$(sessionId))
+          || resource.data.ownerUid == request.auth.uid
+          || isAdmin()
+        );
       allow list: if isAdmin();
       allow create: if signedIn()
         && request.resource.data.ownerUid == request.auth.uid
