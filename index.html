@@ -853,7 +853,7 @@
         if(!currentAttemptId||!auth.currentUser||!questionsList.length)return false;
         // On resume, an already complete immutable snapshot needs no student
         // read access. A replacement explicitly passes its question index.
-        if(!Array.isArray(onlyIndexes)&&currentSession?.questionSnapshotStatus==='ready')return true;
+        if(!Array.isArray(onlyIndexes)&&currentSession?.questionSnapshotStatus==='ready'&&currentSession?.status!=='logged_in')return true;
         try{
           const snapshotRef=collection(db,'exam_sessions',currentAttemptId,'question_snapshots');
           const indexes=Array.isArray(onlyIndexes)?[...new Set(onlyIndexes)]:questionsList.map((_,index)=>index);
