@@ -1620,10 +1620,13 @@
     }
     function renderRecoveryRows(){
       const body=document.getElementById('recovery-table-body');if(!body)return;
-      const pending=currentAnalyticsResults.filter(r=>['logged_in','in_progress','result_pending_feedback'].includes(r.status));
+      const pending=currentAnalyticsResults.filter(r=>['logged_in','in_progress','result_pending_feedback','admin_saved_no_answers'].includes(r.status));
       if(!pending.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;">No pending or incomplete attempts.</td></tr>';return;}
       body.innerHTML=pending.map(r=>{
-        const label=r.status==='logged_in'?'Logged In — Not Started':r.status==='in_progress'?'Test In Progress':'Result Ready — Feedback Pending';
+        const label=r.status==='logged_in'?'Logged In — Not Started':r.status==='in_progress'?'Test In Progress':r.status==='admin_saved_no_answers'?'Admin Saved — No Answers':'Result Ready — Feedback Pending';
+        const forceAction=r.status==='admin_saved_no_answers'
+          ? '<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" disabled><i class="fa-solid fa-check"></i> Saved</button>'
+          : `<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" onclick="forceSaveStudentAttempt('${r.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Force Save</button>`;
         return `<tr>
           <td><strong>${escapeHTML(r.name)}</strong><br><small>${escapeHTML(r.email)}</small></td>
           <td>${escapeHTML(r.examName)}<br><small>${escapeHTML(r.centerName)} • ${escapeHTML(r.batch||'')}</small></td>
@@ -1632,7 +1635,7 @@
           <td>${r.savedAnswerCount} answer(s)<br><small>${r.snapshotStatus==='ready'?'Question snapshot ready':r.snapshotStatus==='failed'?'Snapshot save failed':'Snapshot status unknown'}</small></td>
           <td style="white-space:nowrap;">
             <button type="button" class="btn btn-refresh" style="padding:.45rem .65rem;font-size:.78rem;" onclick="viewAdminPerformanceReport('${r.id}')"><i class="fa-solid fa-eye"></i> Report</button>
-            <button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" onclick="forceSaveStudentAttempt('${r.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Force Save</button>
+            ${forceAction}
           </td></tr>`;
       }).join('');
     }
@@ -1723,6 +1726,7 @@
         <p>Exam: ${escapeHTML(session.examName||session.examId||'N/A')} • Centre: ${escapeHTML(session.centerName||'N/A')} • Batch: ${escapeHTML(session.batch||'N/A')}</p>
         <p>Status: <strong>${escapeHTML(status)}</strong> • Login: ${escapeHTML(dateLabel(session.loginAt))} • Last activity: ${escapeHTML(dateLabel(session.lastSeen))}</p>`;
       if(metrics){
+        html+=`<p>Started: ${escapeHTML(dateLabel(session.examStartTime))} • Recorded duration: ${escapeHTML(session.timeTakenText||'Not recorded')}</p>`;
         if(metrics.missingQuestionSnapshots>0)html+=`<p style="color:#92400e;background:#fef3c7;padding:10px;border-radius:8px;">${metrics.missingQuestionSnapshots} question snapshot(s) are missing. The report will not claim a complete evaluation.</p>`;
         html+=`<div class="stats-grid">
           <div class="stat-box"><div class="stat-label">Score</div><div class="stat-value">${metrics.evaluated?metrics.score+'/'+metrics.total:'Not evaluated'}</div></div>
@@ -1730,7 +1734,8 @@
           <div class="stat-box"><div class="stat-label">Attempted / Unanswered</div><div class="stat-value">${metrics.attempted} / ${metrics.unanswered}</div></div>
           <div class="stat-box"><div class="stat-label">Accuracy</div><div class="stat-value">${metrics.evaluated?metrics.accuracy+'%':'N/A'}</div></div>
         </div>
-        <p>Security: Tab switches ${Number(session.tabSwitches)||0} • Copy/Paste ${Number(session.copiesAttempted)||0} • Penalty ${Number(session.penaltiesApplied)||0}</p>
+        <p>Security: Tab switches ${Number(session.tabSwitches)||0} • Copy/Paste ${Number(session.copiesAttempted)||0} • Violations ${Number(session.securityViolations)||0} • Penalty ${Number(session.penaltiesApplied)||0}</p>
+        <details style="margin:10px 0;"><summary>Security event details (${Array.isArray(session.securityEvents)?session.securityEvents.length:0})</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere;background:#f8fafc;padding:10px;border-radius:8px;">${escapeHTML(JSON.stringify(session.securityEvents||[],null,2))}</pre></details>
         <h3>Subject-wise Performance</h3><div class="table-responsive"><table><thead><tr><th>Subject</th><th>Total</th><th>Correct</th><th>Wrong</th><th>Unanswered</th><th>Marks</th></tr></thead><tbody>
         ${metrics.subjectBreakdown.map(s=>`<tr><td>${escapeHTML(s.subject)}</td><td>${s.total}</td><td>${s.correct}</td><td>${s.wrong}</td><td>${s.unanswered}</td><td>${s.score.toFixed(2)}</td></tr>`).join('')}</tbody></table></div>
         <h3>Question-wise Evaluation</h3><div class="table-responsive"><table><thead><tr><th>Q</th><th>Subject</th><th>Question</th><th>Student Answer</th><th>Correct Answer</th><th>Status</th><th>Marks</th></tr></thead><tbody>
