@@ -150,6 +150,7 @@ service cloud.firestore {
         && resource.data.attemptId == request.resource.data.attemptId
         && resource.data.email == request.resource.data.email
         && resource.data.examId == request.resource.data.examId
+        && resource.data.status == 'draft'
         && resource.data.completed == false
         && request.resource.data.completed == true
         && request.resource.data.status == 'completed'
