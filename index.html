@@ -587,6 +587,7 @@
     let examEndTime = 0;
     let progressSaveTimer = null;
     let progressSaveChain = Promise.resolve();
+    let questionSnapshotSaveChain = Promise.resolve(true);
     let heartbeatTimer = null;
     let reserveQuestions = [];
     let securityEvents = [];
@@ -847,53 +848,57 @@
     // Store the exact question content used in this attempt. Each question is
     // a separate Firestore document to avoid the 1 MiB document-size limit.
     // Existing snapshots are never overwritten, preserving historical reports.
-    async function persistQuestionSnapshots(onlyIndexes=null){
-      if(!currentAttemptId||!auth.currentUser||!questionsList.length)return false;
-      // On resume, an already complete immutable snapshot needs no student
-      // read access. A replacement explicitly passes its question index.
-      if(!Array.isArray(onlyIndexes)&&currentSession?.questionSnapshotStatus==='ready')return true;
-      try{
-        const snapshotRef=collection(db,'exam_sessions',currentAttemptId,'question_snapshots');
-        const indexes=Array.isArray(onlyIndexes)?[...new Set(onlyIndexes)]:questionsList.map((_,index)=>index);
-        let batch=writeBatch(db),pending=0;
-        for(const index of indexes){
-          const q=questionsList[index]||{};
-          const questionKey=String(q._questionKey||`${selectedExamId}|question|${index}`);
-          const questionData=JSON.parse(JSON.stringify(q));
-          // Auto IDs permit create-only rules: students never need read access
-          // to snapshots containing the correct answer key.
-          const ref=doc(snapshotRef);
-          batch.set(ref,{
-            ownerUid:auth.currentUser.uid,attemptId:currentAttemptId,
-            examId:selectedExamId,examName:selectedExamName,
-            questionIndex:index,questionKey,
-            subjectId:String(q._subjectId||''),subjectName:String(q._subjectName||''),
-            questionData,createdAt:new Date(),snapshotSource:'attempt_loaded'
-          });
-          pending++;
-          if(pending>=400){await batch.commit();batch=writeBatch(db);pending=0;}
+    function persistQuestionSnapshots(onlyIndexes=null){
+      const operation=async()=>{
+        if(!currentAttemptId||!auth.currentUser||!questionsList.length)return false;
+        // On resume, an already complete immutable snapshot needs no student
+        // read access. A replacement explicitly passes its question index.
+        if(!Array.isArray(onlyIndexes)&&currentSession?.questionSnapshotStatus==='ready')return true;
+        try{
+          const snapshotRef=collection(db,'exam_sessions',currentAttemptId,'question_snapshots');
+          const indexes=Array.isArray(onlyIndexes)?[...new Set(onlyIndexes)]:questionsList.map((_,index)=>index);
+          let batch=writeBatch(db),pending=0;
+          for(const index of indexes){
+            const q=questionsList[index]||{};
+            const questionKey=String(q._questionKey||`${selectedExamId}|question|${index}`);
+            const questionData=JSON.parse(JSON.stringify(q));
+            // Auto IDs permit create-only rules: students never need read access
+            // to snapshots containing the correct answer key.
+            const ref=doc(snapshotRef);
+            batch.set(ref,{
+              ownerUid:auth.currentUser.uid,attemptId:currentAttemptId,
+              examId:selectedExamId,examName:selectedExamName,
+              questionIndex:index,questionKey,
+              subjectId:String(q._subjectId||''),subjectName:String(q._subjectName||''),
+              questionData,createdAt:new Date(),snapshotSource:'attempt_loaded'
+            });
+            pending++;
+            if(pending>=400){await batch.commit();batch=writeBatch(db);pending=0;}
+          }
+          if(pending)await batch.commit();
+          const snapshotMeta={
+            questionSnapshotVersion:1,questionSnapshotCount:questionsList.length,
+            questionSnapshotStatus:'ready',questionSnapshotAt:new Date(),
+            questionOrder:questionsList.map(q=>q._questionKey),
+            reserveOrder:reserveQuestions.map(q=>q._questionKey),
+            selectedAnswers:{...selectedAnswers},questionStatus:{...questionStatus},
+            currentQuestionIndex,tabSwitches,copiesAttempted,penaltiesApplied,
+            securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50)
+          };
+          await setDoc(doc(db,'exam_sessions',currentAttemptId),snapshotMeta,{merge:true});
+          currentSession={...(currentSession||{}),...snapshotMeta};
+          return true;
+        }catch(error){
+          console.error('Question snapshot save failed:',error);
+          await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+            questionSnapshotStatus:'failed',questionSnapshotError:String(error?.code||error?.message||'unknown').slice(0,120)
+          },{merge:true}).catch(()=>{});
+          currentSession={...(currentSession||{}),questionSnapshotStatus:'failed'};
+          return false;
         }
-        if(pending)await batch.commit();
-        const snapshotMeta={
-          questionSnapshotVersion:1,questionSnapshotCount:questionsList.length,
-          questionSnapshotStatus:'ready',questionSnapshotAt:new Date(),
-          questionOrder:questionsList.map(q=>q._questionKey),
-          reserveOrder:reserveQuestions.map(q=>q._questionKey),
-          selectedAnswers:{...selectedAnswers},questionStatus:{...questionStatus},
-          currentQuestionIndex,tabSwitches,copiesAttempted,penaltiesApplied,
-          securityViolations:securityEvents.length,securityEvents:securityEvents.slice(-50)
-        };
-        await setDoc(doc(db,'exam_sessions',currentAttemptId),snapshotMeta,{merge:true});
-        currentSession={...(currentSession||{}),...snapshotMeta};
-        return true;
-      }catch(error){
-        console.error('Question snapshot save failed:',error);
-        await setDoc(doc(db,'exam_sessions',currentAttemptId),{
-          questionSnapshotStatus:'failed',questionSnapshotError:String(error?.code||error?.message||'unknown').slice(0,120)
-        },{merge:true}).catch(()=>{});
-        currentSession={...(currentSession||{}),questionSnapshotStatus:'failed'};
-        return false;
-      }
+      };
+      questionSnapshotSaveChain=questionSnapshotSaveChain.catch(()=>false).then(operation);
+      return questionSnapshotSaveChain;
     }
 
     function replaceViolatedQuestion(){
