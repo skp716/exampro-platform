@@ -2077,8 +2077,19 @@
       return html;
     }
 
+    function normalizeInlineLatexDelimiters(value) {
+      // Accept common single-dollar LaTeX pasted into question banks, but do
+      // not interpret ordinary currency/code dollars as mathematics.
+      const source = String(value ?? '');
+      return source.replace(/(^|[^$])\$([^$\r\n]+)\$(?!\$)/g, (match, prefix, expression) => {
+        const math = String(expression || '').trim();
+        const hasMathSyntax = /\\(?:displaystyle|textstyle|frac|dfrac|tfrac|sqrt|times|div|cdot|left|right|pi|theta|alpha|beta|sin|cos|tan|log|ln|sum|int|pm|mp|leq|geq|neq|approx|overline|bar|vec|begin|end)|[\^_{}]/i.test(math);
+        return hasMathSyntax ? prefix + '\\(' + math + '\\)' : match;
+      });
+    }
+
     function prepareRichContent(value, baseUrl) {
-      let text = normalizeRichText(value);
+      let text = normalizeInlineLatexDelimiters(normalizeRichText(value));
       if (!text) return '';
 
       /*
