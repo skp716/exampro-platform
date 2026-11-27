@@ -1447,7 +1447,7 @@
             const rawOptions = q.options ?? q.choices ?? q.answers;
             const optionCount = Array.isArray(rawOptions) ? rawOptions.length :
               (rawOptions && typeof rawOptions === 'object' ? Object.keys(rawOptions).length : 0);
-            const answer = q.correctOption ?? q.correct_option ?? q.correctAnswer ?? q.correct ?? q.answer ?? q.ans ?? q.a;
+            const answer = q.correctOption ?? q.correct_option ?? q.correctAnswer ?? q.correct_answer ?? q.correct ?? q.answer ?? q.ans ?? q.a;
             const hasAnswer = (typeof answer === 'string' && answer.trim().length > 0) ||
               typeof answer === 'number' || (answer && typeof answer === 'object');
             return questionText && optionCount >= 2 && hasAnswer;
@@ -2157,6 +2157,7 @@
         qData?.correctOption ??
         qData?.correct_option ??
         qData?.correctAnswer ??
+        qData?.correct_answer ??
         qData?.correct ??
         qData?.answer ??
         qData?.ans ??
@@ -2480,7 +2481,7 @@
     }
 
     function getCorrectOptionIndex(qData, options = getQuestionOptions(qData)) {
-      const raw = qData?.correctOption ?? qData?.correct_option ?? qData?.correctAnswer ?? qData?.correct ?? qData?.answer ?? qData?.ans ?? qData?.a;
+      const raw = qData?.correctOption ?? qData?.correct_option ?? qData?.correctAnswer ?? qData?.correct_answer ?? qData?.correct ?? qData?.answer ?? qData?.ans ?? qData?.a;
       if (typeof raw === 'string') {
         const value = raw.trim();
         if (/^[A-D]$/i.test(value)) return value.toUpperCase().charCodeAt(0) - 65;
