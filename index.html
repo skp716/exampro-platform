@@ -1733,7 +1733,32 @@
         if(error?.code==='attempt-already-used'){
           showExamModal('security','Attempt Already Used','This Gmail address has already used its attempt for the selected examination. Contact the administrator if a retake is required.','Back to Login',null,'primary',()=>window.changeSlide(1));
         }else{
-          showExamModal('security','Question Load Error','The test questions could not be loaded. The student portal is using the exact exam, subject, question count, order and Question Source saved in the Admin Panel. Please check the selected exam configuration and make sure each configured source file exists in the GitHub project.','Close',null,'primary');
+          console.error('[Student Question Load Failure]', {
+            examId: selectedExamConfig?.id || selectedExamId || '',
+            examName: selectedExamConfig?.name || selectedExamName || '',
+            subjects: getSubjectEntries(selectedExamConfig || {}).map(([id,cfg]) => ({
+              subject: cfg?.name || cfg?.subjectName || id,
+              requestedCount: getSubjectCount(cfg),
+              questionSource: resolveSource(cfg),
+              resolvedUrl: resolveQuestionSourceUrl(resolveSource(cfg))
+            })),
+            error: error?.stack || error?.message || String(error)
+          });
+          const detail = escapeHtmlSafe(error?.message || String(error || 'Unknown error'))
+            .replace(/&lt;br\s*\/??&gt;/gi, '<br>');
+          const configSummary = getSubjectEntries(selectedExamConfig || {}).map(([id,cfg]) =>
+            '<strong>' + escapeHtmlSafe(cfg?.name || cfg?.subjectName || id) + ':</strong> ' +
+            getSubjectCount(cfg) + ' questions | Source: ' +
+            escapeHtmlSafe(resolveSource(cfg) || '(empty)')
+          ).join('<br>');
+          showExamModal(
+            'security',
+            'Question Load Error',
+            'The questions could not be loaded. <strong>Actual error:</strong><br>' +
+              detail +
+              (configSummary ? '<br><br><strong>Saved Admin configuration:</strong><br>' + configSummary : ''),
+            'Close',null,'primary'
+          );
         }
         startBtn.disabled = false;
         startBtn.innerText = "Start Examination";
