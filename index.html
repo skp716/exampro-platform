@@ -539,7 +539,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, getDocs, collection, setDoc, writeBatch, runTransaction } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -837,6 +837,47 @@
       };
       try{await setDoc(doc(db,'exam_sessions',currentAttemptId),payload,{merge:true});currentSession={...(currentSession||{}),...payload};}
       catch(err){console.error('Progress save failed:',err);}
+    }
+
+
+    // Store the exact question content used in this attempt. Each question is
+    // a separate Firestore document to avoid the 1 MiB document-size limit.
+    // Existing snapshots are never overwritten, preserving historical reports.
+    async function persistQuestionSnapshots(){
+      if(!currentAttemptId||!auth.currentUser||!questionsList.length)return false;
+      try{
+        const snapshotRef=collection(db,'exam_sessions',currentAttemptId,'question_snapshots');
+        const existing=await getDocs(snapshotRef);
+        const savedIndexes=new Set(existing.docs.map(d=>Number(d.id)));
+        let batch=writeBatch(db),pending=0,savedCount=savedIndexes.size;
+        for(let index=0;index<questionsList.length;index++){
+          if(savedIndexes.has(index))continue;
+          const q=questionsList[index]||{};
+          const questionData=JSON.parse(JSON.stringify(q));
+          const ref=doc(snapshotRef,String(index).padStart(5,'0'));
+          batch.set(ref,{
+            ownerUid:auth.currentUser.uid,attemptId:currentAttemptId,
+            examId:selectedExamId,examName:selectedExamName,
+            questionIndex:index,questionKey:String(q._questionKey||''),
+            subjectId:String(q._subjectId||''),subjectName:String(q._subjectName||''),
+            questionData,createdAt:new Date(),snapshotSource:'attempt_loaded'
+          });
+          pending++;savedCount++;
+          if(pending>=400){await batch.commit();batch=writeBatch(db);pending=0;}
+        }
+        if(pending)await batch.commit();
+        await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+          questionSnapshotVersion:1,questionSnapshotCount:savedCount,
+          questionSnapshotStatus:'ready',questionSnapshotAt:new Date()
+        },{merge:true});
+        return true;
+      }catch(error){
+        console.error('Question snapshot save failed:',error);
+        await setDoc(doc(db,'exam_sessions',currentAttemptId),{
+          questionSnapshotStatus:'failed',questionSnapshotError:String(error?.code||error?.message||'unknown').slice(0,120)
+        },{merge:true}).catch(()=>{});
+        return false;
+      }
     }
 
     function replaceViolatedQuestion(){
@@ -1750,7 +1791,7 @@
         if (!questionsList.length) {
           throw new Error('No questions are configured for the selected exam in the Admin Panel.');
         }
-        sessionStorage.setItem('tabSwitches', String(tabSwitches));
+        // Capture the exact question set before the student starts answering.\n        // On legacy resumed attempts, only missing snapshot records are added.\n        await persistQuestionSnapshots();\n        sessionStorage.setItem('tabSwitches', String(tabSwitches));
         sessionStorage.setItem('copiesAttempted', String(copiesAttempted));
         sessionStorage.setItem('penaltiesApplied', String(penaltiesApplied));
         draftResultId = currentAttemptId;
@@ -2385,14 +2426,14 @@
       document.getElementById('question-status').innerText =
         questionStatus[qIdx] === 'review' ? 'Marked for Review' : 'Answered';
       renderQuestionPalette();
-      queueProgressSave();
+      queueProgressSave(true);
     };
 
     window.clearResponse = () => {
       delete selectedAnswers[currentQuestionIndex];
       questionStatus[currentQuestionIndex] = 'not-answered';
       loadQuestion(currentQuestionIndex);
-      queueProgressSave();
+      queueProgressSave(true);
     };
 
     window.toggleMarkReview = () => {
