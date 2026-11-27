@@ -1823,8 +1823,12 @@
             throw new Error('Student progress changed during Force Save. Refresh the list and try again.');
           }
           const previous=existingResult.exists()?existingResult.data():{};
-          transaction.set(resultRef,{...previous,...resultPayload,feedback:previous.feedback??resultPayload.feedback,
-            doubt:previous.doubt??resultPayload.doubt,rating:previous.rating??resultPayload.rating},{merge:false});
+          const finalizedResult={...previous,...resultPayload,
+            feedback:previous.feedback??resultPayload.feedback,
+            doubt:previous.doubt??resultPayload.doubt};
+          if(previous.rating!==undefined&&previous.rating!==null)finalizedResult.rating=previous.rating;
+          else delete finalizedResult.rating;
+          transaction.set(resultRef,finalizedResult,{merge:false});
           transaction.set(sessionRef,{
             status:loginOnly?'admin_saved_no_answers':'final_submitted',
             score:resultPayload.score,correct:resultPayload.correct,wrong:resultPayload.wrong,
