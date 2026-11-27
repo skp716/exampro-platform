@@ -787,7 +787,7 @@
       const data=await runTransaction(db,async transaction=>{
         const sessionSnap=await transaction.get(sessionRef);
         if(sessionSnap.exists()&&sessionSnap.data()?.ownerUid!==user.uid) throw new Error('email-already-active');
-        if(sessionSnap.exists()&&sessionSnap.data()?.status==='final_submitted') throw new Error('attempt-already-used');
+        if(sessionSnap.exists()&&['final_submitted','admin_saved_no_answers'].includes(sessionSnap.data()?.status)) throw new Error('attempt-already-used');
         if(!sessionSnap.exists()){
           transaction.set(sessionRef,{
             sessionId:attemptId,ownerUid:user.uid,name:currentStudentName,email:currentStudentEmail,
