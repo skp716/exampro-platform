@@ -1783,7 +1783,8 @@
           score:metrics?.evaluated?`${metrics.score}/${metrics.total}`:'Not evaluated',
           correct:metrics?.correct||0,wrong:metrics?.wrong||0,attempted:metrics?.attempted||0,
           unanswered:metrics?.unanswered??null,questionSnapshots:snapshots.length,
-          performanceMetrics:metrics||null,selectedAnswers:session.selectedAnswers||{},
+          performanceMetrics:metrics?{correct:metrics.correct,wrong:metrics.wrong,unanswered:metrics.unanswered,attempted:metrics.attempted,score:metrics.score,total:metrics.total,percentage:metrics.percentage,accuracy:metrics.accuracy,penaltyApplied:metrics.penaltyApplied,evaluated:metrics.evaluated,subjectBreakdown:metrics.subjectBreakdown}:null,
+          selectedAnswers:session.selectedAnswers||{},
           tabSwitches:Number(session.tabSwitches)||0,copiesAttempted:Number(session.copiesAttempted)||0,
           penaltiesApplied:Number(session.penaltiesApplied)||0,feedback:session.feedback||'None',doubt:session.doubt||'None',
           status:loginOnly?'admin_saved_no_answers':'completed',completed:!loginOnly,
@@ -1801,7 +1802,8 @@
             return false;
           }
           const latestAnswerCount=getSavedAnswerCount(latest);
-          if(latestAnswerCount!==getSavedAnswerCount(session)){
+          if(latestAnswerCount!==getSavedAnswerCount(session) ||
+             JSON.stringify(latest.selectedAnswers||{})!==JSON.stringify(session.selectedAnswers||{})){
             throw new Error('Student answers changed during Force Save. Refresh the list and try again.');
           }
           const previous=existingResult.exists()?existingResult.data():{};
@@ -1855,11 +1857,12 @@
           <td><span class="score-main">${escapeHTML(String(r.scoreText))}</span>${pct !== null ? `<span class="score-percent">${pct.toFixed(1)}%</span>` : ''}</td>
           <td><span class="time-stamp"><i class="fa-regular fa-clock"></i>${escapeHTML(r.submittedAtStr)}</span></td>
           <td>${escapeHTML(String(r.feedback))}</td>
-          <td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="btn btn-refresh" style="padding:0.45rem 0.65rem;font-size:0.78rem;" onclick="viewAdminPerformanceReport('${r.id}')"><i class="fa-solid fa-eye"></i> Report</button>
             <button
               type="button"
               class="btn btn-danger"
-              style="padding:0.5rem 0.75rem;font-size:0.8rem;"
+              style="padding:0.45rem 0.65rem;font-size:0.78rem;"
               onclick="deleteSingleResult('${r.id}')"
               title="Delete this student's result"
             >
