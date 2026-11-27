@@ -1713,9 +1713,18 @@
       const session=sessionSnap.data();
       const snapshotSnap=await getDocs(collection(db,'exam_sessions',attemptId,'question_snapshots'));
       const allSnapshots=snapshotSnap.docs.map(d=>d.data());
+      // Several immutable versions may exist for a question after a security
+      // replacement or a retried snapshot write. Keep the latest per key.
+      const latestByKey=new Map();
+      allSnapshots.forEach(snapshot=>{
+        const key=String(snapshot.questionKey||'');
+        const previous=latestByKey.get(key);
+        if(!previous||((asDate(snapshot.createdAt)?.getTime()||0)>=(asDate(previous.createdAt)?.getTime()||0)))latestByKey.set(key,snapshot);
+      });
+      const latestSnapshots=[...latestByKey.values()];
       const snapshots=Array.isArray(session.questionOrder)&&session.questionOrder.length
-        ? session.questionOrder.map(key=>allSnapshots.find(s=>s.questionKey===key)).filter(Boolean)
-        : allSnapshots.sort((a,b)=>Number(a.questionIndex)-Number(b.questionIndex));
+        ? session.questionOrder.map(key=>latestByKey.get(String(key))).filter(Boolean)
+        : latestSnapshots.sort((a,b)=>Number(a.questionIndex)-Number(b.questionIndex));
       return {session,snapshots,metrics:snapshots.length?calculateAdminAttempt(session,snapshots):null};
     }
     function renderAdminReport(data){
