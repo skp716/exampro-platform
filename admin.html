@@ -536,6 +536,14 @@
         Leaderboard & Timing
       </button>
 
+      <button
+        class="slide-tab-btn"
+        onclick="switchSlide(4, this)"
+      >
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        Pending / Incomplete Attempts
+      </button>
+
     </div>
 
 
@@ -756,29 +764,6 @@
       class="admin-slide-content"
     >
 
-      <div class="admin-card" id="recovery-admin-card">
-        <h3><i class="fa-solid fa-cloud-arrow-up"></i> Pending / Incomplete Attempts</h3>
-        <p class="subtitle">Review logged-in and unfinished attempts. Force Save uses only data already saved in this examination's Firestore session.</p>
-        <div class="table-responsive">
-          <table>
-            <thead><tr><th>Student</th><th>Exam / Centre</th><th>Status</th><th>Last Activity</th><th>Saved Answers</th><th>Action</th></tr></thead>
-            <tbody id="recovery-table-body"><tr><td colspan="6" style="text-align:center;">Loading attempts...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="admin-card" id="performance-report-card" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-          <h3><i class="fa-solid fa-chart-column"></i> Detailed Student Performance Report</h3>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button type="button" class="btn btn-refresh" onclick="printAdminPerformanceReport()"><i class="fa-solid fa-print"></i> Print / PDF</button>
-            <button type="button" class="btn btn-accent" onclick="downloadAdminPerformanceJSON()"><i class="fa-solid fa-file-code"></i> Download JSON</button>
-            <button type="button" class="btn btn-danger" onclick="closeAdminPerformanceReport()"><i class="fa-solid fa-xmark"></i> Close</button>
-          </div>
-        </div>
-        <div id="admin-performance-report-content"></div>
-      </div>
-
       <div class="admin-card">
 
         <h3>
@@ -876,6 +861,35 @@
 
         </div>
 
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SLIDE 4: PENDING / INCOMPLETE ATTEMPTS -->
+    <!-- ========================================================= -->
+    <div id="slide-4-content" class="admin-slide-content">
+      <div class="admin-card" id="recovery-admin-card">
+        <h3><i class="fa-solid fa-cloud-arrow-up"></i> Pending / Incomplete Attempts</h3>
+        <p class="subtitle">Review logged-in and unfinished attempts. Force Save uses only data already saved in this examination's Firestore session.</p>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>Student</th><th>Exam / Centre</th><th>Status</th><th>Last Activity</th><th>Saved Answers</th><th>Action</th></tr></thead>
+            <tbody id="recovery-table-body"><tr><td colspan="6" style="text-align:center;">Loading attempts...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-card" id="performance-report-card" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <h3><i class="fa-solid fa-chart-column"></i> Detailed Student Performance Report</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-refresh" onclick="printAdminPerformanceReport()"><i class="fa-solid fa-print"></i> Print / PDF</button>
+            <button type="button" class="btn btn-accent" onclick="downloadAdminPerformanceJSON()"><i class="fa-solid fa-file-code"></i> Download JSON</button>
+            <button type="button" class="btn btn-danger" onclick="closeAdminPerformanceReport()"><i class="fa-solid fa-xmark"></i> Close</button>
+          </div>
+        </div>
+        <div id="admin-performance-report-content"></div>
       </div>
 
     </div>
@@ -1621,13 +1635,13 @@
     }
     function renderRecoveryRows(){
       const body=document.getElementById('recovery-table-body');if(!body)return;
-      const pending=currentAnalyticsResults.filter(r=>['logged_in','in_progress','result_pending_feedback','admin_saved_no_answers'].includes(r.status));
+      // Only attempts that have not been submitted are eligible here.
+      // result_pending_feedback and final_submitted already have submitted answers.
+      const pending=currentAnalyticsResults.filter(r=>['logged_in','in_progress'].includes(r.status));
       if(!pending.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;">No pending or incomplete attempts.</td></tr>';return;}
       body.innerHTML=pending.map(r=>{
-        const label=r.status==='logged_in'?'Logged In — Not Started':r.status==='in_progress'?'Test In Progress':r.status==='admin_saved_no_answers'?'Admin Saved — No Answers':'Result Ready — Feedback Pending';
-        const forceAction=r.status==='admin_saved_no_answers'
-          ? '<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" disabled><i class="fa-solid fa-check"></i> Saved</button>'
-          : `<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" onclick="forceSaveStudentAttempt('${r.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Force Save</button>`;
+        const label=r.status==='logged_in'?'Logged In — Not Started':'Test In Progress';
+        const forceAction=`<button type="button" class="btn btn-success" style="padding:.45rem .65rem;font-size:.78rem;" onclick="forceSaveStudentAttempt('${r.id}')"><i class="fa-solid fa-cloud-arrow-up"></i> Force Save</button>`;
         return `<tr>
           <td><strong>${escapeHTML(r.name)}</strong><br><small>${escapeHTML(r.email)}</small></td>
           <td>${escapeHTML(r.examName)}<br><small>${escapeHTML(r.centerName)} • ${escapeHTML(r.batch||'')}</small></td>
@@ -1763,8 +1777,11 @@
       currentAdminPerformanceReport={session,snapshots,metrics};
     }
     window.viewAdminPerformanceReport=async attemptId=>{
-      try{renderAdminReport(await getAttemptReportData(attemptId));}
-      catch(error){console.error(error);alert('Could not load report: '+error.message);}
+      try{
+        renderAdminReport(await getAttemptReportData(attemptId));
+        const tab=document.querySelector('.slide-tab-btn[onclick*="switchSlide(4"]');
+        window.switchSlide(4,tab);
+      }catch(error){console.error(error);alert('Could not load report: '+error.message);}
     };
     window.closeAdminPerformanceReport=()=>{
       document.getElementById('performance-report-card').style.display='none';
@@ -1790,8 +1807,8 @@
       try{
         const data=await getAttemptReportData(attemptId);
         const {session,snapshots,metrics}=data;
-        if(session.status==='final_submitted'||session.status==='admin_saved_no_answers'){
-          alert('This attempt is already finalized. No duplicate result was created.');return;
+        if(!['logged_in','in_progress'].includes(session.status)){
+          alert('This attempt has already been submitted or is not eligible for Force Save. No result was changed.');return;
         }
         const now=new Date(),adminUid=auth.currentUser?.uid||'';
         const hasAnswers=getSavedAnswerCount(session)>0;
@@ -1821,8 +1838,12 @@
           const existingResult=await transaction.get(resultRef);
           if(!liveSession.exists())throw new Error('Attempt session no longer exists.');
           const latest=liveSession.data();
-          if(['final_submitted','admin_saved_no_answers'].includes(latest.status) ||
-             (existingResult.exists()&&existingResult.data()?.completed===true)){
+          const existingData=existingResult.exists()?existingResult.data():null;
+          // Only never-submitted sessions can be force-saved. This also blocks
+          // result-pending-feedback sessions that already have a saved draft.
+          if(!['logged_in','in_progress'].includes(latest.status) ||
+             ['final_submitted','completed'].includes(existingData?.status) ||
+             existingData?.completed===true){
             return false;
           }
           const latestAnswerCount=getSavedAnswerCount(latest);
