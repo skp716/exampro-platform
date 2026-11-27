@@ -1670,8 +1670,9 @@
       let correct=0,wrong=0,unanswered=0,earned=0,possible=0;
       const details=snapshots.map((snapshot,index)=>{
         const q=snapshot.questionData||snapshot;
+        const questionIndex=Number.isInteger(Number(snapshot.questionIndex))?Number(snapshot.questionIndex):index;
         const options=getQuestionOptionsForAdmin(q);
-        const selectedRaw=answers[index]??answers[String(index)];
+        const selectedRaw=answers[questionIndex]??answers[String(questionIndex)];
         const attempted=selectedRaw!==undefined&&selectedRaw!==null&&selectedRaw!=='';
         const correctIndex=getCorrectIndexForAdmin(q,options);
         const validKey=correctIndex>=0;
@@ -1680,7 +1681,7 @@
         if(validKey)possible+=marks;
         const awarded=attempted&&validKey?(isCorrect?marks:(negEnabled?-neg:0)):0;
         earned+=awarded;
-        return {index:index+1,questionKey:snapshot.questionKey||q._questionKey||'',subject:snapshot.subjectName||q._subjectName||'Not recorded',
+        return {index:questionIndex+1,questionKey:snapshot.questionKey||q._questionKey||'',subject:snapshot.subjectName||q._subjectName||'Not recorded',
           question:getQuestionTextForAdmin(q),options,studentAnswer:attempted?Number(selectedRaw):-1,correctAnswer:correctIndex,
           attempted,isCorrect,answerStatus:!attempted?'Unanswered':!validKey?'Answer key unavailable':isCorrect?'Correct':'Wrong',
           marksAwarded:Number(awarded.toFixed(2)),questionData:q};
@@ -1697,16 +1698,21 @@
         if(!q.attempted)s.unanswered++;else if(q.isCorrect)s.correct++;else s.wrong++;
         s.score+=q.marksAwarded;
       });
+      const expectedCount=Array.isArray(session.questionOrder)?session.questionOrder.length:details.length;
+      const missingQuestionSnapshots=Math.max(0,expectedCount-details.length);
       return {details,correct,wrong,unanswered,attempted,score,total,percentage:total?Number((score/total*100).toFixed(2)):0,
-        accuracy:attempted?Number((correct/attempted*100).toFixed(2)):0,penaltyApplied,
-        subjectBreakdown:Object.values(subjectMap),evaluated:details.length>0&&details.every(q=>q.correctAnswer>=0)};
+        accuracy:attempted?Number((correct/attempted*100).toFixed(2)):0,penaltyApplied,missingQuestionSnapshots,
+        subjectBreakdown:Object.values(subjectMap),evaluated:details.length>0&&missingQuestionSnapshots===0&&details.every(q=>q.correctAnswer>=0)};
     }
     async function getAttemptReportData(attemptId){
       const sessionSnap=await getDoc(doc(db,'exam_sessions',attemptId));
       if(!sessionSnap.exists())throw new Error('Attempt session was not found.');
       const session=sessionSnap.data();
       const snapshotSnap=await getDocs(collection(db,'exam_sessions',attemptId,'question_snapshots'));
-      const snapshots=snapshotSnap.docs.map(d=>d.data()).sort((a,b)=>Number(a.questionIndex)-Number(b.questionIndex));
+      const allSnapshots=snapshotSnap.docs.map(d=>d.data());
+      const snapshots=Array.isArray(session.questionOrder)&&session.questionOrder.length
+        ? session.questionOrder.map(key=>allSnapshots.find(s=>s.questionKey===key)).filter(Boolean)
+        : allSnapshots.sort((a,b)=>Number(a.questionIndex)-Number(b.questionIndex));
       return {session,snapshots,metrics:snapshots.length?calculateAdminAttempt(session,snapshots):null};
     }
     function renderAdminReport(data){
@@ -1717,6 +1723,7 @@
         <p>Exam: ${escapeHTML(session.examName||session.examId||'N/A')} • Centre: ${escapeHTML(session.centerName||'N/A')} • Batch: ${escapeHTML(session.batch||'N/A')}</p>
         <p>Status: <strong>${escapeHTML(status)}</strong> • Login: ${escapeHTML(dateLabel(session.loginAt))} • Last activity: ${escapeHTML(dateLabel(session.lastSeen))}</p>`;
       if(metrics){
+        if(metrics.missingQuestionSnapshots>0)html+=`<p style="color:#92400e;background:#fef3c7;padding:10px;border-radius:8px;">${metrics.missingQuestionSnapshots} question snapshot(s) are missing. The report will not claim a complete evaluation.</p>`;
         html+=`<div class="stats-grid">
           <div class="stat-box"><div class="stat-label">Score</div><div class="stat-value">${metrics.evaluated?metrics.score+'/'+metrics.total:'Not evaluated'}</div></div>
           <div class="stat-box"><div class="stat-label">Correct / Wrong</div><div class="stat-value">${metrics.correct} / ${metrics.wrong}</div></div>
