@@ -854,6 +854,33 @@
       return true;
     }
 
+    async function resumeExamInFullscreen(){
+      if(!isExamActive)return;
+      try{
+        if(!document.fullscreenElement){
+          const fullscreenTarget=document.documentElement;
+          if(!fullscreenTarget?.requestFullscreen){
+            throw new Error('Fullscreen mode is not supported by this browser.');
+          }
+          await fullscreenTarget.requestFullscreen({navigationUI:'hide'});
+        }
+        if(!document.fullscreenElement){
+          throw new Error('The browser did not enable fullscreen mode.');
+        }
+      }catch(error){
+        console.warn('Could not resume exam fullscreen:',error);
+        showExamModal(
+          'security',
+          'Full Screen Required',
+          'To continue the examination, please allow Full Screen mode and press the button below.',
+          'Try Again',
+          null,
+          'primary',
+          resumeExamInFullscreen
+        );
+      }
+    }
+
     function recordSecurityViolation(reason){
       const now=Date.now();
       if(!isExamActive||now<securitySuppressedUntil||multiTouchActive||now-lastMultiTouchAt<1200)return;
@@ -874,7 +901,7 @@
           calculateAndShowResults();
         },350);
       }else{
-        showExamModal('security',`Security Alert — ${tabSwitches}/${maxTabSwitches}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}`,'Continue Exam',null,'primary');
+        showExamModal('security',`Security Alert — ${tabSwitches}/${maxTabSwitches}`,`Focus/fullscreen violation detected.<br><span class="exam-modal-badge">Penalty: -${penalty}</span><br><br>${changed?'The affected question has been replaced.':'Violation recorded. No unused reserve question is currently available.'}<br><br><strong>Press Continue Exam to return to Full Screen mode.</strong>`,'Continue Exam',null,'primary',resumeExamInFullscreen);
       }
     }
 
