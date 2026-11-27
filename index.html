@@ -359,9 +359,7 @@
       <h2><i class="fa-solid fa-clipboard-list"></i> Instructions</h2>
       <p class="subtitle">Please read all instructions carefully before starting.</p>
 
-      <div class="negative-marking-box">
-        <i class="fa-solid fa-circle-exclamation"></i> <b>Negative Marking: -0.25</b> marks for each wrong answer.
-      </div>
+      <div class="negative-marking-box" id="instruction-marking-rules"><i class="fa-solid fa-circle-exclamation"></i> <b>Loading marking rules...</b></div>
 
       <div class="exam-config-cards">
         <div class="config-card">
@@ -795,22 +793,33 @@
             examId:selectedExamId,examName:selectedExamName,centerId:currentCenter.centerId,
             centerName:currentCenter.instituteName||'Examination Center',centerLocation:currentCenter.location||'',
             centerAddress:currentCenter.address||'',batch:currentCenter.batch||'',status:'logged_in',
+            markingSettings:getConfiguredGlobalMarkingSettings(),
             loginAt:now,lastSeen:now,securityViolations:0,tabSwitches:0,copiesAttempted:0,penaltiesApplied:0
           });
-          return {status:'logged_in'};
+          return {status:'logged_in',markingSettings:getConfiguredGlobalMarkingSettings()};
         }
-        transaction.set(sessionRef,{lastSeen:now,name:currentStudentName},{merge:true});
-        return sessionSnap.data();
+        const existing=sessionSnap.data();
+        transaction.set(sessionRef,{lastSeen:now,name:currentStudentName,...(!existing.markingSettings?{markingSettings:getConfiguredGlobalMarkingSettings()}:{})},{merge:true});
+        return {...existing,markingSettings:existing.markingSettings||getConfiguredGlobalMarkingSettings()};
       });
       currentAttemptId=attemptId;draftResultId=attemptId;attemptClaimed=true;currentSession=data;
       sessionStorage.setItem('currentAttemptId',attemptId);sessionStorage.setItem('draftResultId',attemptId);
       return data;
     }
 
-    function getPenaltyPerViolation(){
-      const value=Number(selectedExamConfig?.securityPenalty??examConfigData?.securityPenalty??1);
-      return Number.isFinite(value)&&value>=0?value:1;
+    const DEFAULT_GLOBAL_MARKING_SETTINGS=Object.freeze({marksPerCorrect:1,negativeMarkingEnabled:true,negativeMarksPerWrong:0.25,securityPenalty:1});
+    function getConfiguredGlobalMarkingSettings(){
+      const saved=examConfigData?.globalMarkingSettings||{};
+      const marks=Number(saved.marksPerCorrect),negative=Number(saved.negativeMarksPerWrong),security=Number(saved.securityPenalty);
+      return {marksPerCorrect:Number.isFinite(marks)&&marks>0?marks:1,negativeMarkingEnabled:typeof saved.negativeMarkingEnabled==='boolean'?saved.negativeMarkingEnabled:true,negativeMarksPerWrong:Number.isFinite(negative)&&negative>=0?negative:0.25,securityPenalty:Number.isFinite(security)&&security>=0?security:1};
     }
+    function getGlobalMarkingSettings(){
+      const saved=currentSession?.markingSettings;
+      if(!saved||typeof saved!=='object')return getConfiguredGlobalMarkingSettings();
+      const marks=Number(saved.marksPerCorrect),negative=Number(saved.negativeMarksPerWrong),security=Number(saved.securityPenalty);
+      return {marksPerCorrect:Number.isFinite(marks)&&marks>0?marks:1,negativeMarkingEnabled:typeof saved.negativeMarkingEnabled==='boolean'?saved.negativeMarkingEnabled:true,negativeMarksPerWrong:Number.isFinite(negative)&&negative>=0?negative:0.25,securityPenalty:Number.isFinite(security)&&security>=0?security:1};
+    }
+    function getPenaltyPerViolation(){return getGlobalMarkingSettings().securityPenalty;}
 
     function queueProgressSave(immediate=false){
       clearTimeout(progressSaveTimer);
@@ -1554,6 +1563,12 @@
       durationEl.innerText = (Number.isFinite(Number(configuredMinutes)) && Number(configuredMinutes) > 0)
         ? `${Number(configuredMinutes)} min`
         : '—';
+      const markingEl=document.getElementById('instruction-marking-rules');
+      if(markingEl){
+        const settings=getConfiguredGlobalMarkingSettings();
+        const negativeText=settings.negativeMarkingEnabled?`Negative marking: -${settings.negativeMarksPerWrong} for each wrong answer.`:'Negative marking: Disabled.';
+        markingEl.innerHTML=`<i class="fa-solid fa-circle-exclamation"></i> <b>Marks: +${settings.marksPerCorrect} for each correct answer. ${negativeText}</b>`;
+      }
     }
 
     window.changeSlide = (slideNumber) => {
@@ -2516,11 +2531,15 @@
         reviewContainer.appendChild(reviewItem);
       });
 
-      const rawScore = (correctCount * 1) - (wrongCount * 0.25);
-      const penaltyDeduction = Number(sessionStorage.getItem('penaltiesApplied') || '0');
-      calculatedScore = Math.max(0, rawScore - penaltyDeduction);
-      totalScore = questionsList.length;
-      finalizedScoreString = `${Number.isInteger(calculatedScore) ? calculatedScore : calculatedScore.toFixed(2)}/${totalScore}`;
+      const markingSettings=getGlobalMarkingSettings();
+      const marksPerCorrect=markingSettings.marksPerCorrect;
+      const negativeDeduction=markingSettings.negativeMarkingEnabled?wrongCount*markingSettings.negativeMarksPerWrong:0;
+      const rawScore=(correctCount*marksPerCorrect)-negativeDeduction;
+      const penaltyDeduction=Number(sessionStorage.getItem('penaltiesApplied')||'0');
+      calculatedScore=Math.max(0,Number((rawScore-penaltyDeduction).toFixed(2)));
+      totalScore=questionsList.length*marksPerCorrect;
+      const formatScore=value=>Number.isInteger(value)?String(value):String(Number(value.toFixed(2)));
+      finalizedScoreString=`${formatScore(calculatedScore)}/${formatScore(totalScore)}`;
       const attempted=correctCount+wrongCount;
       const timeTakenSeconds=Math.max(0,Math.round((Date.now()-examStartTime)/1000));
       finalMetrics={correct:correctCount,wrong:wrongCount,attempted,timeTakenSeconds,

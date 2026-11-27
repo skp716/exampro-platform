@@ -349,9 +349,9 @@
     .multi-exam-head h4 { color:var(--primary); font-size:1.05rem; margin:0 0 4px; }
     .multi-exam-head p { color:var(--text-muted); font-size:.83rem; margin:0; line-height:1.5; }
     .exam-control-grid { display:grid; grid-template-columns:minmax(190px,1fr) minmax(150px,.7fr) minmax(150px,.7fr); gap:10px; min-width:min(100%,650px); flex:1; max-width:720px; }
-    .exam-select-wrap,.per-exam-timer-wrap,.per-exam-penalty-wrap { min-width:0; }
-    .exam-select-wrap label,.per-exam-timer-wrap label,.per-exam-penalty-wrap label { display:block; font-size:.72rem; font-weight:700; color:var(--primary); margin-bottom:5px; }
-    .exam-select-wrap select,.per-exam-timer-wrap input,.per-exam-penalty-wrap input { width:100%; box-sizing:border-box; padding:.72rem .75rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#1e293b; font-size:.9rem; outline:none; }
+    .exam-select-wrap,.per-exam-timer-wrap { min-width:0; }
+    .exam-select-wrap label,.per-exam-timer-wrap label { display:block; font-size:.72rem; font-weight:700; color:var(--primary); margin-bottom:5px; }
+    .exam-select-wrap select,.per-exam-timer-wrap input { width:100%; box-sizing:border-box; padding:.72rem .75rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#1e293b; font-size:.9rem; outline:none; }
     .exam-select-wrap select:focus,.per-exam-timer-wrap input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.1); }
     .active-exams-panel { background:#eff6ff; border:1px solid #bfdbfe; border-radius:11px; padding:13px; margin:12px 0 15px; }
     .active-exams-title { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
@@ -548,6 +548,20 @@
       class="admin-slide-content active"
     >
 
+      <!-- GLOBAL MARKING SETTINGS: APPLY TO EVERY EXAM -->
+      <div class="admin-card" id="global-marking-settings-card">
+        <h3><i class="fa-solid fa-calculator"></i> Global Marking & Security Settings</h3>
+        <p class="subtitle">These rules apply to every exam on the student portal. Changes here are saved globally and are not exam-specific.</p>
+        <div class="form-grid">
+          <div class="form-group"><label for="global-marks-per-correct">Marks Per Correct Question *</label><input type="number" id="global-marks-per-correct" min="0.01" step="0.01" value="1" required></div>
+          <div class="form-group"><label for="global-negative-enabled">Negative Marking *</label><select id="global-negative-enabled"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>
+          <div class="form-group"><label for="global-negative-marks">Negative Marks Per Wrong Question *</label><input type="number" id="global-negative-marks" min="0" step="0.01" value="0.25" required></div>
+          <div class="form-group"><label for="global-security-penalty">Security Penalty Per Violation *</label><input type="number" id="global-security-penalty" min="0" step="0.01" value="1" required></div>
+        </div>
+        <button type="button" class="btn btn-success" id="save-global-marking-btn" onclick="saveGlobalMarkingSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Global Marking Settings</button>
+        <div class="config-summary" id="global-marking-summary">Default marking rules are loaded. Save after making any changes.</div>
+      </div>
+
       <!-- MULTI-EXAM + SUBJECT-WISE QUESTION CONTROL -->
       <div class="multi-exam-card">
         <div class="multi-exam-head">
@@ -570,10 +584,6 @@
             <div class="per-exam-timer-wrap">
               <label for="per-exam-timer">Per Exam Timer (Minutes) *</label>
               <input type="number" id="per-exam-timer" min="1" placeholder="e.g. 30">
-            </div>
-            <div class="per-exam-penalty-wrap">
-              <label for="per-exam-penalty">Penalty / Violation *</label>
-              <input type="number" id="per-exam-penalty" min="0" step="0.25" placeholder="e.g. 1">
             </div>
           </div>
         </div>
@@ -1115,6 +1125,31 @@
       return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
     }
 
+    const DEFAULT_GLOBAL_MARKING_SETTINGS = Object.freeze({marksPerCorrect:1,negativeMarkingEnabled:true,negativeMarksPerWrong:0.25,securityPenalty:1});
+    function normalizeGlobalMarkingSettings(saved={}) {
+      const marks=Number(saved.marksPerCorrect),negative=Number(saved.negativeMarksPerWrong),security=Number(saved.securityPenalty);
+      return {marksPerCorrect:Number.isFinite(marks)&&marks>0?marks:1,negativeMarkingEnabled:typeof saved.negativeMarkingEnabled==='boolean'?saved.negativeMarkingEnabled:true,negativeMarksPerWrong:Number.isFinite(negative)&&negative>=0?negative:0.25,securityPenalty:Number.isFinite(security)&&security>=0?security:1};
+    }
+    function populateGlobalMarkingSettings(data={}) {
+      const settings=normalizeGlobalMarkingSettings(data.globalMarkingSettings||{});
+      document.getElementById('global-marks-per-correct').value=settings.marksPerCorrect;
+      document.getElementById('global-negative-enabled').value=String(settings.negativeMarkingEnabled);
+      document.getElementById('global-negative-marks').value=settings.negativeMarksPerWrong;
+      document.getElementById('global-security-penalty').value=settings.securityPenalty;
+      const summary=document.getElementById('global-marking-summary');
+      if(summary)summary.innerHTML='<strong>Loaded:</strong> These rules apply to all configured exams.';
+    }
+    window.saveGlobalMarkingSettings=async()=>{
+      const settings={marksPerCorrect:Number(document.getElementById('global-marks-per-correct').value),negativeMarkingEnabled:document.getElementById('global-negative-enabled').value==='true',negativeMarksPerWrong:Number(document.getElementById('global-negative-marks').value),securityPenalty:Number(document.getElementById('global-security-penalty').value)};
+      if(!Number.isFinite(settings.marksPerCorrect)||settings.marksPerCorrect<=0){alert('Marks per correct question must be greater than 0.');return;}
+      if(!Number.isFinite(settings.negativeMarksPerWrong)||settings.negativeMarksPerWrong<0){alert('Negative marks must be 0 or greater.');return;}
+      if(!Number.isFinite(settings.securityPenalty)||settings.securityPenalty<0){alert('Security penalty must be 0 or greater.');return;}
+      const button=document.getElementById('save-global-marking-btn');button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving Global Settings...';
+      try{await setDoc(doc(db,'exam_config','current_test'),{globalMarkingSettings:settings,updatedAt:new Date()},{merge:true});document.getElementById('global-marking-summary').innerHTML='<strong>Saved:</strong> Global marking settings apply to every exam for new attempts.';alert('Global marking and security settings saved successfully for all exams.');}
+      catch(err){console.error('Global marking settings save failed:',err);alert('Global marking settings could not be saved: '+err.message);}
+      finally{button.disabled=false;button.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Global Marking Settings';}
+    };
+
     let currentCenterSettings={};
     window.saveCenterSettings=async()=>{
       const code=document.getElementById('center-code').value.trim().toUpperCase();
@@ -1164,8 +1199,6 @@
         input.disabled=false;
         input.title='';
       }
-      const penalty=document.getElementById('per-exam-penalty');
-      if(penalty) penalty.value=Number.isFinite(Number(multiExamConfig[id].securityPenalty)) ? Number(multiExamConfig[id].securityPenalty) : 1;
     }
 
     function collectCurrentExamTimer(){
@@ -1173,8 +1206,6 @@
       if(!multiExamConfig[id]) multiExamConfig[id]={examName:getExamDisplayName(id),timerMinutes:0,active:false,subjects:[]};
       const value=Number(document.getElementById('per-exam-timer')?.value);
       if(Number.isFinite(value) && value>0) multiExamConfig[id].timerMinutes=value;
-      const penalty=Number(document.getElementById('per-exam-penalty')?.value);
-      if(Number.isFinite(penalty) && penalty>=0) multiExamConfig[id].securityPenalty=penalty;
     }
 
     function renderActiveExamControls(){
@@ -1255,7 +1286,7 @@
       const id=getConfiguredExamId(),exam=multiExamConfig[id]||{subjects:[],timerMinutes:0};
       const subjects=exam.subjects||[],total=subjects.reduce((n,s)=>n+(Number(s.count)||0),0);
       const active=getExamIds().filter(x=>multiExamConfig[x]?.active).map(x=>getExamDisplayName(x));
-      el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} section(s) • ${total} student questions • Timer: ${Number(exam.timerMinutes)||0} min • Penalty: ${Number(exam.securityPenalty)||0}/violation. <br><strong>Active:</strong> ${active.length?escapeHTML(active.join(', ')):'None selected'}`;
+      el.innerHTML=`<strong>${escapeHTML(exam.examName||id)}:</strong> ${subjects.length} section(s) • ${total} student questions • Timer: ${Number(exam.timerMinutes)||0} min. <br><strong>Active:</strong> ${active.length?escapeHTML(active.join(', ')):'None selected'}`;
     }
 
     function collectVisibleSubjectValues(){
@@ -1330,11 +1361,6 @@
         renderExamSelector(savedActiveExam);
         selector.dataset.previousExamId=selector.value;
         selector.onchange=()=>{
-          const previousId=selector.dataset.previousExamId;
-          const visiblePenalty=Number(document.getElementById('per-exam-penalty')?.value);
-          if(previousId&&multiExamConfig[previousId]&&Number.isFinite(visiblePenalty)&&visiblePenalty>=0){
-            multiExamConfig[previousId].securityPenalty=visiblePenalty;
-          }
           selector.dataset.previousExamId=selector.value;
           syncCurrentExamTimer();
           renderSubjectConfig();
@@ -1342,7 +1368,6 @@
         };
       }
       const timer=document.getElementById('per-exam-timer'); if(timer) timer.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
-      const penalty=document.getElementById('per-exam-penalty'); if(penalty) penalty.oninput=()=>{collectCurrentExamTimer();updateMultiExamSummary();};
       document.getElementById('add-exam-category-btn')?.addEventListener('click',createExamCategory);
       document.getElementById('add-subject-btn')?.addEventListener('click',()=>{const id=getConfiguredExamId();collectCurrentExamTimer();if(!multiExamConfig[id])multiExamConfig[id]={examName:id,timerMinutes:0,active:false,subjects:[]};multiExamConfig[id].subjects.push({name:'',count:1,order:'random',source:''});renderSubjectConfig();});
       document.getElementById('save-multi-exam-btn')?.addEventListener('click',saveMultiExamSettings);
@@ -1360,6 +1385,7 @@
         const docSnap=await getDoc(doc(db,'exam_config','current_test'));
         if(docSnap.exists()){
           const data=docSnap.data();
+          populateGlobalMarkingSettings(data);
           if(Number(data.schemaVersion||0)<EXAM_CONFIG_SCHEMA_VERSION){
             const migrated=JSON.parse(JSON.stringify(data.multiExamConfig||DEFAULT_MULTI_EXAM_CONFIG));
             const removed=Array.isArray(data.deletedExamIds)?data.deletedExamIds:[];
@@ -1392,11 +1418,13 @@
         }else{
           initializeMultiExamControls();
           populateCenterSettings();
+          populateGlobalMarkingSettings();
         }
       }catch(e){
         console.error('Config load error:',e);
         initializeMultiExamControls();
         populateCenterSettings();
+        populateGlobalMarkingSettings();
       }
     }
 
