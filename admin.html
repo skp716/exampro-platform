@@ -902,7 +902,8 @@
       getDocs,
       deleteDoc,
       onSnapshot,
-      runTransaction
+      runTransaction,
+      writeBatch
     } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     import {
@@ -2049,6 +2050,15 @@
        DELETE ONE STUDENT RESULT
        ============================================================ */
 
+    async function deleteAttemptQuestionSnapshots(attemptId){
+      const snapshot=await getDocs(collection(db,'exam_sessions',attemptId,'question_snapshots'));
+      for(let offset=0;offset<snapshot.docs.length;offset+=400){
+        const batch=writeBatch(db);
+        snapshot.docs.slice(offset,offset+400).forEach(item=>batch.delete(item.ref));
+        await batch.commit();
+      }
+    }
+
     window.deleteSingleResult = async (resultId) => {
       if (!resultId) {
         alert('Invalid result selected.');
@@ -2066,6 +2076,7 @@
       if (!confirmed) return;
 
       try {
+        await deleteAttemptQuestionSnapshots(resultId);
         await Promise.all([
           deleteDoc(doc(db, 'results', resultId)),
           deleteDoc(doc(db, 'attempt_locks', resultId)),
@@ -2115,6 +2126,11 @@
 
         const lockSnap = await getDocs(collection(db, "attempt_locks"));
         const sessionSnap = await getDocs(collection(db, "exam_sessions"));
+        // Delete immutable question snapshots before removing their parent
+        // sessions; Firestore does not cascade-delete subcollections.
+        for(const sessionDoc of sessionSnap.docs){
+          await deleteAttemptQuestionSnapshots(sessionDoc.id);
+        }
         const deletes = [
           ...snap.docs.map(d => () => deleteDoc(doc(db, "results", d.id))),
           ...lockSnap.docs.map(d => () => deleteDoc(doc(db, "attempt_locks", d.id))),
