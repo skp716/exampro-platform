@@ -115,7 +115,9 @@ service cloud.firestore {
             && exists(/databases/$(database)/documents/exam_sessions/$(sessionId))
             && get(/databases/$(database)/documents/exam_sessions/$(sessionId)).data.ownerUid == request.auth.uid;
         }
-        allow get, list: if isAdmin() || ownsParentAttempt();
+        // Snapshots include correct answers: students may create their own,
+        // but only authorized admins may read them.
+        allow get, list: if isAdmin();
         allow create: if ownsParentAttempt()
           && request.resource.data.ownerUid == request.auth.uid
           && request.resource.data.attemptId == sessionId
