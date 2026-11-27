@@ -901,7 +901,8 @@
       collection,
       getDocs,
       deleteDoc,
-      onSnapshot
+      onSnapshot,
+      runTransaction
     } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     import {
@@ -1788,13 +1789,33 @@
           status:loginOnly?'admin_saved_no_answers':'completed',completed:!loginOnly,
           adminForced:true,forcedBy:adminUid,forcedAt:now,submittedAt:now,updatedAt:now
         };
-        await setDoc(doc(db,'results',attemptId),resultPayload,{merge:false});
-        await setDoc(doc(db,'exam_sessions',attemptId),{
-          status:loginOnly?'admin_saved_no_answers':'final_submitted',
-          score:resultPayload.score,correct:resultPayload.correct,wrong:resultPayload.wrong,
-          attempted:resultPayload.attempted,unanswered:resultPayload.unanswered,
-          adminForced:true,forcedBy:adminUid,forcedAt:now,submittedAt:now,lastSeen:now
-        },{merge:true});
+        const sessionRef=doc(db,'exam_sessions',attemptId);
+        const resultRef=doc(db,'results',attemptId);
+        const committed=await runTransaction(db,async transaction=>{
+          const liveSession=await transaction.get(sessionRef);
+          const existingResult=await transaction.get(resultRef);
+          if(!liveSession.exists())throw new Error('Attempt session no longer exists.');
+          const latest=liveSession.data();
+          if(['final_submitted','admin_saved_no_answers'].includes(latest.status) ||
+             (existingResult.exists()&&existingResult.data()?.completed===true)){
+            return false;
+          }
+          const latestAnswerCount=getSavedAnswerCount(latest);
+          if(latestAnswerCount!==getSavedAnswerCount(session)){
+            throw new Error('Student answers changed during Force Save. Refresh the list and try again.');
+          }
+          const previous=existingResult.exists()?existingResult.data():{};
+          transaction.set(resultRef,{...previous,...resultPayload,feedback:previous.feedback??resultPayload.feedback,
+            doubt:previous.doubt??resultPayload.doubt,rating:previous.rating??resultPayload.rating},{merge:false});
+          transaction.set(sessionRef,{
+            status:loginOnly?'admin_saved_no_answers':'final_submitted',
+            score:resultPayload.score,correct:resultPayload.correct,wrong:resultPayload.wrong,
+            attempted:resultPayload.attempted,unanswered:resultPayload.unanswered,
+            adminForced:true,forcedBy:adminUid,forcedAt:now,submittedAt:now,lastSeen:now
+          },{merge:true});
+          return true;
+        });
+        if(!committed){alert('This attempt has already been finalized. No duplicate result was created.');return;}
         alert(loginOnly?'Login record saved. No exam answers or completed result were recorded.':'Saved responses have been force-submitted and finalized.');
         await viewAdminPerformanceReport(attemptId);
       }catch(error){console.error('Admin force save failed:',error);alert('Force Save failed: '+error.message);}
@@ -1890,6 +1911,7 @@
             subjects: normalizeSubjects(r),
             centerName:r.centerName||'Not recorded',centerLocation:r.centerLocation||'',centerAddress:r.centerAddress||'',batch:r.batch||'',
             status,statusLabel:status==='final_submitted'?'Final Submitted':status==='result_pending_feedback'?'Result Ready — Feedback Pending':status==='in_progress'?'Test In Progress':status==='admin_saved_no_answers'?'Admin Saved — No Answers':'Logged In',
+            selectedAnswers:r.selectedAnswers||{},
             savedAnswerCount:getSavedAnswerCount(r),snapshotStatus:r.questionSnapshotStatus||'unknown',
             lastSeenStr:dateLabel(r.lastSeen),
             loginAtStr:loginObj.getTime()>0?loginObj.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'N/A',
