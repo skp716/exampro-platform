@@ -1830,7 +1830,8 @@
              JSON.stringify(latest.questionOrder||[])!==JSON.stringify(session.questionOrder||[]) ||
              Number(latest.penaltiesApplied||0)!==Number(session.penaltiesApplied||0) ||
              Number(latest.tabSwitches||0)!==Number(session.tabSwitches||0) ||
-             Number(latest.copiesAttempted||0)!==Number(session.copiesAttempted||0)){
+             Number(latest.copiesAttempted||0)!==Number(session.copiesAttempted||0) ||
+             JSON.stringify(latest.securityEvents||[])!==JSON.stringify(session.securityEvents||[])){
             throw new Error('Student progress changed during Force Save. Refresh the list and try again.');
           }
           const previous=existingResult.exists()?existingResult.data():{};
